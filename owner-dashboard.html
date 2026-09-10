@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lender Operations Dashboard - CampusRent Hub</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              800: '#1e293b',
+              900: '#0f172a',
+              950: '#0a0f1d',
+            },
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            bkash: '#e2136e',
+            nagad: '#f7941d'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="flex flex-col min-h-screen text-slate-800 antialiased selection:bg-blue-600 selection:text-white">
+
+  <!-- Top Campus Notice Bar -->
+  <div class="bg-navy-950 text-slate-300 text-xs py-2 px-4 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span class="font-medium text-slate-200">Lender Portal:</span> 
+        <span>All rental earnings are transferred directly to your bKash upon confirmed return.</span>
+      </div>
+      <div class="flex items-center gap-4 text-slate-400">
+        <a href="renter-dashboard.html" class="hover:text-white transition-colors flex items-center gap-1">
+          Switch to Renter View &rarr;
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Header Navigation -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        
+        <!-- Brand Logo -->
+        <a href="index.html" class="flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-navy-900 to-primary-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-xl font-extrabold tracking-tight text-navy-900">CampusRent</span>
+              <span class="text-xl font-bold text-primary-600">Hub</span>
+            </div>
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Lender Operations</p>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
+          <a href="index.html" class="px-3.5 py-2 text-sm font-medium text-slate-700 hover:text-primary-600 hover:bg-slate-100 rounded-lg transition-colors">
+            Browse Equipment
+          </a>
+          <a href="owner-dashboard.html" class="px-3.5 py-2 text-sm font-semibold text-primary-600 rounded-lg bg-blue-50/80">
+            Lender Hub
+          </a>
+          <a href="renter-dashboard.html" class="px-3.5 py-2 text-sm font-medium text-slate-700 hover:text-primary-600 hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-1.5">
+            <span>My Rentals</span>
+            <span class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">2 Active</span>
+          </a>
+          <a href="admin.html" class="px-3.5 py-2 text-sm font-medium text-slate-700 hover:text-amber-600 hover:bg-slate-100 rounded-lg transition-colors">
+            Admin
+          </a>
+        </nav>
+
+        <!-- Right Side User Badge & Action -->
+        <div class="flex items-center gap-3">
+          <button data-modal-target="add-equipment-modal" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold shadow-md shadow-blue-600/30 transition-all">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            <span>+ Add Equipment</span>
+          </button>
+
+          <div class="flex items-center pl-2 sm:pl-3 border-l border-slate-200 gap-2">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="w-8 h-8 rounded-full ring-2 ring-primary-600/30 object-cover">
+            <div class="text-left leading-tight hidden sm:block">
+              <div class="text-xs font-bold text-navy-900">Rafiqul Islam</div>
+              <div class="text-[11px] font-semibold text-emerald-600">Lender ID: CSE-22</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    
+    <!-- Welcome Strip & Page Title -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <div>
+        <h1 class="text-2xl font-extrabold text-navy-900 tracking-tight">Owner / Lender Dashboard</h1>
+        <p class="text-sm text-slate-500 mt-0.5">Manage your campus gear listings, incoming requests, and in-person handovers.</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button data-modal-target="add-equipment-modal" class="py-2 px-4 rounded-xl bg-navy-900 hover:bg-navy-800 text-white text-xs font-bold shadow transition-all flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+          <span>List New Item</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Overview Metrics Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+      
+      <!-- Total Earnings -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Earnings</span>
+          <span class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+            ৳
+          </span>
+        </div>
+        <div class="mt-3">
+          <div class="text-2xl font-extrabold text-navy-900">৳12,450</div>
+          <p class="text-xs text-emerald-600 font-semibold mt-0.5 flex items-center gap-1">
+            <span>+৳1,850 this semester</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Active Lends -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Active Lends</span>
+          <span class="w-9 h-9 rounded-xl bg-blue-50 text-primary-600 flex items-center justify-center">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          </span>
+        </div>
+        <div class="mt-3">
+          <div class="text-2xl font-extrabold text-navy-900">4 Items</div>
+          <p class="text-xs text-slate-500 mt-0.5">Currently with campus peers</p>
+        </div>
+      </div>
+
+      <!-- Pending Requests -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Pending Requests</span>
+          <span class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </span>
+        </div>
+        <div class="mt-3">
+          <div class="text-2xl font-extrabold text-navy-900">3 Requests</div>
+          <p class="text-xs text-amber-600 font-semibold mt-0.5">Awaiting pickup approval</p>
+        </div>
+      </div>
+
+      <!-- Escrow Locked Balance -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Security In Escrow</span>
+          <span class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+          </span>
+        </div>
+        <div class="mt-3">
+          <div class="text-2xl font-extrabold text-navy-900">৳3,200</div>
+          <p class="text-xs text-slate-500 mt-0.5">Guaranteed by University Hub</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Interactive Section: In-Person Handover Confirmation Terminal -->
+    <section class="bg-gradient-to-tr from-navy-900 to-slate-900 rounded-2xl p-6 sm:p-8 text-white shadow-xl mb-10 border border-slate-800">
+      <div class="max-w-2xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 font-mono text-xs font-bold uppercase tracking-wider mb-2">
+          <span>In-Person Handover Verification</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold">Release Equipment with Renter's Secret Token</h2>
+        <p class="text-xs sm:text-sm text-slate-300 mt-1">
+          When meeting the student at Central Library, Cafeteria, or Lab, ask them for their 8-character Renter Passcode to verify payment and release the equipment.
+        </p>
+      </div>
+
+      <!-- Token Input Terminal Form -->
+      <div class="mt-6 max-w-xl">
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <input type="text" id="handover_token_input" placeholder="Enter Token (e.g. TRX-8291)" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 font-mono text-base tracking-wider focus:outline-none focus:ring-2 focus:ring-primary-500 uppercase">
+          </div>
+          <button id="btn-verify-token" class="py-3 px-6 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-lg transition-all flex items-center justify-center gap-2 shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Verify Token</span>
+          </button>
+        </div>
+
+        <div class="text-[11px] text-slate-400 mt-2 flex items-center gap-2">
+          <span>Demo Hint: Try entering token</span>
+          <button onclick="document.getElementById('handover_token_input').value='TRX-8291'" class="text-blue-400 underline font-mono">TRX-8291</button>
+          <span>or</span>
+          <button onclick="document.getElementById('handover_token_input').value='RENT-4092'" class="text-blue-400 underline font-mono">RENT-4092</button>
+        </div>
+
+        <!-- Verification Result Container (Injected via JS) -->
+        <div id="token-verification-result" class="mt-4 hidden"></div>
+      </div>
+    </section>
+
+    <!-- Two-Column Grid: Manage Listings & Incoming Requests -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Left 8 Columns: Manage Equipment Listings -->
+      <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        
+        <div class="p-6 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 class="text-lg font-bold text-navy-900">My Listed Equipment</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Your items available for peer rental across campus departments</p>
+          </div>
+
+          <!-- Filter Pills -->
+          <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+            <button class="px-3 py-1.5 rounded-lg bg-white shadow-sm text-navy-900 font-bold">All (3)</button>
+            <button class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-navy-900">Active (2)</button>
+            <button class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-navy-900">Rented (1)</button>
+          </div>
+        </div>
+
+        <!-- Listings Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-600">
+            <thead class="bg-slate-50 text-slate-500 uppercase tracking-wider font-bold border-b border-slate-200">
+              <tr>
+                <th class="py-3 px-4">Equipment</th>
+                <th class="py-3 px-4">Daily Rate</th>
+                <th class="py-3 px-4">Security Deposit</th>
+                <th class="py-3 px-4">Total Lends</th>
+                <th class="py-3 px-4">Status</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="owner-listings-tbody" class="divide-y divide-slate-100">
+              <!-- Injected via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- Right 4 Columns: Incoming Rental Requests Queue -->
+      <div class="lg:col-span-4 bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <div class="flex justify-between items-center mb-4">
+          <div>
+            <h2 class="text-base font-bold text-navy-900">Incoming Requests</h2>
+            <p class="text-xs text-slate-500">Students requesting your equipment</p>
+          </div>
+          <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[11px] font-bold rounded-full">3 New</span>
+        </div>
+
+        <div class="space-y-4">
+          
+          <!-- Request Card 1 -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white hover:shadow-md transition-all space-y-2.5">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-[10px] font-bold text-primary-600 uppercase">CSE Student</span>
+                <h4 class="font-bold text-xs text-navy-900">TI-Nspire CX II Graphing Calculator</h4>
+              </div>
+              <span class="text-xs font-extrabold text-emerald-600">৳300</span>
+            </div>
+            
+            <div class="text-[11px] text-slate-600">
+              <span class="font-semibold text-slate-800">Requester:</span> Zubair Hossain (CSE-23-0811)
+            </div>
+
+            <div class="text-[11px] text-slate-500 flex items-center gap-1">
+              <svg class="w-3.5 h-3.5 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
+              <span>Central Library Front · 2 Days</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200">
+              <button onclick="App.showToast('Request accepted! Renter notified to deposit escrow.', 'success')" class="py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-sm">
+                Accept
+              </button>
+              <button onclick="App.showToast('Request declined.', 'info')" class="py-1.5 px-3 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs font-bold">
+                Decline
+              </button>
+            </div>
+          </div>
+
+          <!-- Request Card 2 -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white hover:shadow-md transition-all space-y-2.5">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-[10px] font-bold text-primary-600 uppercase">Media Fest</span>
+                <h4 class="font-bold text-xs text-navy-900">Boya BY-M1 Lavalier Microphone</h4>
+              </div>
+              <span class="text-xs font-extrabold text-emerald-600">৳150</span>
+            </div>
+            
+            <div class="text-[11px] text-slate-600">
+              <span class="font-semibold text-slate-800">Requester:</span> Ananya Roy (EEE-22-0491)
+            </div>
+
+            <div class="text-[11px] text-slate-500 flex items-center gap-1">
+              <svg class="w-3.5 h-3.5 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
+              <span>TSC Ground · 3 Days</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200">
+              <button onclick="App.showToast('Request accepted! Renter notified to deposit escrow.', 'success')" class="py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-sm">
+                Accept
+              </button>
+              <button onclick="App.showToast('Request declined.', 'info')" class="py-1.5 px-3 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs font-bold">
+                Decline
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Add New Equipment Modal (PHP Ready Form) -->
+  <div id="add-equipment-modal" class="modal-container hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="modal-backdrop fixed inset-0 bg-navy-950/80 backdrop-blur-sm"></div>
+    
+    <div class="relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden z-10 border border-slate-200 max-h-[90vh] flex flex-col">
+      
+      <!-- Modal Header -->
+      <div class="bg-navy-900 p-5 text-white flex justify-between items-center shrink-0">
+        <div>
+          <h3 class="font-bold text-base">List Equipment for Campus Rental</h3>
+          <p class="text-xs text-slate-300">Monetize your idle lab gear and study equipment safely</p>
+        </div>
+        <button data-modal-close class="text-slate-400 hover:text-white transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <!-- Scrollable Form Body -->
+      <form id="add-equipment-form" action="process_add_item.php" method="POST" enctype="multipart/form-data" class="p-6 space-y-4 overflow-y-auto">
+        
+        <!-- Item Title -->
+        <div>
+          <label for="item_title" class="block text-xs font-bold text-slate-700 mb-1">Equipment Title *</label>
+          <input type="text" id="item_title" name="item_title" required placeholder="e.g. Casio fx-991CW Calculator or Rotring Drafter" class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-slate-800 font-medium">
+        </div>
+
+        <!-- Category & Department -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="category" class="block text-xs font-bold text-slate-700 mb-1">Category *</label>
+            <select id="category" name="category" required class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-slate-800 font-medium">
+              <option value="Scientific Calculators">Scientific Calculators</option>
+              <option value="Drafter Kits">Drafter Kits</option>
+              <option value="Arduino / IoT Kits">Arduino / IoT Kits</option>
+              <option value="DSLR Cameras">DSLR Cameras</option>
+              <option value="Lab Coats & Safety">Lab Coats & Safety</option>
+              <option value="Lab Instruments">Lab Instruments</option>
+              <option value="Sports Gear">Sports Gear</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="department" class="block text-xs font-bold text-slate-700 mb-1">Relevant Department *</label>
+            <select id="department" name="department" required class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-slate-800 font-medium">
+              <option value="CSE">CSE (Computer Science)</option>
+              <option value="EEE">EEE (Electrical)</option>
+              <option value="Architecture">Architecture</option>
+              <option value="Pharmacy">Pharmacy</option>
+              <option value="Civil Engineering">Civil Engineering</option>
+              <option value="Mechanical">Mechanical</option>
+              <option value="General">General / Multimedia</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Condition & Campus Pickup Spot -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="item_condition" class="block text-xs font-bold text-slate-700 mb-1">Condition *</label>
+            <select id="item_condition" name="item_condition" required class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-slate-800 font-medium">
+              <option value="Like New">Like New (Mint condition)</option>
+              <option value="Good">Good (Lightly used, fully working)</option>
+              <option value="Fair">Fair (Cosmetic wear, operational)</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="pickup_spot" class="block text-xs font-bold text-slate-700 mb-1">Preferred Campus Handover Spot *</label>
+            <select id="pickup_spot" name="pickup_spot" required class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-slate-800 font-medium">
+              <option value="Central Library Front Gate">Central Library Front Gate</option>
+              <option value="Campus Cafeteria Entrance">Campus Cafeteria Entrance</option>
+              <option value="Academic Building-1 Gate">Academic Building-1 Gate</option>
+              <option value="Engineering Lab Complex (3rd Floor)">Engineering Lab Complex</option>
+              <option value="TSC Ground / Student Union">TSC Ground / Student Union</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Pricing: Daily Rate & Security Deposit -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="daily_rate" class="block text-xs font-bold text-slate-700 mb-1">Daily Rental Rate (৳) *</label>
+            <div class="relative">
+              <span class="absolute left-3 top-2 text-xs font-bold text-slate-500">৳</span>
+              <input type="number" id="daily_rate" name="daily_rate" required min="10" max="5000" placeholder="e.g. 70" class="w-full pl-7 pr-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-slate-800 font-bold">
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Suggested: ৳40 - ৳150 for calculators & kits</p>
+          </div>
+
+          <div>
+            <label for="security_deposit" class="block text-xs font-bold text-slate-700 mb-1">Refundable Security Deposit (৳) *</label>
+            <div class="relative">
+              <span class="absolute left-3 top-2 text-xs font-bold text-emerald-600">৳</span>
+              <input type="number" id="security_deposit" name="security_deposit" required min="50" max="50000" placeholder="e.g. 800" class="w-full pl-7 pr-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-slate-800 font-bold">
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Held in escrow to protect against damage/loss</p>
+          </div>
+        </div>
+
+        <!-- Specs & Inclusions -->
+        <div>
+          <label for="technical_specs" class="block text-xs font-bold text-slate-700 mb-1">Specifications & Included Accessories</label>
+          <textarea id="technical_specs" name="technical_specs" rows="2" placeholder="e.g. Includes original cover, 2 spare AA batteries, carrying bag." class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-slate-800"></textarea>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label for="item_description" class="block text-xs font-bold text-slate-700 mb-1">Item Description & Usage Guidelines</label>
+          <textarea id="item_description" name="item_description" rows="2" placeholder="Describe the condition, which courses it is suitable for, and handover notes." class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-slate-800"></textarea>
+        </div>
+
+        <!-- Image Upload Mockup -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Equipment Photos</label>
+          <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer">
+            <svg class="w-8 h-8 text-slate-400 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            <span class="text-xs font-semibold text-primary-600">Click to upload photo</span>
+            <span class="text-[11px] text-slate-500 block">PNG, JPG up to 5MB (Sample image auto-selected in demo)</span>
+            <input type="file" id="item_image_file" name="item_image_file" class="hidden">
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-2">
+          <button type="submit" class="w-full py-3 px-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl text-sm shadow-md transition-all">
+            Publish Equipment to Campus Catalog
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="assets/js/mock-data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/forms-handler.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      renderOwnerListings();
+
+      // Check if URL has ?action=new to open modal automatically
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('action') === 'new') {
+        App.openModal('add-equipment-modal');
+      }
+    });
+
+    function renderOwnerListings() {
+      const data = CampusRentData.get();
+      const tbody = document.getElementById('owner-listings-tbody');
+      if (!tbody) return;
+
+      tbody.innerHTML = '';
+
+      data.ownerListings.forEach(item => {
+        let statusBadge = `<span class="badge-status bg-emerald-100 text-emerald-800">Active</span>`;
+        if (item.status === 'Rented Out') {
+          statusBadge = `<span class="badge-status bg-blue-100 text-blue-800">Rented Out</span>`;
+        } else if (item.status === 'Paused') {
+          statusBadge = `<span class="badge-status bg-slate-100 text-slate-800">Paused</span>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50/80 transition-colors';
+        tr.innerHTML = `
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-3">
+              <img src="${item.image}" alt="${item.title}" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
+              <div>
+                <div class="font-bold text-navy-900 text-xs">${item.title}</div>
+                <div class="text-[10px] text-slate-400">${item.category} &bull; ${item.department}</div>
+              </div>
+            </div>
+          </td>
+          <td class="py-3 px-4 font-bold text-slate-800">৳${item.dailyRate}/day</td>
+          <td class="py-3 px-4 font-bold text-emerald-600">৳${item.deposit}</td>
+          <td class="py-3 px-4 font-semibold text-slate-700">${item.totalLends} times</td>
+          <td class="py-3 px-4">${statusBadge}</td>
+          <td class="py-3 px-4 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <button onclick="App.showToast('Listing edited.', 'info')" class="p-1 text-slate-400 hover:text-primary-600 transition-colors" title="Edit">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+              </button>
+              <button onclick="deleteListing('${item.id}')" class="p-1 text-slate-400 hover:text-red-600 transition-colors" title="Delete">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function deleteListing(id) {
+      if (confirm('Are you sure you want to remove this equipment listing?')) {
+        const data = CampusRentData.get();
+        data.ownerListings = data.ownerListings.filter(i => i.id !== id);
+        CampusRentData.save(data);
+        renderOwnerListings();
+        App.showToast('Listing removed successfully.', 'info');
+      }
+    }
+  </script>
+</body>
+</html>
