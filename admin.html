@@ -95,12 +95,14 @@
           </a>
         </nav>
 
-        <!-- Right Side Badge -->
+        <!-- Right Side Badge & Dynamic Auth -->
         <div class="flex items-center gap-3">
-          <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold flex items-center gap-1.5">
+          <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold flex items-center gap-1.5 hidden sm:flex">
             <span class="w-2 h-2 rounded-full bg-amber-500"></span>
             Proctor Office Console
           </span>
+
+          <div id="header-auth-container" class="flex items-center pl-2 sm:pl-3 border-l border-slate-200"></div>
         </div>
 
       </div>
@@ -128,8 +130,8 @@
           </span>
         </div>
         <div class="mt-3">
-          <div class="text-2xl font-extrabold text-navy-900">1,842</div>
-          <p class="text-xs text-slate-500 mt-0.5">3 pending ID approvals</p>
+          <div id="admin-registered-students" class="text-2xl font-extrabold text-navy-900">0</div>
+          <p class="text-xs text-slate-500 mt-0.5">Chittagong student accounts</p>
         </div>
       </div>
 
@@ -142,8 +144,8 @@
           </span>
         </div>
         <div class="mt-3">
-          <div class="text-2xl font-extrabold text-navy-900">87 Ongoing</div>
-          <p class="text-xs text-emerald-600 font-semibold mt-0.5">99.2% on-time return rate</p>
+          <div id="admin-active-rentals" class="text-2xl font-extrabold text-navy-900">0 Ongoing</div>
+          <p class="text-xs text-emerald-600 font-semibold mt-0.5">Monitored in system</p>
         </div>
       </div>
 
@@ -156,7 +158,7 @@
           </span>
         </div>
         <div class="mt-3">
-          <div class="text-2xl font-extrabold text-navy-900">2 Cases</div>
+          <div id="admin-disputed-items" class="text-2xl font-extrabold text-navy-900">0 Cases</div>
           <p class="text-xs text-red-600 font-semibold mt-0.5">Under proctorial mediation</p>
         </div>
       </div>
@@ -164,14 +166,14 @@
       <!-- Platform Escrow Locked -->
       <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Platform Escrow Locked</span>
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Platform Security Deposits</span>
           <span class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
             ৳
           </span>
         </div>
         <div class="mt-3">
-          <div class="text-2xl font-extrabold text-navy-900">৳68,500</div>
-          <p class="text-xs text-slate-500 mt-0.5">Held across bKash / Nagad</p>
+          <div id="admin-escrow-locked" class="text-2xl font-extrabold text-navy-900">৳0</div>
+          <p class="text-xs text-slate-500 mt-0.5">Active rental deposits monitored</p>
         </div>
       </div>
 
@@ -256,7 +258,7 @@
                 BD
               </div>
               <div>
-                <h4 class="font-extrabold text-xs tracking-tight text-navy-900 uppercase">Dhaka University Campus</h4>
+                <h4 id="modal-id-campus" class="font-extrabold text-xs tracking-tight text-navy-900 uppercase">Premier University / CUET Campus</h4>
                 <p class="text-[9px] text-slate-500 font-semibold tracking-wider uppercase">Student Identity Card</p>
               </div>
             </div>
@@ -329,7 +331,27 @@
     document.addEventListener('DOMContentLoaded', () => {
       renderVerificationQueue();
       renderDisputes();
+      updateAdminKPIs();
     });
+
+    function updateAdminKPIs() {
+      const data = CampusRentData.get();
+      const disputesCount = data.disputes ? data.disputes.length : 0;
+      const rentals = data.rentals || [];
+      const activeRentalsCount = rentals.filter(r => r.statusCode === 'active').length;
+      
+      let totalEscrow = rentals.reduce((sum, r) => sum + (r.deposit || 0) + (r.totalRent || 0), 0);
+
+      const regEl = document.getElementById('admin-registered-students');
+      const activeEl = document.getElementById('admin-active-rentals');
+      const dispEl = document.getElementById('admin-disputed-items');
+      const escrowEl = document.getElementById('admin-escrow-locked');
+
+      if (regEl) regEl.textContent = `${(data.users ? data.users.length : 0).toLocaleString()}`;
+      if (activeEl) activeEl.textContent = `${activeRentalsCount} Ongoing`;
+      if (dispEl) dispEl.textContent = `${disputesCount} Cases`;
+      if (escrowEl) escrowEl.textContent = App.formatBDT(totalEscrow);
+    }
 
     function renderVerificationQueue() {
       const data = CampusRentData.get();
@@ -383,6 +405,11 @@
       activeVerifStudent = data.verificationQueue.find(s => s.id === studentId);
       if (!activeVerifStudent) return;
 
+      const campusEl = document.getElementById('modal-id-campus');
+      if (campusEl) {
+        campusEl.textContent = activeVerifStudent.campus || "Premier University / CUET Campus";
+      }
+
       document.getElementById('modal-id-name').textContent = activeVerifStudent.name;
       document.getElementById('modal-id-roll').textContent = activeVerifStudent.studentId;
       document.getElementById('modal-id-exam-roll').textContent = activeVerifStudent.rollNo;
@@ -411,6 +438,7 @@
         data.verificationQueue = data.verificationQueue.filter(s => s.id !== studentId);
         CampusRentData.save(data);
         renderVerificationQueue();
+        updateAdminKPIs();
         App.showToast(`Student ${st.name} (${st.studentId}) approved with Verified Badge!`, 'success');
       }
     }
@@ -420,6 +448,7 @@
       data.verificationQueue = data.verificationQueue.filter(s => s.id !== studentId);
       CampusRentData.save(data);
       renderVerificationQueue();
+      updateAdminKPIs();
       App.showToast('Student ID rejected. Notification sent for re-submission.', 'warning');
     }
 
@@ -490,9 +519,10 @@
       data.disputes = data.disputes.filter(d => d.id !== dispId);
       CampusRentData.save(data);
       renderDisputes();
+      updateAdminKPIs();
 
       if (actionType === 'refund_renter') {
-        App.showToast(`Dispute #${dispId} settled: 100% escrow refunded to Renter's bKash.`, 'success');
+        App.showToast(`Dispute #${dispId} settled: Cash deposit refunded in full to Renter.`, 'success');
       } else if (actionType === 'release_owner') {
         App.showToast(`Dispute #${dispId} settled: Deposit released to Owner for damage compensation.`, 'success');
       } else {

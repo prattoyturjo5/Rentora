@@ -50,7 +50,7 @@
       <div class="flex items-center gap-2">
         <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
         <span class="font-medium text-slate-200">Lender Portal:</span> 
-        <span>All rental earnings are transferred directly to your bKash upon confirmed return.</span>
+        <span>All rental fees & security deposits are collected in cash directly at campus handover.</span>
       </div>
       <div class="flex items-center gap-4 text-slate-400">
         <a href="renter-dashboard.html" class="hover:text-white transition-colors flex items-center gap-1">
@@ -89,7 +89,6 @@
           </a>
           <a href="renter-dashboard.html" class="px-3.5 py-2 text-sm font-medium text-slate-700 hover:text-primary-600 hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-1.5">
             <span>My Rentals</span>
-            <span class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">2 Active</span>
           </a>
           <a href="admin.html" class="px-3.5 py-2 text-sm font-medium text-slate-700 hover:text-amber-600 hover:bg-slate-100 rounded-lg transition-colors">
             Admin
@@ -103,13 +102,7 @@
             <span>+ Add Equipment</span>
           </button>
 
-          <div class="flex items-center pl-2 sm:pl-3 border-l border-slate-200 gap-2">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="w-8 h-8 rounded-full ring-2 ring-primary-600/30 object-cover">
-            <div class="text-left leading-tight hidden sm:block">
-              <div class="text-xs font-bold text-navy-900">Rafiqul Islam</div>
-              <div class="text-[11px] font-semibold text-emerald-600">Lender ID: CSE-22</div>
-            </div>
-          </div>
+          <div id="header-auth-container" class="flex items-center pl-2 sm:pl-3 border-l border-slate-200"></div>
         </div>
 
       </div>
@@ -146,9 +139,9 @@
           </span>
         </div>
         <div class="mt-3">
-          <div class="text-2xl font-extrabold text-navy-900">৳12,450</div>
+          <div id="owner-total-earnings" class="text-2xl font-extrabold text-navy-900">৳0</div>
           <p class="text-xs text-emerald-600 font-semibold mt-0.5 flex items-center gap-1">
-            <span>+৳1,850 this semester</span>
+            <span>Cash at Handover (In-person)</span>
           </p>
         </div>
       </div>
@@ -162,7 +155,7 @@
           </span>
         </div>
         <div class="mt-3">
-          <div class="text-2xl font-extrabold text-navy-900">4 Items</div>
+          <div id="owner-active-lends" class="text-2xl font-extrabold text-navy-900">0 Items</div>
           <p class="text-xs text-slate-500 mt-0.5">Currently with campus peers</p>
         </div>
       </div>
@@ -176,8 +169,8 @@
           </span>
         </div>
         <div class="mt-3">
-          <div class="text-2xl font-extrabold text-navy-900">3 Requests</div>
-          <p class="text-xs text-amber-600 font-semibold mt-0.5">Awaiting pickup approval</p>
+          <div id="owner-pending-reqs" class="text-2xl font-extrabold text-navy-900">0 Requests</div>
+          <p class="text-xs text-amber-600 font-semibold mt-0.5">Awaiting handover token</p>
         </div>
       </div>
 
@@ -190,7 +183,7 @@
           </span>
         </div>
         <div class="mt-3">
-          <div class="text-2xl font-extrabold text-navy-900">৳3,200</div>
+          <div id="owner-escrow-balance" class="text-2xl font-extrabold text-navy-900">৳0</div>
           <p class="text-xs text-slate-500 mt-0.5">Guaranteed by University Hub</p>
         </div>
       </div>
@@ -205,7 +198,7 @@
         </div>
         <h2 class="text-xl sm:text-2xl font-bold">Release Equipment with Renter's Secret Token</h2>
         <p class="text-xs sm:text-sm text-slate-300 mt-1">
-          When meeting the student at Central Library, Cafeteria, or Lab, ask them for their 8-character Renter Passcode to verify payment and release the equipment.
+          When meeting the student at CU Central Library, Premier University Lounge, or CUET Lab, ask them for their 8-character Renter Passcode to verify payment and release the equipment.
         </p>
       </div>
 
@@ -331,7 +324,7 @@
 
             <div class="text-[11px] text-slate-500 flex items-center gap-1">
               <svg class="w-3.5 h-3.5 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
-              <span>TSC Ground · 3 Days</span>
+              <span>Premier University GEC Lounge · 3 Days</span>
             </div>
 
             <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200">
@@ -420,11 +413,12 @@
           <div>
             <label for="pickup_spot" class="block text-xs font-bold text-slate-700 mb-1">Preferred Campus Handover Spot *</label>
             <select id="pickup_spot" name="pickup_spot" required class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-slate-800 font-medium">
-              <option value="Central Library Front Gate">Central Library Front Gate</option>
-              <option value="Campus Cafeteria Entrance">Campus Cafeteria Entrance</option>
-              <option value="Academic Building-1 Gate">Academic Building-1 Gate</option>
-              <option value="Engineering Lab Complex (3rd Floor)">Engineering Lab Complex</option>
-              <option value="TSC Ground / Student Union">TSC Ground / Student Union</option>
+              <option value="CU Central Library Front Gate">CU Central Library Front Gate</option>
+              <option value="Premier University GEC Campus Lounge">Premier University GEC Campus Lounge</option>
+              <option value="IIUC Central Playground & Cafeteria">IIUC Central Playground & Cafeteria</option>
+              <option value="CUET Academic Building-1 Gate">CUET Academic Building-1 Gate</option>
+              <option value="CUET Engineering Lab Paharika">CUET Engineering Lab Paharika</option>
+              <option value="Sholoshahar Shuttle Station Point">Sholoshahar Shuttle Station Point</option>
             </select>
           </div>
         </div>
@@ -462,14 +456,34 @@
           <textarea id="item_description" name="item_description" rows="2" placeholder="Describe the condition, which courses it is suitable for, and handover notes." class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-slate-800"></textarea>
         </div>
 
-        <!-- Image Upload Mockup -->
+        <!-- Image Upload with Live Preview & Drag and Drop -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Equipment Photos</label>
-          <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer">
-            <svg class="w-8 h-8 text-slate-400 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-            <span class="text-xs font-semibold text-primary-600">Click to upload photo</span>
-            <span class="text-[11px] text-slate-500 block">PNG, JPG up to 5MB (Sample image auto-selected in demo)</span>
-            <input type="file" id="item_image_file" name="item_image_file" class="hidden">
+          <label class="block text-xs font-bold text-slate-700 mb-1">Equipment Photo</label>
+          <div id="item-drop-zone" class="relative border-2 border-dashed border-slate-300 hover:border-primary-500 rounded-xl p-4 text-center bg-slate-50 hover:bg-blue-50/40 transition-colors cursor-pointer group">
+            
+            <!-- Default Placeholder State -->
+            <div id="item-upload-prompt" class="space-y-1">
+              <svg class="w-8 h-8 text-slate-400 group-hover:text-primary-600 mx-auto mb-1 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <div class="text-xs font-semibold text-primary-600">Choose photo or drag and drop here</div>
+              <p class="text-[11px] text-slate-400">PNG, JPG, WebP up to 5MB. Real photo will be saved to your listing.</p>
+            </div>
+
+            <!-- Live Thumbnail Preview State (hidden by default) -->
+            <div id="item-preview-container" class="hidden relative">
+              <img id="item-preview-img" src="" alt="Equipment preview" class="w-full h-44 object-contain bg-slate-900 rounded-lg shadow">
+              <div class="absolute bottom-2 right-2 flex items-center gap-2">
+                <button type="button" id="btn-change-item-photo" class="px-2.5 py-1 bg-white/90 hover:bg-white text-slate-800 text-[11px] font-bold rounded-lg shadow backdrop-blur transition-colors">
+                  Change
+                </button>
+                <button type="button" id="btn-remove-item-photo" class="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold rounded-lg shadow transition-colors">
+                  Remove
+                </button>
+              </div>
+            </div>
+
+            <input type="file" id="item_image_file" name="item_image_file" accept="image/*" class="hidden">
           </div>
         </div>
 
@@ -492,7 +506,9 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      initListingPhotoUpload();
       renderOwnerListings();
+      updateOwnerKPIs();
 
       // Check if URL has ?action=new to open modal automatically
       const params = new URLSearchParams(window.location.search);
@@ -501,12 +517,135 @@
       }
     });
 
+    function initListingPhotoUpload() {
+      const dropZone = document.getElementById('item-drop-zone');
+      const fileInput = document.getElementById('item_image_file');
+      const promptEl = document.getElementById('item-upload-prompt');
+      const previewContainer = document.getElementById('item-preview-container');
+      const previewImg = document.getElementById('item-preview-img');
+      const btnRemove = document.getElementById('btn-remove-item-photo');
+
+      if (!dropZone || !fileInput) return;
+
+      window._uploadedListingImageBase64 = null;
+
+      dropZone.addEventListener('click', (e) => {
+        if (e.target.closest('#btn-remove-item-photo')) return;
+        fileInput.click();
+      });
+
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('border-primary-600', 'bg-blue-50');
+      });
+
+      dropZone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('border-primary-600', 'bg-blue-50');
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('border-primary-600', 'bg-blue-50');
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          processFile(e.dataTransfer.files[0]);
+        }
+      });
+
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+          processFile(e.target.files[0]);
+        }
+      });
+
+      if (btnRemove) {
+        btnRemove.addEventListener('click', (e) => {
+          e.stopPropagation();
+          window._uploadedListingImageBase64 = null;
+          fileInput.value = '';
+          previewImg.src = '';
+          previewContainer.classList.add('hidden');
+          promptEl.classList.remove('hidden');
+        });
+      }
+
+      function processFile(file) {
+        if (!file.type.startsWith('image/')) {
+          App.showToast('Please select a valid image file.', 'warning');
+          return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          App.showToast('Photo size must be under 5MB.', 'warning');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          window._uploadedListingImageBase64 = event.target.result;
+          previewImg.src = event.target.result;
+          promptEl.classList.add('hidden');
+          previewContainer.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function updateOwnerKPIs() {
+      const data = CampusRentData.get();
+      const listings = data.ownerListings || [];
+      const rentals = data.rentals || [];
+      
+      let totalEarnings = 0;
+      let activeLendsCount = 0;
+      let pendingCount = 0;
+      let escrowLocked = 0;
+
+      rentals.forEach(r => {
+        if (r.status === 'Active' || r.statusCode === 'active') {
+          activeLendsCount++;
+          escrowLocked += (r.deposit || 0);
+          totalEarnings += (r.totalRent || 0);
+        } else if (r.status === 'Ready for Handover' || r.statusCode === 'ready_handover') {
+          pendingCount++;
+          escrowLocked += (r.deposit || 0);
+        } else if (r.status === 'Completed') {
+          totalEarnings += (r.totalRent || 0);
+        }
+      });
+
+      const earningsEl = document.getElementById('owner-total-earnings');
+      const activeEl = document.getElementById('owner-active-lends');
+      const pendingEl = document.getElementById('owner-pending-reqs');
+      const escrowEl = document.getElementById('owner-escrow-balance');
+
+      if (earningsEl) earningsEl.textContent = App.formatBDT(totalEarnings);
+      if (activeEl) activeEl.textContent = `${activeLendsCount} Items`;
+      if (pendingEl) pendingEl.textContent = `${pendingCount} Requests`;
+      if (escrowEl) escrowEl.textContent = App.formatBDT(escrowLocked);
+    }
+
     function renderOwnerListings() {
       const data = CampusRentData.get();
       const tbody = document.getElementById('owner-listings-tbody');
       if (!tbody) return;
 
       tbody.innerHTML = '';
+
+      if (!data.ownerListings || data.ownerListings.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="py-12 text-center text-slate-400">
+              <div class="flex flex-col items-center justify-center">
+                <svg class="w-12 h-12 text-slate-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                <p class="text-sm font-semibold text-slate-700">No equipment listed yet</p>
+                <p class="text-xs text-slate-400 mt-0.5">Click "+ Add Equipment" above to publish your first item to campus peers.</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        updateOwnerKPIs();
+        return;
+      }
 
       data.ownerListings.forEach(item => {
         let statusBadge = `<span class="badge-status bg-emerald-100 text-emerald-800">Active</span>`;
@@ -545,6 +684,8 @@
         `;
         tbody.appendChild(tr);
       });
+
+      updateOwnerKPIs();
     }
 
     function deleteListing(id) {

@@ -47,18 +47,30 @@ function handleAddNewItem(form) {
   }
 
   const data = CampusRentData.get();
+  const currentUser = (window.Auth && Auth.getCurrentUser()) || data.currentUser || {
+    id: 'usr_1',
+    name: 'Rafiqul Islam',
+    studentId: 'PUC-22-0145',
+    department: 'CSE',
+    phone: '+8801712001122'
+  };
   const newItemId = 'item_' + (Date.now() % 10000);
 
-  // Default clean mock image based on category
-  let defaultImage = "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=600&auto=format&fit=crop&q=80";
-  if (category.toLowerCase().includes('calc')) {
-    defaultImage = "https://images.unsplash.com/photo-1594980596870-8aa52a78d8cd?w=600&auto=format&fit=crop&q=80";
-  } else if (category.toLowerCase().includes('camera') || category.toLowerCase().includes('dslr')) {
-    defaultImage = "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&auto=format&fit=crop&q=80";
-  } else if (category.toLowerCase().includes('iot') || category.toLowerCase().includes('arduino')) {
-    defaultImage = "https://images.unsplash.com/photo-1553406830-ef2513450d76?w=600&auto=format&fit=crop&q=80";
-  } else if (category.toLowerCase().includes('coat')) {
-    defaultImage = "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&auto=format&fit=crop&q=80";
+  // Check if a custom base64 image was uploaded via drag-and-drop or file input
+  let finalImage = window._uploadedListingImageBase64 || null;
+
+  if (!finalImage) {
+    // Fallback image based on category
+    finalImage = "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=600&auto=format&fit=crop&q=80";
+    if (category.toLowerCase().includes('calc')) {
+      finalImage = "https://images.unsplash.com/photo-1594980596870-8aa52a78d8cd?w=600&auto=format&fit=crop&q=80";
+    } else if (category.toLowerCase().includes('camera') || category.toLowerCase().includes('dslr')) {
+      finalImage = "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&auto=format&fit=crop&q=80";
+    } else if (category.toLowerCase().includes('iot') || category.toLowerCase().includes('arduino')) {
+      finalImage = "https://images.unsplash.com/photo-1553406830-ef2513450d76?w=600&auto=format&fit=crop&q=80";
+    } else if (category.toLowerCase().includes('coat')) {
+      finalImage = "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&auto=format&fit=crop&q=80";
+    }
   }
 
   const newItem = {
@@ -70,17 +82,17 @@ function handleAddNewItem(form) {
     dailyRate: dailyRate,
     securityDeposit: securityDeposit,
     pickupSpot: pickupSpot,
-    image: defaultImage,
-    gallery: [defaultImage],
+    image: finalImage,
+    gallery: [finalImage],
     lender: {
-      id: data.currentUser.id,
-      name: data.currentUser.name,
-      studentId: data.currentUser.studentId,
-      department: data.currentUser.department,
+      id: currentUser.id,
+      name: currentUser.name,
+      studentId: currentUser.studentId,
+      department: currentUser.department || 'CSE',
       rating: 5.0,
       reviewsCount: 1,
       verified: true,
-      phone: data.currentUser.phone
+      phone: currentUser.phone || '+8801700-000000'
     },
     specs: {
       "Condition": condition,
@@ -88,7 +100,7 @@ function handleAddNewItem(form) {
       "Overview": specsText || "Verified student equipment item in tested condition."
     },
     description: description,
-    rules: "Valid University Student ID required at pickup. Return on time.",
+    rules: "Valid University Student ID required at pickup. Pay in cash upon item inspection. Return on time.",
     featured: false,
     status: "Available"
   };
@@ -108,10 +120,21 @@ function handleAddNewItem(form) {
     status: "Active",
     totalLends: 0,
     pickupSpot: pickupSpot,
-    image: defaultImage
+    image: finalImage
   });
 
   CampusRentData.save(data);
+
+  // Reset image upload preview state
+  window._uploadedListingImageBase64 = null;
+  const promptEl = document.getElementById('item-upload-prompt');
+  const previewContainer = document.getElementById('item-preview-container');
+  const previewImg = document.getElementById('item-preview-img');
+  const fileInput = document.getElementById('item_image_file');
+  if (promptEl) promptEl.classList.remove('hidden');
+  if (previewContainer) previewContainer.classList.add('hidden');
+  if (previewImg) previewImg.src = '';
+  if (fileInput) fileInput.value = '';
 
   App.showToast(`Listing "${title}" published successfully to campus catalog!`, 'success');
   App.closeModal('add-equipment-modal');
@@ -167,7 +190,7 @@ function handleRentalRequest(form) {
   App.openModal('payment-checkout-modal');
 }
 
-// 3. Simulated bKash / Nagad / Cash Payment
+// 3. Cash on Delivery (COD) / Cash at Handover Confirmation Flow
 function handleSimulatedPayment(form) {
   const submitBtn = form.querySelector('button[type="submit"]');
   const originalText = submitBtn.innerHTML;
@@ -176,17 +199,34 @@ function handleSimulatedPayment(form) {
     <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-    </svg> Processing Escrow Payment...
+    </svg> Confirming Cash on Delivery Booking...
   `;
 
   setTimeout(() => {
     const data = CampusRentData.get();
+    const currentUser = (window.Auth && Auth.getCurrentUser()) || data.currentUser || {
+      name: 'Rafiqul Islam',
+      studentId: 'PUC-22-0145',
+      phone: '+8801712001122'
+    };
     const pending = window._pendingBooking || {};
-    const item = data.items.find(i => i.id === pending.itemId) || data.items[0];
+    const item = (data.items && data.items.find(i => i.id === pending.itemId)) || {
+      id: pending.itemId || 'item_default',
+      title: 'Equipment Item',
+      image: 'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=600&auto=format&fit=crop&q=80',
+      dailyRate: pending.totalRent ? Math.round(pending.totalRent / (pending.days || 1)) : 100,
+      securityDeposit: pending.deposit || 500,
+      pickupSpot: pending.pickupSpot || 'Campus Central Spot',
+      lender: {
+        name: 'Equipment Lender',
+        studentId: 'CAMPUS-22',
+        phone: '+8801700-000000'
+      }
+    };
 
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
     const newToken = `TRX-${randomSuffix}`;
-    const newTrxId = `BK${Math.floor(10000000 + Math.random() * 90000000)}X`;
+    const newTrxId = `COD-${Date.now().toString().slice(-6)}`;
 
     const newRental = {
       id: `rent_${Date.now() % 10000}`,
@@ -194,25 +234,25 @@ function handleSimulatedPayment(form) {
       itemId: item.id,
       itemTitle: item.title,
       itemImage: item.image,
-      lenderName: item.lender.name,
-      lenderStudentId: item.lender.studentId,
-      lenderPhone: item.lender.phone,
-      renterName: data.currentUser.name,
-      renterStudentId: data.currentUser.studentId,
-      renterPhone: data.currentUser.phone,
+      lenderName: item.lender ? item.lender.name : 'Equipment Lender',
+      lenderStudentId: item.lender ? item.lender.studentId : 'CAMPUS-22',
+      lenderPhone: item.lender ? item.lender.phone : '+8801700-000000',
+      renterName: currentUser.name,
+      renterStudentId: currentUser.studentId,
+      renterPhone: currentUser.phone,
       startDate: pending.startDate || '2026-09-12',
       endDate: pending.endDate || '2026-09-15',
       days: pending.days || 3,
-      dailyRate: item.dailyRate,
-      totalRent: pending.totalRent || (item.dailyRate * 3),
-      deposit: pending.deposit || item.securityDeposit,
-      escrowPaid: true,
-      escrowPaymentMethod: "bKash",
+      dailyRate: item.dailyRate || 100,
+      totalRent: pending.totalRent || ((item.dailyRate || 100) * 3),
+      deposit: pending.deposit || (item.securityDeposit || 500),
+      escrowPaid: false,
+      escrowPaymentMethod: "Cash on Delivery (COD)",
       escrowTrxId: newTrxId,
       pickupSpot: pending.pickupSpot || item.pickupSpot,
-      pickupSpotNote: "Campus Pickup Spot Verified",
+      pickupSpotNote: "Pay exact cash to lender upon item inspection at pickup spot",
       status: "Ready for Handover",
-      urgencyBadge: "Handover Ready",
+      urgencyBadge: "Pay Cash at Handover",
       statusCode: "ready_handover"
     };
 
@@ -223,14 +263,14 @@ function handleSimulatedPayment(form) {
     submitBtn.innerHTML = originalText;
     App.closeModal('payment-checkout-modal');
 
-    // Show celebratory confirmation
-    App.showToast(`৳${pending.totalPayable} locked in University Escrow! Token: ${newToken}`, 'success');
+    // Show confirmation toast
+    App.showToast(`COD Booking Confirmed! Token: ${newToken}. Pay ৳${pending.totalPayable} in cash at pickup.`, 'success');
 
-    // Redirect or show token
+    // Redirect to renter-dashboard.html to view token
     setTimeout(() => {
       window.location.href = 'renter-dashboard.html';
     }, 1200);
-  }, 1600);
+  }, 1200);
 }
 
 // 4. In-Person Handover Token Verifier (Used by Owner)
