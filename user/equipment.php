@@ -1,64 +1,62 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (($_SESSION['role'] ?? '') !== 'member') {
+    header("Location: ../auth/login.php");
+    exit();
+}
 require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/../includes/auth_guard.php');
 
-require_member('../auth/login.php');
-
-$user_id = $_SESSION['user_id'];
+$user_id = $_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0;
 $error = "";
 $success = "";
 
 // Fetch categories for the Add Equipment form
 $categories = [];
 try {
-    $catStmt = $pdo->query("SELECT * FROM category ORDER BY name ASC");
+    $catStmt = $pdo->query("SELECT category_id, category_name FROM category ORDER BY category_name ASC");
     $categories = $catStmt->fetchAll();
 } catch (Exception $e) {
-    // Graceful fallback if table is empty or not yet seeded
-    $categories = [
-        ['category_id' => 1, 'name' => 'Scientific Calculators'],
-        ['category_id' => 2, 'name' => 'Drafter Kits'],
-        ['category_id' => 3, 'name' => 'Lab Coats & Safety'],
-        ['category_id' => 4, 'name' => 'Arduino / IoT Kits'],
-        ['category_id' => 5, 'name' => 'DSLR Cameras'],
-        ['category_id' => 6, 'name' => 'Sports Gear'],
-        ['category_id' => 7, 'name' => 'Lab Instruments'],
-    ];
+    $categories = [];
 }
 
 // Handle Add Equipment Submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_equipment'])) {
-    $title = trim($_POST['title'] ?? '');
+    $equipment_name = trim($_POST['title'] ?? $_POST['equipment_name'] ?? '');
     $category_id = (int)($_POST['category_id'] ?? 1);
-    $daily_rate = floatval($_POST['daily_rate'] ?? 0);
+    $rental_rate = floatval($_POST['daily_rate'] ?? $_POST['rental_rate'] ?? 0);
     $security_deposit = floatval($_POST['security_deposit'] ?? 0);
-    $condition = trim($_POST['item_condition'] ?? 'Good');
-    $campus_spot = trim($_POST['campus_spot'] ?? 'Central Library');
-    $description = trim($_POST['description'] ?? '');
+    $campus_spot = trim($_POST['campus_spot'] ?? '');
     $image_url = trim($_POST['image_url'] ?? '');
-    if (empty($image_url)) {
-        $image_url = 'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=600&auto=format&fit=crop&q=80';
+    $condition = trim($_POST['item_condition'] ?? $_POST['condition_status'] ?? 'Good');
+    if ($condition === 'Like New') {
+        $condition = 'New';
     }
+    if (!in_array($condition, ['New', 'Good', 'Fair', 'Poor'])) {
+        $condition = 'Good';
+    }
+    $description = trim($_POST['description'] ?? '');
 
-    if (empty($title) || $daily_rate <= 0 || $security_deposit <= 0) {
-        $error = "Please fill in all required equipment fields.";
+    if (empty($equipment_name) || $rental_rate <= 0) {
+        $error = "Please fill in all required equipment fields (Title and Rental Rate).";
     } else {
         try {
             $stmt = $pdo->prepare("
-                INSERT INTO equipment (member_id, category_id, title, description, daily_rate, security_deposit, item_condition, campus_spot, image_url, is_available)
-                VALUES (:member_id, :category_id, :title, :description, :daily_rate, :security_deposit, :item_condition, :campus_spot, :image_url, 1)
+                INSERT INTO equipment (owner_id, category_id, equipment_name, description, condition_status, availability_status, rental_rate, security_deposit, campus_spot, image_url)
+                VALUES (:owner_id, :category_id, :equipment_name, :description, :condition_status, 'Available', :rental_rate, :security_deposit, :campus_spot, :image_url)
             ");
             $stmt->execute([
-                'member_id'        => $user_id,
+                'owner_id'         => $user_id,
                 'category_id'      => $category_id,
-                'title'            => $title,
+                'equipment_name'   => $equipment_name,
                 'description'      => $description,
-                'daily_rate'       => $daily_rate,
+                'condition_status' => $condition,
+                'rental_rate'      => $rental_rate,
                 'security_deposit' => $security_deposit,
-                'item_condition'   => $condition,
                 'campus_spot'      => $campus_spot,
-                'image_url'        => $image_url,
+                'image_url'        => $image_url
             ]);
             $success = "Equipment listing added successfully!";
         } catch (PDOException $e) {
@@ -71,8 +69,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_equipment'])) {
 if (isset($_GET['delete'])) {
     $del_id = (int)$_GET['delete'];
     try {
-        $delStmt = $pdo->prepare("DELETE FROM equipment WHERE (equipment_id = :id OR id = :id2) AND (member_id = :uid OR member_id = :uid2)");
-        $delStmt->execute(['id' => $del_id, 'id2' => $del_id, 'uid' => $user_id, 'uid2' => $user_id]);
+        $delStmt = $pdo->prepare("DELETE FROM equipment WHERE equipment_id = :id AND owner_id = :owner_id");
+        $delStmt->execute(['id' => $del_id, 'owner_id' => $user_id]);
         $success = "Equipment listing deleted.";
     } catch (PDOException $e) {
         $error = "Could not delete equipment: " . htmlspecialchars($e->getMessage());
@@ -83,8 +81,12 @@ if (isset($_GET['delete'])) {
 if (isset($_GET['toggle'])) {
     $tog_id = (int)$_GET['toggle'];
     try {
-        $togStmt = $pdo->prepare("UPDATE equipment SET is_available = NOT is_available WHERE (equipment_id = :id OR id = :id2) AND (member_id = :uid OR member_id = :uid2)");
-        $togStmt->execute(['id' => $tog_id, 'id2' => $tog_id, 'uid' => $user_id, 'uid2' => $user_id]);
+        $togStmt = $pdo->prepare("
+            UPDATE equipment 
+            SET availability_status = CASE WHEN availability_status = 'Available' THEN 'Rented' ELSE 'Available' END 
+            WHERE equipment_id = :id AND owner_id = :owner_id
+        ");
+        $togStmt->execute(['id' => $tog_id, 'owner_id' => $user_id]);
         $success = "Equipment availability toggled.";
     } catch (PDOException $e) {
         $error = "Could not update availability.";
@@ -95,13 +97,14 @@ if (isset($_GET['toggle'])) {
 $my_equipment = [];
 try {
     $stmt = $pdo->prepare("
-        SELECT e.*, c.name as category_name 
+        SELECT e.*, e.equipment_name AS title, e.rental_rate AS daily_rate, c.category_name,
+               (CASE WHEN e.availability_status = 'Available' THEN 1 ELSE 0 END) AS is_available
         FROM equipment e 
-        LEFT JOIN category c ON e.category_id = c.category_id OR e.category_id = c.id
-        WHERE e.member_id = :uid1 OR e.member_id = :uid2
-        ORDER BY 1 DESC
+        LEFT JOIN category c ON e.category_id = c.category_id 
+        WHERE e.owner_id = :owner_id
+        ORDER BY e.equipment_id DESC
     ");
-    $stmt->execute(['uid1' => $user_id, 'uid2' => $user_id]);
+    $stmt->execute(['owner_id' => $user_id]);
     $my_equipment = $stmt->fetchAll();
 } catch (Exception $e) {
     $my_equipment = [];
@@ -224,7 +227,7 @@ require_once(__DIR__ . '/../includes/nav.php');
             <label for="category_id" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Category *</label>
             <select id="category_id" name="category_id" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
               <?php foreach ($categories as $c): ?>
-                <option value="<?php echo $c['category_id'] ?? $c['id']; ?>"><?php echo htmlspecialchars($c['name']); ?></option>
+                <option value="<?php echo $c['category_id'] ?? $c['id']; ?>"><?php echo htmlspecialchars($c['category_name'] ?? $c['name'] ?? ''); ?></option>
               <?php endforeach; ?>
             </select>
           </div>
@@ -232,9 +235,10 @@ require_once(__DIR__ . '/../includes/nav.php');
           <div>
             <label for="item_condition" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Condition *</label>
             <select id="item_condition" name="item_condition" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
-              <option value="Like New">Like New</option>
+              <option value="New">New</option>
               <option value="Good" selected>Good</option>
               <option value="Fair">Fair</option>
+              <option value="Poor">Poor</option>
             </select>
           </div>
         </div>

@@ -13,24 +13,23 @@ $sort = isset($_GET['sort']) ? trim($_GET['sort']) : 'newest';
 $categories = [];
 try {
     $catStmt = $pdo->query("
-        SELECT c.*, COUNT(e.equipment_id) as item_count 
+        SELECT c.category_id, c.category_name, COUNT(e.equipment_id) as item_count 
         FROM category c 
-        LEFT JOIN equipment e ON (c.category_id = e.category_id OR c.id = e.category_id) AND e.is_available = 1 
-        GROUP BY c.category_id, c.name
-        ORDER BY c.name ASC
+        LEFT JOIN equipment e ON c.category_id = e.category_id AND e.availability_status = 'Available'
+        GROUP BY c.category_id, c.category_name
+        ORDER BY c.category_name ASC
     ");
     $categories = $catStmt->fetchAll();
 } catch (Exception $e) {
-    // If category table does not exist or empty yet
     $categories = [];
 }
 
 // 2. Construct Query for Equipment Items
-$where_clauses = ["(e.is_available = 1 OR e.is_available IS NULL)"];
+$where_clauses = ["(e.availability_status = 'Available')"];
 $params = [];
 
 if (!empty($query)) {
-    $where_clauses[] = "(e.title LIKE :query1 OR e.description LIKE :query2)";
+    $where_clauses[] = "(e.equipment_name LIKE :query1 OR e.description LIKE :query2)";
     $params['query1'] = "%$query%";
     $params['query2'] = "%$query%";
 }
@@ -38,30 +37,28 @@ if ($category_id > 0) {
     $where_clauses[] = "e.category_id = :cat_id";
     $params['cat_id'] = $category_id;
 }
-if (!empty($pickup_spot)) {
-    $where_clauses[] = "e.campus_spot = :spot";
-    $params['spot'] = $pickup_spot;
-}
 
 $where_sql = "WHERE " . implode(" AND ", $where_clauses);
 
 // Sorting
 $order_sql = "ORDER BY e.equipment_id DESC";
 if ($sort === 'price_asc') {
-    $order_sql = "ORDER BY e.daily_rate ASC";
+    $order_sql = "ORDER BY e.rental_rate ASC";
 } elseif ($sort === 'price_desc') {
-    $order_sql = "ORDER BY e.daily_rate DESC";
-} elseif ($sort === 'deposit_asc') {
-    $order_sql = "ORDER BY e.security_deposit ASC";
+    $order_sql = "ORDER BY e.rental_rate DESC";
 }
 
 $items = [];
 $total_items = 0;
 try {
-    $items_sql = "SELECT e.*, c.name AS category_name, m.name AS owner_name, m.student_id AS owner_student_id 
+    $items_sql = "SELECT e.*, e.equipment_name AS title, e.rental_rate AS daily_rate, 
+                         e.condition_status AS item_condition, c.category_name, 
+                         CONCAT(m.first_name, ' ', m.last_name) AS owner_name, 
+                         m.username AS owner_student_id,
+                         m.campus_address AS campus_spot
                   FROM equipment e 
-                  LEFT JOIN category c ON (e.category_id = c.category_id OR e.category_id = c.id) 
-                  LEFT JOIN member m ON (e.member_id = m.member_id OR e.member_id = m.id) 
+                  LEFT JOIN category c ON e.category_id = c.category_id 
+                  LEFT JOIN member m ON e.owner_id = m.member_id 
                   $where_sql $order_sql";
     $stmt = $pdo->prepare($items_sql);
     $stmt->execute($params);
@@ -79,7 +76,7 @@ try {
     $stRes = $pdo->query("SELECT COUNT(*) FROM member");
     $count_students = $stRes->fetchColumn() ?: 0;
 
-    $avRes = $pdo->query("SELECT COUNT(*) FROM equipment WHERE is_available = 1");
+    $avRes = $pdo->query("SELECT COUNT(*) FROM equipment WHERE availability_status = 'Available'");
     $count_avail = $avRes->fetchColumn() ?: 0;
 } catch (Exception $e) {
     $count_students = 0;
@@ -133,7 +130,7 @@ require_once(__DIR__ . '/includes/nav.php');
               <?php foreach ($categories as $cat): ?>
                 <?php $cid = $cat['category_id'] ?? $cat['id']; ?>
                 <option value="<?php echo $cid; ?>" <?php if ($category_id == $cid) echo 'selected'; ?>>
-                  <?php echo htmlspecialchars($cat['name']); ?> (<?php echo $cat['item_count'] ?? 0; ?>)
+                  <?php echo htmlspecialchars($cat['category_name'] ?? $cat['name'] ?? ''); ?> (<?php echo $cat['item_count'] ?? 0; ?>)
                 </option>
               <?php endforeach; ?>
             </select>
@@ -171,7 +168,7 @@ require_once(__DIR__ . '/includes/nav.php');
         <?php foreach ($categories as $cat): ?>
           <?php $cid = $cat['category_id'] ?? $cat['id']; ?>
           <a href="index.php?category_id=<?php echo $cid; ?>" class="px-3 py-1.5 rounded-full <?php echo ($category_id == $cid) ? 'bg-white/30 text-white font-bold' : 'bg-white/10 text-slate-200'; ?> hover:bg-white/20 transition-colors border border-white/15">
-            <?php echo htmlspecialchars($cat['name']); ?>
+            <?php echo htmlspecialchars($cat['category_name'] ?? $cat['name'] ?? ''); ?>
           </a>
         <?php endforeach; ?>
       </div>

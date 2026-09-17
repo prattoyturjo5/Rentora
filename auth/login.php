@@ -31,55 +31,40 @@ if (is_logged_in()) {
 }
 
 // Handle Sign In submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signin'])) {
-    $login = trim($_POST['login'] ?? '');
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['signin']) || isset($_POST['username']))) {
+    $username = trim($_POST['username'] ?? $_POST['login'] ?? '');
     $password = trim($_POST['password'] ?? '');
 
-    if (empty($login) || empty($password)) {
-        $error = "Please provide your Student ID or Email and Password.";
+    if (empty($username) || empty($password)) {
+        $error = "Please provide both username and password.";
     } else {
         try {
-            // Find member by email or student_id
-            $stmt = $pdo->prepare("SELECT * FROM member WHERE email = :login1 OR student_id = :login2 LIMIT 1");
-            $stmt->execute(['login1' => $login, 'login2' => $login]);
+            // SELECT the member by username
+            $stmt = $pdo->prepare("SELECT * FROM member WHERE username = :username LIMIT 1");
+            $stmt->execute(['username' => $username]);
             $member = $stmt->fetch();
 
-            if ($member) {
-                $hash = $member['password'];
-                $isValid = password_verify($password, $hash);
+            // Verify the password with password_verify()
+            if ($member && password_verify($password, $member['password_hash'])) {
+                $_SESSION['role'] = 'member';
+                $_SESSION['member_id'] = (int)$member['member_id'];
+                $_SESSION['user_id'] = (int)$member['member_id'];
+                $_SESSION['username'] = $member['username'];
+                $_SESSION['name'] = trim($member['first_name'] . ' ' . $member['last_name']);
+                $_SESSION['email'] = $member['university_email'] ?? '';
 
-                // Safe fallback if raw plain text was seeded initially
-                if (!$isValid && $password === $hash) {
-                    $isValid = true;
-                    // Auto-rehash to secure hash
-                    $newHash = password_hash($password, PASSWORD_DEFAULT);
-                    $memberIdCol = isset($member['member_id']) ? 'member_id' : 'id';
-                    $upStmt = $pdo->prepare("UPDATE member SET password = :newHash WHERE $memberIdCol = :id");
-                    $upStmt->execute(['newHash' => $newHash, 'id' => $member[$memberIdCol]]);
-                }
-
-                if ($isValid) {
-                    $memberId = $member['member_id'] ?? $member['id'] ?? 0;
-                    $_SESSION['role'] = 'member';
-                    $_SESSION['user_id'] = $memberId;
-                    $_SESSION['name'] = $member['name'] ?? 'Member';
-                    $_SESSION['email'] = $member['email'] ?? '';
-                    $_SESSION['student_id'] = $member['student_id'] ?? '';
-                    $_SESSION['phone'] = $member['phone'] ?? '';
-
-                    header("Location: ../user/dashboard.php");
-                    exit();
-                } else {
-                    $error = "Invalid credentials. Please verify your Student ID/Email and password.";
-                }
+                header("Location: ../user/dashboard.php");
+                exit();
             } else {
-                $error = "No member account found with those credentials.";
+                // Generic error without revealing whether username or password was wrong
+                $error = "Invalid username or password.";
             }
         } catch (PDOException $e) {
             $error = "Database notice: " . htmlspecialchars($e->getMessage());
         }
     }
 }
+
 
 $base_path = '..';
 $page_title = 'Member Sign In - Rentora';
@@ -130,9 +115,9 @@ require_once(__DIR__ . '/../includes/header.php');
       <form action="login.php" method="POST" class="space-y-4">
         
         <div>
-          <label for="login" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Student ID or Email</label>
+          <label for="username" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Username</label>
           <div class="relative">
-            <input type="text" id="login" name="login" required placeholder="e.g. CSE-22-0145 or student@univ.ac.bd" class="w-full pl-9 pr-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
+            <input type="text" id="username" name="username" required value="<?php echo htmlspecialchars($_POST['username'] ?? $_POST['login'] ?? ''); ?>" placeholder="e.g. tanvir23" class="w-full pl-9 pr-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
             <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
           </div>
         </div>

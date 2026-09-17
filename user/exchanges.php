@@ -1,11 +1,15 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (($_SESSION['role'] ?? '') !== 'member') {
+    header("Location: ../auth/login.php");
+    exit();
+}
 require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/../includes/auth_guard.php');
 
-require_member('../auth/login.php');
-
-$user_id = $_SESSION['user_id'];
+$user_id = $_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0;
 $error = "";
 $success = "";
 
@@ -16,16 +20,16 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 
     try {
         if ($action === 'accept') {
-            $stmt = $pdo->prepare("UPDATE exchange_agreement SET status = 'Accepted' WHERE exchange_id = :id OR id = :id2");
-            $stmt->execute(['id' => $exchange_id, 'id2' => $exchange_id]);
+            $stmt = $pdo->prepare("UPDATE exchange_agreement SET status = 'Accepted' WHERE exchange_id = :id");
+            $stmt->execute(['id' => $exchange_id]);
             $success = "Exchange agreement accepted! Coordinate with peer for equipment swap.";
-        } elseif ($action === 'decline') {
-            $stmt = $pdo->prepare("UPDATE exchange_agreement SET status = 'Declined' WHERE exchange_id = :id OR id = :id2");
-            $stmt->execute(['id' => $exchange_id, 'id2' => $exchange_id]);
+        } elseif ($action === 'decline' || $action === 'reject') {
+            $stmt = $pdo->prepare("UPDATE exchange_agreement SET status = 'Rejected' WHERE exchange_id = :id");
+            $stmt->execute(['id' => $exchange_id]);
             $success = "Exchange proposal declined.";
         } elseif ($action === 'complete') {
-            $stmt = $pdo->prepare("UPDATE exchange_agreement SET status = 'Completed' WHERE exchange_id = :id OR id = :id2");
-            $stmt->execute(['id' => $exchange_id, 'id2' => $exchange_id]);
+            $stmt = $pdo->prepare("UPDATE exchange_agreement SET status = 'Completed' WHERE exchange_id = :id");
+            $stmt->execute(['id' => $exchange_id]);
             $success = "Exchange marked as completed!";
         }
     } catch (PDOException $e) {
@@ -35,28 +39,29 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 
 // Handle Propose New Exchange
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['propose_exchange'])) {
-    $offered_id = (int)($_POST['offered_equipment_id'] ?? 0);
-    $requested_id = (int)($_POST['requested_equipment_id'] ?? 0);
+    $equipment_a_id = (int)($_POST['equipment_a_id'] ?? $_POST['offered_equipment_id'] ?? 0);
+    $equipment_b_id = (int)($_POST['equipment_b_id'] ?? $_POST['requested_equipment_id'] ?? 0);
 
-    if ($offered_id <= 0 || $requested_id <= 0) {
+    if ($equipment_a_id <= 0 || $equipment_b_id <= 0) {
         $error = "Please select both your offered equipment and the item you wish to swap for.";
     } else {
         try {
-            // Find owner of requested equipment
-            $ownerStmt = $pdo->prepare("SELECT member_id FROM equipment WHERE equipment_id = :id OR id = :id2 LIMIT 1");
-            $ownerStmt->execute(['id' => $requested_id, 'id2' => $requested_id]);
-            $owner_id = $ownerStmt->fetchColumn();
+            // Find owner (lender_b_id) of requested equipment
+            $ownerStmt = $pdo->prepare("SELECT owner_id FROM equipment WHERE equipment_id = :id LIMIT 1");
+            $ownerStmt->execute(['id' => $equipment_b_id]);
+            $lender_b_id = $ownerStmt->fetchColumn();
 
-            if ($owner_id) {
+            if ($lender_b_id) {
+                $lender_a_id = $user_id;
                 $ins = $pdo->prepare("
-                    INSERT INTO exchange_agreement (requester_id, owner_id, offered_equipment_id, requested_equipment_id, status)
-                    VALUES (:requester_id, :owner_id, :offered, :requested, 'Pending')
+                    INSERT INTO exchange_agreement (lender_a_id, lender_b_id, equipment_a_id, equipment_b_id, status)
+                    VALUES (:lender_a_id, :lender_b_id, :equipment_a_id, :equipment_b_id, 'Pending')
                 ");
                 $ins->execute([
-                    'requester_id' => $user_id,
-                    'owner_id'     => $owner_id,
-                    'offered'      => $offered_id,
-                    'requested'    => $requested_id
+                    'lender_a_id'    => $lender_a_id,
+                    'lender_b_id'    => $lender_b_id,
+                    'equipment_a_id' => $equipment_a_id,
+                    'equipment_b_id' => $equipment_b_id
                 ]);
                 $success = "Exchange proposal submitted to owner!";
             } else {
@@ -71,8 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['propose_exchange'])) 
 // Fetch member's own equipment (for the dropdown)
 $my_items = [];
 try {
-    $myStmt = $pdo->prepare("SELECT * FROM equipment WHERE member_id = :uid1 OR member_id = :uid2");
-    $myStmt->execute(['uid1' => $user_id, 'uid2' => $user_id]);
+    $myStmt = $pdo->prepare("SELECT equipment_id, equipment_name AS title FROM equipment WHERE owner_id = :uid");
+    $myStmt->execute(['uid' => $user_id]);
     $my_items = $myStmt->fetchAll();
 } catch (Exception $e) {
     $my_items = [];
@@ -82,12 +87,13 @@ try {
 $other_items = [];
 try {
     $othStmt = $pdo->prepare("
-        SELECT e.*, m.name as owner_name 
+        SELECT e.equipment_id, e.equipment_name AS title, 
+               CONCAT(m.first_name, ' ', m.last_name) AS owner_name 
         FROM equipment e 
-        JOIN member m ON e.member_id = m.member_id OR e.member_id = m.id
-        WHERE (e.member_id != :uid1 AND e.member_id != :uid2) AND e.is_available = 1
+        JOIN member m ON e.owner_id = m.member_id
+        WHERE e.owner_id != :uid AND e.availability_status = 'Available'
     ");
-    $othStmt->execute(['uid1' => $user_id, 'uid2' => $user_id]);
+    $othStmt->execute(['uid' => $user_id]);
     $other_items = $othStmt->fetchAll();
 } catch (Exception $e) {
     $other_items = [];
@@ -98,17 +104,17 @@ $exchanges = [];
 try {
     $exStmt = $pdo->prepare("
         SELECT ex.*, 
-               e_off.title as offered_title, 
-               e_req.title as requested_title,
-               m_req.name as requester_name,
-               m_own.name as owner_name
+               e_off.equipment_name as offered_title, 
+               e_req.equipment_name as requested_title,
+               CONCAT(m_req.first_name, ' ', m_req.last_name) as requester_name,
+               CONCAT(m_own.first_name, ' ', m_own.last_name) as owner_name
         FROM exchange_agreement ex
-        LEFT JOIN equipment e_off ON ex.offered_equipment_id = e_off.equipment_id OR ex.offered_equipment_id = e_off.id
-        LEFT JOIN equipment e_req ON ex.requested_equipment_id = e_req.equipment_id OR ex.requested_equipment_id = e_req.id
-        LEFT JOIN member m_req ON ex.requester_id = m_req.member_id OR ex.requester_id = m_req.id
-        LEFT JOIN member m_own ON ex.owner_id = m_own.member_id OR ex.owner_id = m_own.id
-        WHERE ex.requester_id = :uid1 OR ex.owner_id = :uid2
-        ORDER BY 1 DESC
+        LEFT JOIN equipment e_off ON ex.equipment_a_id = e_off.equipment_id
+        LEFT JOIN equipment e_req ON ex.equipment_b_id = e_req.equipment_id
+        LEFT JOIN member m_req ON ex.lender_a_id = m_req.member_id
+        LEFT JOIN member m_own ON ex.lender_b_id = m_own.member_id
+        WHERE ex.lender_a_id = :uid1 OR ex.lender_b_id = :uid2
+        ORDER BY ex.exchange_id DESC
     ");
     $exStmt->execute(['uid1' => $user_id, 'uid2' => $user_id]);
     $exchanges = $exStmt->fetchAll();
@@ -190,12 +196,12 @@ require_once(__DIR__ . '/../includes/nav.php');
                   <td class="py-3 px-4 text-slate-700"><?php echo htmlspecialchars($ex['owner_name'] ?? 'Owner'); ?></td>
                   <td class="py-3 px-4">
                     <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold
-                      <?php echo ($ex['status'] === 'Accepted') ? 'bg-emerald-100 text-emerald-800' : (($ex['status'] === 'Completed') ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800'); ?>">
+                      <?php echo ($ex['status'] === 'Accepted') ? 'bg-emerald-100 text-emerald-800' : (($ex['status'] === 'Completed') ? 'bg-blue-100 text-blue-800' : (($ex['status'] === 'Rejected') ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800')); ?>">
                       <?php echo htmlspecialchars($ex['status'] ?? 'Pending'); ?>
                     </span>
                   </td>
                   <td class="py-3 px-4 text-right space-x-1.5">
-                    <?php if ($ex['status'] === 'Pending' && $ex['owner_id'] == $user_id): ?>
+                    <?php if ($ex['status'] === 'Pending' && (($ex['lender_b_id'] ?? $ex['owner_id'] ?? 0) == $user_id)): ?>
                       <a href="exchanges.php?action=accept&id=<?php echo $exId; ?>" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px]">
                         Accept
                       </a>
@@ -229,7 +235,7 @@ require_once(__DIR__ . '/../includes/nav.php');
         
         <div>
           <label for="offered_equipment_id" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Your Equipment to Offer *</label>
-          <select id="offered_equipment_id" name="offered_equipment_id" required class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-600 font-medium text-slate-800">
+          <select id="offered_equipment_id" name="equipment_a_id" required class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-600 font-medium text-slate-800">
             <?php if (empty($my_items)): ?>
               <option value="">(You have not listed any items yet - please list an item first)</option>
             <?php else: ?>
@@ -244,7 +250,7 @@ require_once(__DIR__ . '/../includes/nav.php');
 
         <div>
           <label for="requested_equipment_id" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Target Equipment You Want *</label>
-          <select id="requested_equipment_id" name="requested_equipment_id" required class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-600 font-medium text-slate-800">
+          <select id="requested_equipment_id" name="equipment_b_id" required class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-600 font-medium text-slate-800">
             <?php if (empty($other_items)): ?>
               <option value="">(No peer items currently available for exchange)</option>
             <?php else: ?>

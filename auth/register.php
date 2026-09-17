@@ -12,37 +12,58 @@ if (is_logged_in()) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
+    $first_name = trim($_POST['first_name'] ?? '');
+    $last_name = trim($_POST['last_name'] ?? '');
+    $full_name = trim($_POST['name'] ?? '');
+    
+    // Support either separate first/last name or combined name
+    if (empty($first_name) && !empty($full_name)) {
+        $parts = explode(' ', $full_name, 2);
+        $first_name = $parts[0];
+        $last_name = $parts[1] ?? $parts[0];
+    }
+    
     $student_id = trim($_POST['student_id'] ?? '');
-    $name = trim($_POST['name'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $phone = trim($_POST['phone'] ?? '');
+    $username = trim($_POST['username'] ?? '');
+    $university_email = trim($_POST['university_email'] ?? $_POST['email'] ?? '');
+    $phone_number = trim($_POST['phone_number'] ?? $_POST['phone'] ?? '');
+    $campus_address = trim($_POST['campus_address'] ?? '');
     $password = trim($_POST['password'] ?? '');
 
-    if (empty($student_id) || empty($name) || empty($email) || empty($phone) || empty($password)) {
+    if (empty($first_name) || empty($last_name) || empty($student_id) || empty($username) || empty($university_email) || empty($password)) {
         $error = "Please fill in all required fields.";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    } elseif (!filter_var($university_email, FILTER_VALIDATE_EMAIL)) {
         $error = "Please provide a valid university email address.";
     } elseif (strlen($password) < 4) {
         $error = "Password must be at least 4 characters long.";
     } else {
         try {
-            // Check for duplicate student_id or email
-            $stmt = $pdo->prepare("SELECT COUNT(*) FROM member WHERE student_id = :student_id OR email = :email");
-            $stmt->execute(['student_id' => $student_id, 'email' => $email]);
+            // Validate that username, university_email, and student_id aren't already taken before inserting
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM member WHERE username = :username OR university_email = :email OR student_id = :student_id");
+            $stmt->execute([
+                'username'   => $username,
+                'email'      => $university_email,
+                'student_id' => $student_id
+            ]);
             if ($stmt->fetchColumn() > 0) {
-                $error = "An account with this Student ID or Email already exists.";
+                $error = "An account with this username, student ID, or university email already exists.";
             } else {
                 // Securely hash password with password_hash()
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-                $insertStmt = $pdo->prepare("INSERT INTO member (student_id, name, email, phone, password, status) 
-                                             VALUES (:student_id, :name, :email, :phone, :password, 'Verified')");
+                $insertStmt = $pdo->prepare("
+                    INSERT INTO member (first_name, last_name, student_id, dob, gender, university_email, phone_number, campus_address, account_balance, username, password_hash) 
+                    VALUES (:first_name, :last_name, :student_id, NULL, NULL, :university_email, :phone_number, :campus_address, 0.00, :username, :password_hash)
+                ");
                 $insertStmt->execute([
-                    'student_id' => $student_id,
-                    'name'       => $name,
-                    'email'      => $email,
-                    'phone'      => $phone,
-                    'password'   => $hashed_password
+                    'first_name'       => $first_name,
+                    'last_name'        => $last_name,
+                    'student_id'       => $student_id,
+                    'university_email' => $university_email,
+                    'phone_number'     => !empty($phone_number) ? $phone_number : null,
+                    'campus_address'   => !empty($campus_address) ? $campus_address : null,
+                    'username'         => $username,
+                    'password_hash'    => $hashed_password
                 ]);
 
                 header("Location: login.php?registered=1");
@@ -95,31 +116,55 @@ require_once(__DIR__ . '/../includes/header.php');
       <form action="register.php" method="POST" class="space-y-4">
         
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <!-- Student ID -->
+          <!-- First Name -->
           <div>
-            <label for="student_id" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Student Roll / ID *</label>
-            <input type="text" id="student_id" name="student_id" required placeholder="e.g. CSE-23-0182" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
+            <label for="first_name" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">First Name *</label>
+            <input type="text" id="first_name" name="first_name" required value="<?php echo htmlspecialchars($_POST['first_name'] ?? ''); ?>" placeholder="e.g. Tanvir" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
           </div>
 
-          <!-- Full Name -->
+          <!-- Last Name -->
           <div>
-            <label for="name" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Full Name *</label>
-            <input type="text" id="name" name="name" required placeholder="e.g. Tanvir Ahmed" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
+            <label for="last_name" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Last Name *</label>
+            <input type="text" id="last_name" name="last_name" required value="<?php echo htmlspecialchars($_POST['last_name'] ?? ''); ?>" placeholder="e.g. Ahmed" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Student ID -->
+          <div>
+            <label for="student_id" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Student ID *</label>
+            <input type="text" id="student_id" name="student_id" required value="<?php echo htmlspecialchars($_POST['student_id'] ?? ''); ?>" placeholder="e.g. 024-231-001" maxlength="20" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
+          </div>
+
+          <!-- Username -->
+          <div>
+            <label for="username" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Username *</label>
+            <input type="text" id="username" name="username" required value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>" placeholder="e.g. tanvir23" maxlength="50" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <!-- University Email -->
           <div>
-            <label for="email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Campus Email *</label>
-            <input type="email" id="email" name="email" required placeholder="name@univ.ac.bd" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
+            <label for="university_email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Campus Email *</label>
+            <input type="email" id="university_email" name="university_email" required value="<?php echo htmlspecialchars($_POST['university_email'] ?? $_POST['email'] ?? ''); ?>" placeholder="name@univ.ac.bd" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
           </div>
 
           <!-- Mobile Phone -->
           <div>
-            <label for="phone" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Mobile / bKash *</label>
-            <input type="tel" id="phone" name="phone" required placeholder="+88017XXXXXXXX" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
+            <label for="phone_number" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Phone Number</label>
+            <input type="tel" id="phone_number" name="phone_number" value="<?php echo htmlspecialchars($_POST['phone_number'] ?? $_POST['phone'] ?? ''); ?>" placeholder="+88017XXXXXXXX" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
           </div>
+        </div>
+
+        <!-- Campus Address -->
+        <div>
+          <label for="campus_address" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Campus Address</label>
+          <select id="campus_address" name="campus_address" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
+            <option value="Hazari Lane" <?php echo (($_POST['campus_address'] ?? '') === 'Hazari Lane') ? 'selected' : ''; ?>>Hazari Lane</option>
+            <option value="Wasa" <?php echo (($_POST['campus_address'] ?? '') === 'Wasa') ? 'selected' : ''; ?>>Wasa</option>
+            <option value="GEC Campus" <?php echo (($_POST['campus_address'] ?? '') === 'GEC Campus') ? 'selected' : ''; ?>>GEC Campus</option>
+          </select>
         </div>
 
         <!-- Password -->

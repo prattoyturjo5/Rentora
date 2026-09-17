@@ -1,10 +1,14 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (($_SESSION['role'] ?? '') !== 'admin') {
+    header("Location: login.php");
+    exit();
+}
 require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/../includes/auth_guard.php');
 
-// Enforce admin guard
-require_admin('login.php');
 
 // Helper query function with error swallowing for clean rendering prior to schema import
 function safe_query($pdo, $sql, $params = [], $default = []) {
@@ -38,11 +42,11 @@ $active_rentals = safe_scalar($pdo, "SELECT COUNT(*) FROM rental_agreement WHERE
 $total_exchanges = safe_scalar($pdo, "SELECT COUNT(*) FROM exchange_agreement");
 
 // KPI 4: Escrow Locked Balance
-$escrow_locked = safe_scalar($pdo, "SELECT SUM(deposit) FROM rental_agreement WHERE status IN ('Approved', 'Active')");
+$escrow_locked = safe_scalar($pdo, "SELECT SUM(deposit_amount) FROM rental_agreement WHERE status IN ('Approved', 'Active')");
 
-// Member Verification Queue
-$pending_members = safe_query($pdo, "SELECT * FROM member WHERE status = 'Pending' ORDER BY 1 DESC");
-$pending_verif_count = count($pending_members);
+// Member Verification Queue & Management
+$members = safe_query($pdo, "SELECT * FROM member ORDER BY member_id DESC");
+$pending_verif_count = safe_scalar($pdo, "SELECT COUNT(*) FROM member WHERE status = 'Pending'");
 
 // Equipment Moderation List
 $equipment_list = safe_query($pdo, "
@@ -206,32 +210,48 @@ require_once(__DIR__ . '/../includes/header.php');
               <th class="py-3 px-4">Name</th>
               <th class="py-3 px-4">Email</th>
               <th class="py-3 px-4">Phone</th>
+              <th class="py-3 px-4">Status</th>
               <th class="py-3 px-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-            <?php if (empty($pending_members)): ?>
+            <?php if (empty($members)): ?>
               <tr>
-                <td colspan="6" class="py-6 text-center text-slate-400 font-medium">
-                  No members currently pending verification. All registered students are verified.
+                <td colspan="7" class="py-6 text-center text-slate-400 font-medium">
+                  No members currently registered.
                 </td>
               </tr>
             <?php else: ?>
-              <?php foreach ($pending_members as $m): ?>
+              <?php foreach ($members as $m): ?>
                 <?php $mid = $m['member_id'] ?? $m['id'] ?? 0; ?>
                 <tr class="hover:bg-slate-50/80 transition-colors">
                   <td class="py-3 px-4 font-mono font-semibold">#<?php echo $mid; ?></td>
-                  <td class="py-3 px-4 font-bold text-navy-900"><?php echo htmlspecialchars($m['student_id'] ?? 'N/A'); ?></td>
-                  <td class="py-3 px-4 font-semibold text-slate-800"><?php echo htmlspecialchars($m['name'] ?? ''); ?></td>
-                  <td class="py-3 px-4 text-slate-600"><?php echo htmlspecialchars($m['email'] ?? ''); ?></td>
-                  <td class="py-3 px-4 text-slate-600"><?php echo htmlspecialchars($m['phone'] ?? ''); ?></td>
+                  <td class="py-3 px-4 font-bold text-navy-900"><?php echo htmlspecialchars($m['username'] ?? $m['student_id'] ?? 'N/A'); ?></td>
+                  <td class="py-3 px-4 font-semibold text-slate-800"><?php echo htmlspecialchars(trim(($m['first_name'] ?? '') . ' ' . ($m['last_name'] ?? '')) ?: ($m['name'] ?? '')); ?></td>
+                  <td class="py-3 px-4 text-slate-600"><?php echo htmlspecialchars($m['university_email'] ?? $m['email'] ?? ''); ?></td>
+                  <td class="py-3 px-4 text-slate-600"><?php echo htmlspecialchars($m['phone_number'] ?? $m['phone'] ?? ''); ?></td>
+                  <td class="py-3 px-4">
+                    <?php 
+                      $statusVal = $m['status'] ?? 'Pending';
+                      if ($statusVal === 'Verified'): ?>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Verified</span>
+                      <?php elseif ($statusVal === 'Rejected'): ?>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-800">Rejected</span>
+                      <?php else: ?>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">Pending</span>
+                    <?php endif; ?>
+                  </td>
                   <td class="py-3 px-4 text-right space-x-1.5">
-                    <a href="verify_user.php?id=<?php echo $mid; ?>&action=approve" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-sm">
-                      Approve
-                    </a>
-                    <a href="verify_user.php?id=<?php echo $mid; ?>&action=reject" class="px-2.5 py-1 rounded-lg bg-red-100 hover:bg-red-200 text-red-700 font-bold text-[11px]">
-                      Reject
-                    </a>
+                    <?php if (($m['status'] ?? '') !== 'Verified'): ?>
+                      <a href="verify_user.php?id=<?php echo $mid; ?>&action=approve" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-sm">
+                        Approve
+                      </a>
+                    <?php endif; ?>
+                    <?php if (($m['status'] ?? '') !== 'Rejected'): ?>
+                      <a href="verify_user.php?id=<?php echo $mid; ?>&action=reject" class="px-2.5 py-1 rounded-lg bg-red-100 hover:bg-red-200 text-red-700 font-bold text-[11px]">
+                        Reject
+                      </a>
+                    <?php endif; ?>
                   </td>
                 </tr>
               <?php endforeach; ?>

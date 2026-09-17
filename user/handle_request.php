@@ -1,9 +1,14 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (($_SESSION['role'] ?? '') !== 'member') {
+    header("Location: ../auth/login.php");
+    exit();
+}
 require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/../includes/auth_guard.php');
 
-require_member('../auth/login.php');
 
 $action = $_GET['action'] ?? '';
 $request_id = (int)($_GET['id'] ?? 0);

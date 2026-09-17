@@ -1,12 +1,15 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (($_SESSION['role'] ?? '') !== 'member') {
+    header("Location: ../auth/login.php");
+    exit();
+}
 require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/../includes/auth_guard.php');
 
-// Enforce member login guard
-require_member('../auth/login.php');
-
-$user_id = $_SESSION['user_id'];
+$user_id = $_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0;
 
 // Defensive helper queries
 function safe_user_query($pdo, $sql, $params = []) {

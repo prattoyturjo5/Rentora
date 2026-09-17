@@ -14,52 +14,52 @@ if (isset($_GET['password_changed'])) {
 }
 
 // If already authenticated as admin, redirect to admin dashboard
-if (is_admin()) {
+if (($_SESSION['role'] ?? '') === 'admin') {
     header("Location: dashboard.php");
     exit();
 }
 
 // Handle Admin Sign In
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_signin'])) {
-    $login = trim($_POST['login'] ?? '');
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['admin_signin']) || isset($_POST['login']))) {
+    $login = trim($_POST['login'] ?? $_POST['username'] ?? '');
     $password = trim($_POST['password'] ?? '');
 
     if (empty($login) || empty($password)) {
         $error = "Please enter both Admin Username/Email and Password.";
     } else {
         try {
-            // Find admin in admin table (not member table)
-            $stmt = $pdo->prepare("SELECT * FROM admin WHERE username = :login1 OR email = :login2 LIMIT 1");
+            // Find admin in admin table only (never from member table)
+            $stmt = $pdo->prepare("SELECT * FROM admin WHERE admin_username = :login1 OR admin_email = :login2 LIMIT 1");
             $stmt->execute(['login1' => $login, 'login2' => $login]);
             $admin = $stmt->fetch();
 
             if ($admin) {
-                $hash = $admin['password'];
+                $hash = $admin['admin_password_hash'];
                 $isValid = password_verify($password, $hash);
 
                 // Auto-rehash fallback if raw password was seeded in admin table
                 if (!$isValid && $password === $hash) {
                     $isValid = true;
                     $newHash = password_hash($password, PASSWORD_DEFAULT);
-                    $adminIdCol = isset($admin['admin_id']) ? 'admin_id' : 'id';
-                    $upStmt = $pdo->prepare("UPDATE admin SET password = :newHash WHERE $adminIdCol = :id");
-                    $upStmt->execute(['newHash' => $newHash, 'id' => $admin[$adminIdCol]]);
+                    $upStmt = $pdo->prepare("UPDATE admin SET admin_password_hash = :newHash WHERE admin_id = :id");
+                    $upStmt->execute(['newHash' => $newHash, 'id' => $admin['admin_id']]);
                 }
 
                 if ($isValid) {
-                    $adminId = $admin['admin_id'] ?? $admin['id'] ?? 1;
                     $_SESSION['role'] = 'admin';
-                    $_SESSION['user_id'] = $adminId;
-                    $_SESSION['name'] = $admin['name'] ?? 'Administrator';
-                    $_SESSION['username'] = $admin['username'] ?? $admin['email'] ?? 'admin';
+                    $_SESSION['admin_id'] = (int)$admin['admin_id'];
+                    $_SESSION['user_id'] = (int)$admin['admin_id'];
+                    $_SESSION['name'] = $admin['admin_username'];
+                    $_SESSION['username'] = $admin['admin_username'];
 
                     header("Location: dashboard.php");
                     exit();
                 } else {
-                    $error = "Invalid administrator password.";
+                    // Generic error without revealing specific failure
+                    $error = "Invalid administrator username or password.";
                 }
             } else {
-                $error = "No administrator record found matching those credentials.";
+                $error = "Invalid administrator username or password.";
             }
         } catch (PDOException $e) {
             $error = "Database notice: " . htmlspecialchars($e->getMessage());

@@ -1,9 +1,14 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (($_SESSION['role'] ?? '') !== 'admin') {
+    header("Location: login.php");
+    exit();
+}
 require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/../includes/auth_guard.php');
 
-require_admin('login.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['handover_token'])) {
     $token = strtoupper(trim($_POST['handover_token']));

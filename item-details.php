@@ -14,39 +14,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request'])) {
     }
 
     $req_item_id = (int)$_POST['item_id'];
-    $renter_id = $_SESSION['user_id'];
-    $start_date = trim($_POST['rental_start_date'] ?? '');
-    $end_date = trim($_POST['rental_end_date'] ?? '');
-    $pickup_spot = trim($_POST['pickup_spot'] ?? 'Central Library Front Gate');
+    $renter_id = (int)($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
+    $start_date = trim($_POST['rental_start_date'] ?? date('Y-m-d'));
+    $end_date = trim($_POST['rental_end_date'] ?? date('Y-m-d', strtotime('+1 day')));
 
     // Retrieve equipment details
-    $eqStmt = $pdo->prepare("SELECT * FROM equipment WHERE equipment_id = :id OR id = :id2 LIMIT 1");
-    $eqStmt->execute(['id' => $req_item_id, 'id2' => $req_item_id]);
-    $item = $eqStmt->fetch();
+    $eqStmt = $pdo->prepare("SELECT * FROM equipment WHERE equipment_id = :id LIMIT 1");
+    $eqStmt->execute(['id' => $req_item_id]);
+    $eqItem = $eqStmt->fetch();
 
-    if ($item) {
+    if ($eqItem) {
         $start_ts = strtotime($start_date);
         $end_ts = strtotime($end_date);
         $diff_days = max(1, round(($end_ts - $start_ts) / 86400));
 
-        $total_rent = $diff_days * $item['daily_rate'];
-        $deposit = $item['security_deposit'];
-        $handover_token = 'TRX-' . rand(1000, 9999);
+        $total_cost = $diff_days * $eqItem['rental_rate'];
+        $deposit_amount = floatval($eqItem['security_deposit'] ?? 0);
+        $pickup_spot = trim($_POST['pickup_spot'] ?? $eqItem['campus_spot'] ?? 'Central Library Front Gate');
+        $handover_token = 'TRX-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
 
         try {
             $ins = $pdo->prepare("
-                INSERT INTO rental_agreement (equipment_id, renter_id, start_date, end_date, total_rent, deposit, handover_token, pickup_spot, status)
-                VALUES (:eq_id, :renter_id, :start_date, :end_date, :total_rent, :deposit, :token, :spot, 'Pending')
+                INSERT INTO rental_agreement (equipment_id, renter_id, start_date, expected_end_date, total_cost, deposit_amount, handover_token, pickup_spot, fine, status)
+                VALUES (:eq_id, :renter_id, :start_date, :end_date, :total_cost, :deposit_amount, :handover_token, :pickup_spot, 0.00, 'Pending')
             ");
             $ins->execute([
-                'eq_id'      => $req_item_id,
-                'renter_id'  => $renter_id,
-                'start_date' => $start_date,
-                'end_date'   => $end_date,
-                'total_rent' => $total_rent,
-                'deposit'    => $deposit,
-                'token'      => $handover_token,
-                'spot'       => $pickup_spot
+                'eq_id'          => $req_item_id,
+                'renter_id'      => $renter_id,
+                'start_date'     => $start_date,
+                'end_date'       => $end_date,
+                'total_cost'     => $total_cost,
+                'deposit_amount' => $deposit_amount,
+                'handover_token' => $handover_token,
+                'pickup_spot'    => $pickup_spot
             ]);
 
             header("Location: user/dashboard.php?msg=requested&token=" . urlencode($handover_token));
@@ -63,14 +63,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request'])) {
 $item = null;
 try {
     $stmt = $pdo->prepare("
-        SELECT e.*, c.name AS category_name, m.name AS owner_name, m.student_id AS owner_student_id, m.phone AS owner_phone 
+        SELECT e.*, e.equipment_name AS title, e.rental_rate AS daily_rate, 
+               e.condition_status AS item_condition,
+               c.category_name, 
+               CONCAT(m.first_name, ' ', m.last_name) AS owner_name, 
+               m.username AS owner_student_id, 
+               m.phone_number AS owner_phone,
+               COALESCE(NULLIF(e.campus_spot, ''), m.campus_address) AS campus_spot
         FROM equipment e 
-        LEFT JOIN category c ON e.category_id = c.category_id OR e.category_id = c.id
-        LEFT JOIN member m ON e.member_id = m.member_id OR e.member_id = m.id 
-        WHERE e.equipment_id = :id OR e.id = :id2
+        LEFT JOIN category c ON e.category_id = c.category_id
+        LEFT JOIN member m ON e.owner_id = m.member_id 
+        WHERE e.equipment_id = :id
         LIMIT 1
     ");
-    $stmt->execute(['id' => $item_id, 'id2' => $item_id]);
+    $stmt->execute(['id' => $item_id]);
     $item = $stmt->fetch();
 } catch (Exception $e) {
     $item = null;

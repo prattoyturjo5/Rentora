@@ -1,13 +1,19 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/../includes/auth_guard.php');
 
-require_member('login.php?msg=login_required');
+// Must be logged in as a member
+if (($_SESSION['role'] ?? '') !== 'member') {
+    header("Location: login.php?msg=login_required");
+    exit();
+}
 
 $error = "";
 $success = "";
-$user_id = $_SESSION['user_id'];
+$member_id = $_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     $current_password = $_POST['current_password'] ?? '';
@@ -22,22 +28,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
         $error = "New password must be at least 4 characters long.";
     } else {
         try {
-            $stmt = $pdo->prepare("SELECT * FROM member WHERE member_id = :id OR id = :id2 LIMIT 1");
-            $stmt->execute(['id' => $user_id, 'id2' => $user_id]);
+            // Retrieve current member password_hash
+            $stmt = $pdo->prepare("SELECT * FROM member WHERE member_id = :id LIMIT 1");
+            $stmt->execute(['id' => $member_id]);
             $member = $stmt->fetch();
 
             if ($member) {
-                $hash = $member['password'];
-                $isValid = password_verify($current_password, $hash);
-                if (!$isValid && $current_password === $hash) {
-                    $isValid = true; // Fallback for raw seed
-                }
-
-                if ($isValid) {
+                // Verify current password with password_verify()
+                if (password_verify($current_password, $member['password_hash'])) {
                     $new_hash = password_hash($new_password, PASSWORD_DEFAULT);
-                    $col = isset($member['member_id']) ? 'member_id' : 'id';
-                    $up = $pdo->prepare("UPDATE member SET password = :new_hash WHERE $col = :id");
-                    $up->execute(['new_hash' => $new_hash, 'id' => $member[$col]]);
+                    $up = $pdo->prepare("UPDATE member SET password_hash = :new_hash WHERE member_id = :id");
+                    $up->execute(['new_hash' => $new_hash, 'id' => $member_id]);
 
                     $success = "Your password has been changed successfully!";
                 } else {

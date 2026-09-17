@@ -1,13 +1,19 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/../includes/auth_guard.php');
 
-require_admin('login.php');
+// Enforce admin guard
+if (($_SESSION['role'] ?? '') !== 'admin') {
+    header("Location: login.php");
+    exit();
+}
 
 $error = "";
 $success = "";
-$admin_id = $_SESSION['user_id'];
+$admin_id = $_SESSION['admin_id'] ?? $_SESSION['user_id'] ?? 0;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_admin_password'])) {
     $current_password = $_POST['current_password'] ?? '';
@@ -22,22 +28,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_admin_password
         $error = "New password must be at least 4 characters long.";
     } else {
         try {
-            $stmt = $pdo->prepare("SELECT * FROM admin WHERE admin_id = :id OR id = :id2 LIMIT 1");
-            $stmt->execute(['id' => $admin_id, 'id2' => $admin_id]);
+            $stmt = $pdo->prepare("SELECT * FROM admin WHERE admin_id = :id LIMIT 1");
+            $stmt->execute(['id' => $admin_id]);
             $admin = $stmt->fetch();
 
             if ($admin) {
-                $hash = $admin['password'];
+                $hash = $admin['admin_password_hash'];
                 $isValid = password_verify($current_password, $hash);
+
+                // Fallback if plain text was previously seeded
                 if (!$isValid && $current_password === $hash) {
-                    $isValid = true; // Fallback for raw seed
+                    $isValid = true;
                 }
 
                 if ($isValid) {
                     $new_hash = password_hash($new_password, PASSWORD_DEFAULT);
-                    $col = isset($admin['admin_id']) ? 'admin_id' : 'id';
-                    $up = $pdo->prepare("UPDATE admin SET password = :new_hash WHERE $col = :id");
-                    $up->execute(['new_hash' => $new_hash, 'id' => $admin[$col]]);
+                    $up = $pdo->prepare("UPDATE admin SET admin_password_hash = :new_hash, last_password_change = NOW() WHERE admin_id = :id");
+                    $up->execute(['new_hash' => $new_hash, 'id' => $admin_id]);
 
                     $success = "Administrator password updated successfully!";
                 } else {
