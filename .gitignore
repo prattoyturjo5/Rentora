@@ -1,0 +1,3 @@
+# Uploaded user equipment media
+uploads/equipment/*
+!uploads/equipment/.gitkeep

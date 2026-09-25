@@ -13,6 +13,28 @@ $user_id = $_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0;
 $error = "";
 $success = "";
 
+if (isset($_GET['msg']) && $_GET['msg'] === 'item_added') {
+    $success = "Equipment listing added successfully!";
+}
+if (isset($_GET['error'])) {
+    $errCode = $_GET['error'];
+    if ($errCode === 'missing_fields') {
+        $error = "Please fill in all required equipment fields (Title, Rental Rate, and Equipment Image).";
+    } elseif ($errCode === 'missing_image') {
+        $error = "An equipment image is required. Please upload a photo (JPG, PNG, or WebP).";
+    } elseif ($errCode === 'invalid_image') {
+        $error = "Invalid image file format. Only JPG, PNG, and WebP images are allowed.";
+    } elseif ($errCode === 'file_too_large') {
+        $error = "Image file is too large. Maximum allowed size is 5MB.";
+    } elseif ($errCode === 'upload_failed') {
+        $error = "Failed to upload the equipment image. Please try again.";
+    } elseif ($errCode === 'db_error') {
+        $error = "Database error while adding equipment listing.";
+    } else {
+        $error = htmlspecialchars($errCode);
+    }
+}
+
 // Fetch categories for the Add Equipment form
 $categories = [];
 try {
@@ -22,47 +44,10 @@ try {
     $categories = [];
 }
 
-// Handle Add Equipment Submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_equipment'])) {
-    $equipment_name = trim($_POST['title'] ?? $_POST['equipment_name'] ?? '');
-    $category_id = (int)($_POST['category_id'] ?? 1);
-    $rental_rate = floatval($_POST['daily_rate'] ?? $_POST['rental_rate'] ?? 0);
-    $security_deposit = floatval($_POST['security_deposit'] ?? 0);
-    $campus_spot = trim($_POST['campus_spot'] ?? '');
-    $image_url = trim($_POST['image_url'] ?? '');
-    $condition = trim($_POST['item_condition'] ?? $_POST['condition_status'] ?? 'Good');
-    if ($condition === 'Like New') {
-        $condition = 'New';
-    }
-    if (!in_array($condition, ['New', 'Good', 'Fair', 'Poor'])) {
-        $condition = 'Good';
-    }
-    $description = trim($_POST['description'] ?? '');
-
-    if (empty($equipment_name) || $rental_rate <= 0) {
-        $error = "Please fill in all required equipment fields (Title and Rental Rate).";
-    } else {
-        try {
-            $stmt = $pdo->prepare("
-                INSERT INTO equipment (owner_id, category_id, equipment_name, description, condition_status, availability_status, rental_rate, security_deposit, campus_spot, image_url)
-                VALUES (:owner_id, :category_id, :equipment_name, :description, :condition_status, 'Available', :rental_rate, :security_deposit, :campus_spot, :image_url)
-            ");
-            $stmt->execute([
-                'owner_id'         => $user_id,
-                'category_id'      => $category_id,
-                'equipment_name'   => $equipment_name,
-                'description'      => $description,
-                'condition_status' => $condition,
-                'rental_rate'      => $rental_rate,
-                'security_deposit' => $security_deposit,
-                'campus_spot'      => $campus_spot,
-                'image_url'        => $image_url
-            ]);
-            $success = "Equipment listing added successfully!";
-        } catch (PDOException $e) {
-            $error = "Database notice: " . htmlspecialchars($e->getMessage());
-        }
-    }
+// Handle Direct Add Equipment Submission (delegates to add_item.php)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['add_equipment']) || isset($_POST['title']) || isset($_POST['equipment_name']))) {
+    require_once(__DIR__ . '/add_item.php');
+    exit();
 }
 
 // Handle Delete Equipment
@@ -164,7 +149,15 @@ require_once(__DIR__ . '/../includes/nav.php');
           <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
             <div>
               <div class="h-44 bg-slate-100 relative overflow-hidden">
-                <img src="<?php echo htmlspecialchars($eq['image_url'] ?? ''); ?>" alt="<?php echo htmlspecialchars($eq['title'] ?? ''); ?>" class="w-full h-full object-cover">
+                <?php 
+                  $eq_img = $eq['image_url'] ?? '';
+                  if (!empty($eq_img)) {
+                      $img_src = (strpos($eq_img, 'http://') === 0 || strpos($eq_img, 'https://') === 0) ? $eq_img : $base_path . '/' . ltrim($eq_img, '/');
+                  } else {
+                      $img_src = 'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=600&auto=format&fit=crop&q=80';
+                  }
+                ?>
+                <img src="<?php echo htmlspecialchars($img_src); ?>" alt="<?php echo htmlspecialchars($eq['title'] ?? ''); ?>" class="w-full h-full object-cover">
                 <div class="absolute top-3 right-3">
                   <?php if (!empty($eq['is_available'])): ?>
                     <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-500 text-white shadow-sm">Available</span>
@@ -215,7 +208,14 @@ require_once(__DIR__ . '/../includes/nav.php');
         <p class="text-xs text-slate-500">Provide details so campus peers can borrow or swap gear</p>
       </div>
 
-      <form action="equipment.php" method="POST" class="space-y-4">
+      <?php if (!empty($error)): ?>
+        <div class="mb-5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+          <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span class="font-medium"><?php echo htmlspecialchars($error); ?></span>
+        </div>
+      <?php endif; ?>
+
+      <form action="add_item.php" method="POST" enctype="multipart/form-data" class="space-y-4">
         
         <div>
           <label for="title" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Equipment Title *</label>
@@ -258,17 +258,78 @@ require_once(__DIR__ . '/../includes/nav.php');
         <div>
           <label for="campus_spot" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Campus Handover Spot *</label>
           <select id="campus_spot" name="campus_spot" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
-            <option value="Central Library Front Gate">Central Library Front Gate</option>
-            <option value="TSC Ground / Student Union">TSC Ground / Student Union</option>
-            <option value="Academic Building-1 Gate">Academic Building-1 Gate</option>
-            <option value="Engineering Lab Complex">Engineering Lab Complex</option>
-            <option value="Campus Cafeteria Entrance">Campus Cafeteria Entrance</option>
+            <option value="Hazari Lane">Hazari Lane</option>
+            <option value="Wasa">Wasa</option>
+            <option value="GEC Campus">GEC Campus</option>
           </select>
         </div>
 
         <div>
-          <label for="image_url" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Image URL (Optional)</label>
-          <input type="url" id="image_url" name="image_url" placeholder="https://images.unsplash.com/..." class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+            <span>Equipment Image *</span>
+            <span class="text-[11px] font-normal text-slate-400">JPG, PNG, WebP up to 5MB</span>
+          </label>
+
+          <!-- Upload Container -->
+          <div id="equipment-upload-wrapper" class="relative">
+            
+            <!-- Empty Dropzone State -->
+            <div id="upload-dropzone" class="relative group border-2 border-dashed border-slate-300 hover:border-primary-500 hover:bg-slate-50/80 rounded-2xl p-6 text-center cursor-pointer transition-all duration-200 bg-slate-50/50 overflow-hidden">
+              <!-- Native file input covers the entire dropzone with opacity-0 -->
+              <input type="file" id="equipment_image" name="equipment_image" accept="image/jpeg,image/png,image/webp" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" title="Choose equipment image">
+              
+              <div class="pointer-events-none">
+                <div class="w-12 h-12 rounded-xl bg-blue-50 text-primary-600 flex items-center justify-center mx-auto mb-2.5 group-hover:scale-105 group-hover:bg-blue-100/70 transition-all shadow-sm">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                </div>
+                <p class="text-xs font-semibold text-slate-700">
+                  <span class="text-primary-600 font-bold group-hover:underline">Click to upload</span> or drag and drop image
+                </p>
+                <p class="text-[11px] text-slate-400 mt-1">PNG, JPG, or WebP (max. 5MB)</p>
+              </div>
+            </div>
+
+            <!-- AI Chat-Style Attachment Preview Card (Hidden until file selected) -->
+            <div id="upload-preview-card" class="hidden p-3 bg-white border border-slate-200/90 rounded-2xl shadow-sm hover:shadow transition-shadow">
+              <div class="flex items-center gap-3.5">
+                <!-- Thumbnail Preview (56x56px object-cover) -->
+                <div class="relative w-14 h-14 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0 shadow-inner">
+                  <img id="image-preview-thumb" src="" alt="Equipment preview" class="w-full h-full object-cover">
+                </div>
+
+                <!-- Attachment Details -->
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2">
+                    <p id="image-preview-name" class="text-xs font-bold text-navy-900 truncate max-w-[200px] sm:max-w-xs"></p>
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60 shrink-0">
+                      Attached
+                    </span>
+                  </div>
+                  <p id="image-preview-meta" class="text-[11px] font-medium text-slate-500 mt-0.5"></p>
+                  <button type="button" id="btn-change-image" class="text-[11px] text-primary-600 hover:text-primary-700 font-semibold mt-1 inline-flex items-center gap-1 hover:underline">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    <span>Change photo</span>
+                  </button>
+                </div>
+
+                <!-- Remove 'x' Button in corner -->
+                <button type="button" id="btn-remove-image" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-400 hover:border hover:border-red-200 flex items-center justify-center transition-all shrink-0 self-start" title="Remove attachment">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Client-side error banner -->
+            <p id="upload-error-text" class="hidden text-xs text-red-600 font-medium mt-1.5 flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              <span id="upload-error-msg">Please upload a valid image file.</span>
+            </p>
+
+          </div>
         </div>
 
         <div>
@@ -285,5 +346,148 @@ require_once(__DIR__ . '/../includes/nav.php');
     </div>
 
   </main>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const dropzone = document.getElementById('upload-dropzone');
+    const fileInput = document.getElementById('equipment_image');
+    const previewCard = document.getElementById('upload-preview-card');
+    const previewThumb = document.getElementById('image-preview-thumb');
+    const previewName = document.getElementById('image-preview-name');
+    const previewMeta = document.getElementById('image-preview-meta');
+    const removeBtn = document.getElementById('btn-remove-image');
+    const changeBtn = document.getElementById('btn-change-image');
+    const errorText = document.getElementById('upload-error-text');
+    const errorMsg = document.getElementById('upload-error-msg');
+
+    if (!dropzone || !fileInput) return;
+
+    let currentObjectUrl = null;
+    const maxSizeBytes = 5 * 1024 * 1024; // 5MB
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+    function formatSize(bytes) {
+      if (!bytes || bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    function showError(msg) {
+      if (errorText && errorMsg) {
+        errorMsg.textContent = msg;
+        errorText.classList.remove('hidden');
+      }
+      dropzone.classList.add('border-red-400', 'bg-red-50/40');
+    }
+
+    function clearError() {
+      if (errorText) {
+        errorText.classList.add('hidden');
+      }
+      dropzone.classList.remove('border-red-400', 'bg-red-50/40');
+    }
+
+    function displayPreview(file) {
+      clearError();
+      if (currentObjectUrl) {
+        URL.revokeObjectURL(currentObjectUrl);
+      }
+      currentObjectUrl = URL.createObjectURL(file);
+      previewThumb.src = currentObjectUrl;
+      previewName.textContent = file.name;
+      previewMeta.textContent = file.name + ' • ' + formatSize(file.size);
+
+      dropzone.classList.add('hidden');
+      previewCard.classList.remove('hidden');
+    }
+
+    function handleFile(file) {
+      if (!file) return;
+
+      if (!allowedTypes.includes(file.type)) {
+        showError('Please upload a valid JPG, PNG, or WebP image file.');
+        fileInput.value = '';
+        return;
+      }
+
+      if (file.size > maxSizeBytes) {
+        showError('Image file is too large. Maximum allowed size is 5MB.');
+        fileInput.value = '';
+        return;
+      }
+
+      displayPreview(file);
+    }
+
+    // Handle native file input change (file picker)
+    fileInput.addEventListener('change', function() {
+      if (this.files && this.files.length > 0) {
+        handleFile(this.files[0]);
+      }
+    });
+
+    // Handle drag-and-drop hover states
+    ['dragenter', 'dragover'].forEach(function(eventName) {
+      dropzone.addEventListener(eventName, function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.add('border-primary-500', 'bg-blue-50/60', 'ring-2', 'ring-primary-500/20');
+      });
+    });
+
+    ['dragleave', 'dragend'].forEach(function(eventName) {
+      dropzone.addEventListener(eventName, function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove('border-primary-500', 'bg-blue-50/60', 'ring-2', 'ring-primary-500/20');
+      });
+    });
+
+    dropzone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      dropzone.classList.remove('border-primary-500', 'bg-blue-50/60', 'ring-2', 'ring-primary-500/20');
+
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        const droppedFile = e.dataTransfer.files[0];
+        try {
+          const dt = new DataTransfer();
+          dt.items.add(droppedFile);
+          fileInput.files = dt.files;
+        } catch (err) {
+          // Fallback if DataTransfer not supported
+        }
+        handleFile(droppedFile);
+      }
+    });
+
+    // Remove attachment button
+    if (removeBtn) {
+      removeBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        fileInput.value = '';
+        if (currentObjectUrl) {
+          URL.revokeObjectURL(currentObjectUrl);
+          currentObjectUrl = null;
+        }
+        previewThumb.src = '';
+        previewCard.classList.add('hidden');
+        dropzone.classList.remove('hidden');
+        clearError();
+      });
+    }
+
+    // Change photo button
+    if (changeBtn) {
+      changeBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        fileInput.click();
+      });
+    }
+  });
+  </script>
 
 <?php require_once(__DIR__ . '/../includes/footer.php'); ?>

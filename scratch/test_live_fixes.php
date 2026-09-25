@@ -79,7 +79,7 @@ if (!$cat_id) {
 }
 
 $test_deposit = 750.50;
-$test_spot = 'Central Library Front Gate';
+$test_spot = 'Hazari Lane';
 $test_img = 'https://example.com/item.jpg';
 $test_title = 'Scientific Calculator FX';
 
@@ -118,7 +118,7 @@ $pdo->prepare("INSERT INTO member (first_name, last_name, username, university_e
 $test_renter_id = (int)$pdo->lastInsertId();
 
 $test_token = 'TRX-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
-$test_pickup = 'TSC Ground / Student Union';
+$test_pickup = 'Wasa';
 $calc_deposit = floatval($eqRow['security_deposit']);
 $total_cost = 180.00;
 

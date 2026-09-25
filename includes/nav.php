@@ -12,13 +12,13 @@ $current_user_id = $_SESSION['user_id'] ?? null;
   <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
     <div class="flex items-center gap-2">
       <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-      <span class="font-medium text-slate-200">Dhaka Campus Escrow Active:</span> 
-      <span>Zero platform fee for verified university student equipment exchanges.</span>
+      <span class="font-medium text-slate-200">Premier University Marketplace —</span> 
+      <span>Exchange and rent gear with verified PU students. Cash handover only, no online payments.</span>
     </div>
     <div class="flex items-center gap-4 text-slate-400">
       <span class="flex items-center gap-1">
         <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
-        Pickup Points: Central Library, TSC & Engineering Lab
+        Pickup Points: Hazari Lane, Wasa & GEC Campus
       </span>
       <span class="hidden sm:inline">|</span>
       <?php if ($current_role === 'admin'): ?>

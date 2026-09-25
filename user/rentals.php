@@ -161,7 +161,7 @@ require_once(__DIR__ . '/../includes/nav.php');
           <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
           <h3 class="text-base font-bold text-white">Physical Handover Verification</h3>
         </div>
-        <p class="text-xs text-slate-300">Are you handing over gear to a student on campus? Enter their 8-character token to unlock escrow and activate the rental.</p>
+        <p class="text-xs text-slate-300">Are you handing over gear to a student on campus? Enter their 8-character token to confirm handover and activate the rental.</p>
       </div>
 
       <form action="rentals.php" method="POST" class="flex items-center gap-2 w-full md:w-auto">

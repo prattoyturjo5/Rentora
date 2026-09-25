@@ -51,8 +51,8 @@ $my_exchanges_count = safe_user_scalar($pdo, "
     WHERE requester_id = :uid1 OR owner_id = :uid2
 ", ['uid1' => $user_id, 'uid2' => $user_id]);
 
-// 4. Security Deposit in Escrow
-$escrow_total = safe_user_scalar($pdo, "
+// 4. Security Deposit Total
+$security_deposit_total = safe_user_scalar($pdo, "
     SELECT SUM(deposit) FROM rental_agreement 
     WHERE (renter_id = :uid1 OR renter_id = :uid2) AND status IN ('Approved', 'Active')
 ", ['uid1' => $user_id, 'uid2' => $user_id]);
@@ -158,11 +158,11 @@ require_once(__DIR__ . '/../includes/nav.php');
 
       <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Escrow Deposits</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Security Deposits</span>
           <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm">৳</span>
         </div>
-        <div class="mt-3 text-2xl font-extrabold text-navy-900">৳<?php echo number_format($escrow_total, 2); ?></div>
-        <span class="text-[11px] text-slate-400">Held in trust guarantee</span>
+        <div class="mt-3 text-2xl font-extrabold text-navy-900">৳<?php echo number_format($security_deposit_total, 2); ?></div>
+        <span class="text-[11px] text-slate-400">Refundable deposit guarantee</span>
       </div>
 
     </div>
@@ -175,7 +175,7 @@ require_once(__DIR__ . '/../includes/nav.php');
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
             <span>Handover Token Ready</span>
           </div>
-          <span class="text-xs text-slate-400 font-medium">Pickup Spot: <?php echo htmlspecialchars($latest_token_rental['pickup_spot'] ?? 'Central Library'); ?></span>
+          <span class="text-xs text-slate-400 font-medium">Pickup Spot: <?php echo htmlspecialchars($latest_token_rental['pickup_spot'] ?? 'Hazari Lane'); ?></span>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">

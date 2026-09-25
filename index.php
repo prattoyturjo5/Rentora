@@ -37,6 +37,10 @@ if ($category_id > 0) {
     $where_clauses[] = "e.category_id = :cat_id";
     $params['cat_id'] = $category_id;
 }
+if (!empty($pickup_spot) && $pickup_spot !== 'ALL') {
+    $where_clauses[] = "(m.campus_address = :spot OR e.campus_spot = :spot)";
+    $params['spot'] = $pickup_spot;
+}
 
 $where_sql = "WHERE " . implode(" AND ", $where_clauses);
 
@@ -99,14 +103,14 @@ require_once(__DIR__ . '/includes/nav.php');
       <!-- Academic Badge -->
       <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-blue-200 mb-6 backdrop-blur-sm">
         <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-        <span>Trusted University Equipment Exchange & Escrow Protocol</span>
+        <span>Trusted University Equipment Exchange & Handover Protocol</span>
       </div>
 
       <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white max-w-3xl mx-auto leading-tight">
         Rent & Exchange Lab Kits & Gear <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Directly on Campus</span>
       </h1>
       <p class="mt-4 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto font-normal">
-        Exchange scientific calculators, drafters, cameras, and IoT kits with verified classmates. Safe in-person pickup with 100% escrow deposit protection.
+        Exchange scientific calculators, drafters, cameras, and IoT kits with verified classmates. Safe in-person handover with a refundable security deposit.
       </p>
 
       <!-- Search & Filter Form -->
@@ -141,11 +145,9 @@ require_once(__DIR__ . '/includes/nav.php');
             <label for="pickup_spot" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Campus Spot</label>
             <select id="pickup_spot" name="pickup_spot" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-slate-800 font-medium">
               <option value="ALL">Any Campus Spot</option>
-              <option value="Central Library Front Gate" <?php if ($pickup_spot === 'Central Library Front Gate') echo 'selected'; ?>>Central Library Front Gate</option>
-              <option value="Campus Cafeteria Entrance" <?php if ($pickup_spot === 'Campus Cafeteria Entrance') echo 'selected'; ?>>Campus Cafeteria Entrance</option>
-              <option value="Academic Building-1 Gate" <?php if ($pickup_spot === 'Academic Building-1 Gate') echo 'selected'; ?>>Academic Building Gate</option>
-              <option value="Engineering Lab Complex" <?php if ($pickup_spot === 'Engineering Lab Complex') echo 'selected'; ?>>Engineering Lab Complex</option>
-              <option value="TSC Ground / Student Union" <?php if ($pickup_spot === 'TSC Ground / Student Union') echo 'selected'; ?>>TSC Ground</option>
+              <option value="Hazari Lane" <?php if ($pickup_spot === 'Hazari Lane') echo 'selected'; ?>>Hazari Lane</option>
+              <option value="Wasa" <?php if ($pickup_spot === 'Wasa') echo 'selected'; ?>>Wasa</option>
+              <option value="GEC Campus" <?php if ($pickup_spot === 'GEC Campus') echo 'selected'; ?>>GEC Campus</option>
             </select>
           </div>
 
@@ -190,10 +192,10 @@ require_once(__DIR__ . '/includes/nav.php');
         </div>
         <div>
           <span class="block text-xl font-extrabold text-emerald-600">৳0 Fee</span>
-          <span class="text-xs text-slate-500 font-medium">Campus Escrow Guarantee</span>
+          <span class="text-xs text-slate-500 font-medium">Cash-Only, No Platform Fees</span>
         </div>
         <div>
-          <span class="block text-xl font-extrabold text-amber-600">5 Pickup Zones</span>
+          <span class="block text-xl font-extrabold text-amber-600">3 Pickup Zones</span>
           <span class="text-xs text-slate-500 font-medium">Official Handover Spots</span>
         </div>
       </div>
@@ -201,124 +203,137 @@ require_once(__DIR__ . '/includes/nav.php');
   </section>
 
   <!-- Main Content Area: Equipment Catalog Grid -->
-  <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
-    
-    <!-- Section Header & Filter Controls -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-      <div>
-        <h2 class="text-2xl font-extrabold text-navy-900 tracking-tight">Available Campus Equipment</h2>
-        <p class="text-sm text-slate-500 mt-1">Showing <?php echo $total_items; ?> verified equipment items in database</p>
-      </div>
-
-      <!-- Sort Form -->
-      <form action="index.php" method="GET" class="flex items-center gap-3 w-full sm:w-auto">
-        <?php if (!empty($query)): ?><input type="hidden" name="query" value="<?php echo htmlspecialchars($query); ?>"><?php endif; ?>
-        <?php if ($category_id > 0): ?><input type="hidden" name="category_id" value="<?php echo $category_id; ?>"><?php endif; ?>
-        <?php if (!empty($pickup_spot)): ?><input type="hidden" name="pickup_spot" value="<?php echo htmlspecialchars($pickup_spot); ?>"><?php endif; ?>
-        
-        <label for="sort" class="text-xs font-semibold text-slate-500 whitespace-nowrap">Sort By:</label>
-        <select id="sort" name="sort" onchange="this.form.submit()" class="px-3 py-1.5 text-xs bg-white border border-slate-200 rounded-lg text-slate-700 font-medium focus:ring-primary-600 focus:border-primary-600">
-          <option value="newest" <?php if ($sort === 'newest') echo 'selected'; ?>>Newest First</option>
-          <option value="price_asc" <?php if ($sort === 'price_asc') echo 'selected'; ?>>Rental Rate: Low to High</option>
-          <option value="price_desc" <?php if ($sort === 'price_desc') echo 'selected'; ?>>Rental Rate: High to Low</option>
-          <option value="deposit_asc" <?php if ($sort === 'deposit_asc') echo 'selected'; ?>>Deposit: Low to High</option>
-        </select>
-      </form>
-    </div>
-
-    <!-- Equipment Grid -->
-    <?php if ($total_items > 0): ?>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <?php foreach ($items as $item): 
-          $cond_class = 'bg-emerald-100 text-emerald-800 border-emerald-200';
-          if (($item['item_condition'] ?? '') === 'Good') {
-              $cond_class = 'bg-blue-100 text-blue-800 border-blue-200';
-          } elseif (($item['item_condition'] ?? '') === 'Fair') {
-              $cond_class = 'bg-amber-100 text-amber-800 border-amber-200';
-          }
-          $item_image = !empty($item['image_url']) ? $item['image_url'] : 'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=600&auto=format&fit=crop&q=80';
-          $itemId = $item['equipment_id'] ?? $item['id'] ?? 1;
-        ?>
-          <div class="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 card-hover flex flex-col">
-            
-            <!-- Image Container -->
-            <div class="relative h-48 w-full bg-slate-100 overflow-hidden group">
-              <img src="<?php echo htmlspecialchars($item_image); ?>" alt="<?php echo htmlspecialchars($item['title'] ?? ''); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-              <div class="absolute top-3 left-3 flex flex-wrap gap-1.5">
-                <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border <?php echo $cond_class; ?> shadow-sm backdrop-blur-md">
-                  <?php echo htmlspecialchars($item['item_condition'] ?? 'Good'); ?>
-                </span>
-                <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-slate-900/80 text-white backdrop-blur-md">
-                  <?php echo htmlspecialchars($item['category_name'] ?? 'Equipment'); ?>
-                </span>
-              </div>
-              <div class="absolute bottom-3 right-3 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-lg text-xs font-bold text-navy-900 shadow">
-                ৳<?php echo number_format($item['daily_rate'] ?? 0); ?> <span class="text-[10px] text-slate-500 font-normal">/ day</span>
-              </div>
-            </div>
-
-            <!-- Card Body -->
-            <div class="p-5 flex-1 flex flex-col justify-between">
-              <div>
-                <div class="text-[11px] font-semibold text-primary-600 uppercase tracking-wider mb-1">
-                  <?php echo htmlspecialchars($item['category_name'] ?? 'General'); ?>
-                </div>
-                <h3 class="font-bold text-navy-900 text-base leading-snug line-clamp-2 hover:text-primary-600 transition-colors">
-                  <a href="item-details.php?id=<?php echo $itemId; ?>"><?php echo htmlspecialchars($item['title'] ?? 'Equipment'); ?></a>
-                </h3>
-
-                <!-- Deposit & Pickup Spot -->
-                <div class="mt-3 space-y-1.5 text-xs text-slate-500 border-y border-slate-100 py-2.5 my-3">
-                  <div class="flex items-center justify-between">
-                    <span class="text-slate-500">Deposit:</span>
-                    <span class="font-bold text-slate-700">৳<?php echo number_format($item['security_deposit'] ?? 0); ?> <span class="text-[10px] font-normal text-emerald-600">(Refundable)</span></span>
-                  </div>
-                  <div class="flex items-center gap-1.5 text-slate-600 truncate" title="<?php echo htmlspecialchars($item['campus_spot'] ?? 'Campus'); ?>">
-                    <svg class="w-3.5 h-3.5 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
-                    <span class="truncate"><?php echo htmlspecialchars($item['campus_spot'] ?? 'Campus'); ?></span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Footer: Lender Info & Rent Button -->
-              <div>
-                <div class="flex items-center justify-between text-xs text-slate-500 mb-3.5">
-                  <div class="flex items-center gap-2">
-                    <div class="w-6 h-6 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-[10px]">
-                      <?php echo strtoupper(substr($item['owner_name'] ?? 'M', 0, 1)); ?>
-                    </div>
-                    <span class="font-medium text-slate-700 truncate max-w-[120px]"><?php echo htmlspecialchars($item['owner_name'] ?? 'Member'); ?></span>
-                  </div>
-                  <div class="text-[11px] font-semibold text-primary-600">
-                    <?php echo htmlspecialchars($item['owner_student_id'] ?? ''); ?>
-                  </div>
-                </div>
-
-                <!-- View & Rent Action Button -->
-                <a href="item-details.php?id=<?php echo $itemId; ?>" class="w-full py-2.5 px-4 rounded-xl bg-navy-900 hover:bg-primary-600 text-white text-xs font-bold text-center block shadow transition-all hover:shadow-md">
-                  View & Rent Equipment
-                </a>
-              </div>
-
-            </div>
-
-          </div>
-        <?php endforeach; ?>
-      </div>
-    <?php else: ?>
-      <!-- Empty State -->
-      <div class="text-center py-16 bg-white rounded-2xl border border-slate-200 p-8 my-6">
-        <div class="w-16 h-16 bg-blue-50 text-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+  <main class="flex-1 bg-slate-50 py-10 sm:py-12 w-full">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header & Filter Controls -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Available Campus Equipment</h2>
+          <p class="text-sm text-slate-500 font-medium mt-1">Showing <?php echo $total_items; ?> verified equipment items in database</p>
         </div>
-        <h3 class="text-lg font-bold text-navy-900">No equipment found matching criteria</h3>
-        <p class="text-sm text-slate-500 max-w-md mx-auto mt-1">Try relaxing your category or pickup spot filter, or search with different keywords.</p>
-        <a href="index.php" class="inline-block mt-4 px-4 py-2 bg-primary-600 text-white rounded-xl text-xs font-bold hover:bg-primary-700 transition-colors">
-          Reset All Filters
-        </a>
-      </div>
-    <?php endif; ?>
 
+        <!-- Sort Form -->
+        <form action="index.php" method="GET" class="flex items-center gap-3 w-full sm:w-auto">
+          <?php if (!empty($query)): ?><input type="hidden" name="query" value="<?php echo htmlspecialchars($query); ?>"><?php endif; ?>
+          <?php if ($category_id > 0): ?><input type="hidden" name="category_id" value="<?php echo $category_id; ?>"><?php endif; ?>
+          <?php if (!empty($pickup_spot)): ?><input type="hidden" name="pickup_spot" value="<?php echo htmlspecialchars($pickup_spot); ?>"><?php endif; ?>
+          
+          <label for="sort" class="text-xs font-semibold text-slate-500 whitespace-nowrap">Sort By:</label>
+          <select id="sort" name="sort" onchange="this.form.submit()" class="bg-white border border-slate-200 text-slate-700 rounded-lg px-3 py-1.5 shadow-sm text-sm focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 font-medium">
+            <option value="newest" <?php if ($sort === 'newest') echo 'selected'; ?>>Newest First</option>
+            <option value="price_asc" <?php if ($sort === 'price_asc') echo 'selected'; ?>>Rental Rate: Low to High</option>
+            <option value="price_desc" <?php if ($sort === 'price_desc') echo 'selected'; ?>>Rental Rate: High to Low</option>
+            <option value="deposit_asc" <?php if ($sort === 'deposit_asc') echo 'selected'; ?>>Deposit: Low to High</option>
+          </select>
+        </form>
+      </div>
+
+      <!-- Equipment Container / Card Grid -->
+      <?php if ($total_items > 0): ?>
+        <div class="bg-white border border-slate-200/80 shadow-sm rounded-2xl p-6 sm:p-8 lg:p-10">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <?php foreach ($items as $item): 
+              $cond_class = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+              if (($item['item_condition'] ?? '') === 'Good') {
+                  $cond_class = 'bg-blue-100 text-blue-800 border-blue-200';
+              } elseif (($item['item_condition'] ?? '') === 'Fair') {
+                  $cond_class = 'bg-amber-100 text-amber-800 border-amber-200';
+              }
+              $raw_img = $item['image_url'] ?? '';
+              if (!empty($raw_img)) {
+                  if (strpos($raw_img, 'http://') === 0 || strpos($raw_img, 'https://') === 0) {
+                      $item_image = $raw_img;
+                  } else {
+                      $item_image = $base_path . '/' . ltrim($raw_img, '/');
+                  }
+              } else {
+                  $item_image = 'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=600&auto=format&fit=crop&q=80';
+              }
+              $itemId = $item['equipment_id'] ?? $item['id'] ?? 1;
+            ?>
+              <div class="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 card-hover flex flex-col">
+                
+                <!-- Image Container -->
+                <div class="relative h-48 w-full bg-slate-100 overflow-hidden group">
+                  <img src="<?php echo htmlspecialchars($item_image); ?>" alt="<?php echo htmlspecialchars($item['title'] ?? ''); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                  <div class="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                    <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border <?php echo $cond_class; ?> shadow-sm backdrop-blur-md">
+                      <?php echo htmlspecialchars($item['item_condition'] ?? 'Good'); ?>
+                    </span>
+                    <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-slate-900/80 text-white backdrop-blur-md">
+                      <?php echo htmlspecialchars($item['category_name'] ?? 'Equipment'); ?>
+                    </span>
+                  </div>
+                  <div class="absolute bottom-3 right-3 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-lg text-xs font-bold text-navy-900 shadow">
+                    ৳<?php echo number_format($item['daily_rate'] ?? 0); ?> <span class="text-[10px] text-slate-500 font-normal">/ day</span>
+                  </div>
+                </div>
+
+                <!-- Card Body -->
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                  <div>
+                    <div class="text-[11px] font-semibold text-primary-600 uppercase tracking-wider mb-1">
+                      <?php echo htmlspecialchars($item['category_name'] ?? 'General'); ?>
+                    </div>
+                    <h3 class="font-bold text-navy-900 text-base leading-snug line-clamp-2 hover:text-primary-600 transition-colors">
+                      <a href="item-details.php?id=<?php echo $itemId; ?>"><?php echo htmlspecialchars($item['title'] ?? 'Equipment'); ?></a>
+                    </h3>
+
+                    <!-- Deposit & Pickup Spot -->
+                    <div class="mt-3 space-y-1.5 text-xs text-slate-500 border-y border-slate-100 py-2.5 my-3">
+                      <div class="flex items-center justify-between">
+                        <span class="text-slate-500">Deposit:</span>
+                        <span class="font-bold text-slate-700">৳<?php echo number_format($item['security_deposit'] ?? 0); ?> <span class="text-[10px] font-normal text-emerald-600">(Refundable)</span></span>
+                      </div>
+                      <div class="flex items-center gap-1.5 text-slate-600 truncate" title="<?php echo htmlspecialchars($item['campus_spot'] ?? 'Campus'); ?>">
+                        <svg class="w-3.5 h-3.5 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
+                        <span class="truncate"><?php echo htmlspecialchars($item['campus_spot'] ?? 'Campus'); ?></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Footer: Lender Info & Rent Button -->
+                  <div>
+                    <div class="flex items-center justify-between text-xs text-slate-500 mb-3.5">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-[10px]">
+                          <?php echo strtoupper(substr($item['owner_name'] ?? 'M', 0, 1)); ?>
+                        </div>
+                        <span class="font-medium text-slate-700 truncate max-w-[120px]"><?php echo htmlspecialchars($item['owner_name'] ?? 'Member'); ?></span>
+                      </div>
+                      <div class="text-[11px] font-semibold text-primary-600">
+                        <?php echo htmlspecialchars($item['owner_student_id'] ?? ''); ?>
+                      </div>
+                    </div>
+
+                    <!-- View & Rent Action Button -->
+                    <a href="item-details.php?id=<?php echo $itemId; ?>" class="w-full py-2.5 px-4 rounded-xl bg-navy-900 hover:bg-primary-600 text-white text-xs font-bold text-center block shadow transition-all hover:shadow-md">
+                      View & Rent Equipment
+                    </a>
+                  </div>
+
+                </div>
+
+              </div>
+            <?php endforeach; ?>
+          </div>
+        </div>
+      <?php else: ?>
+        <!-- Empty State Container -->
+        <div class="bg-white border border-slate-200/80 shadow-sm rounded-2xl p-8 sm:p-12 text-center">
+          <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl p-4 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900">No equipment found matching criteria</h3>
+          <p class="text-sm text-slate-500 font-medium max-w-md mx-auto mt-2">Try relaxing your category or pickup spot filter, or search with different keywords.</p>
+          <a href="index.php" class="inline-block mt-6 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl text-sm shadow-sm transition">
+            Reset All Filters
+          </a>
+        </div>
+      <?php endif; ?>
+
+    </div>
   </main>
 
 <?php require_once(__DIR__ . '/includes/footer.php'); ?>

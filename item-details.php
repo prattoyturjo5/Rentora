@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request'])) {
 
         $total_cost = $diff_days * $eqItem['rental_rate'];
         $deposit_amount = floatval($eqItem['security_deposit'] ?? 0);
-        $pickup_spot = trim($_POST['pickup_spot'] ?? $eqItem['campus_spot'] ?? 'Central Library Front Gate');
+        $pickup_spot = trim($_POST['pickup_spot'] ?? $eqItem['campus_spot'] ?? 'Hazari Lane');
         $handover_token = 'TRX-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
 
         try {
@@ -87,9 +87,17 @@ if (!$item) {
     exit();
 }
 
-$image_url = !empty($item['image_url']) ? $item['image_url'] : 'https://images.unsplash.com/photo-1594980596870-8aa52a78d8cd?w=600&auto=format&fit=crop&q=80';
-
 $base_path = '.';
+$raw_img = $item['image_url'] ?? '';
+if (!empty($raw_img)) {
+    if (strpos($raw_img, 'http://') === 0 || strpos($raw_img, 'https://') === 0) {
+        $image_url = $raw_img;
+    } else {
+        $image_url = $base_path . '/' . ltrim($raw_img, '/');
+    }
+} else {
+    $image_url = 'https://images.unsplash.com/photo-1594980596870-8aa52a78d8cd?w=600&auto=format&fit=crop&q=80';
+}
 $page_title = ($item['title'] ?? 'Equipment') . ' - Rentora';
 require_once(__DIR__ . '/includes/header.php');
 require_once(__DIR__ . '/includes/nav.php');
@@ -193,11 +201,9 @@ require_once(__DIR__ . '/includes/nav.php');
             <div>
               <label for="pickup_spot" class="block text-xs font-bold text-slate-700 mb-1">Campus Handover Spot *</label>
               <select id="pickup_spot" name="pickup_spot" required class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 font-medium text-slate-800">
-                <option value="Central Library Front Gate">Central Library Front Gate</option>
-                <option value="Campus Cafeteria Entrance">Campus Cafeteria Entrance</option>
-                <option value="Academic Building-1 Gate">Academic Building-1 Gate</option>
-                <option value="Engineering Lab Complex">Engineering Lab Complex</option>
-                <option value="TSC Ground / Student Union">TSC Ground / Student Union</option>
+                <option value="Hazari Lane">Hazari Lane</option>
+                <option value="Wasa">Wasa</option>
+                <option value="GEC Campus">GEC Campus</option>
               </select>
             </div>
 
@@ -228,7 +234,7 @@ require_once(__DIR__ . '/includes/nav.php');
             <?php endif; ?>
 
             <p class="text-[11px] text-center text-slate-400">
-              🔒 Handover token is required for physical exchange. 100% escrow protection.
+              🔒 Handover token is required for physical exchange. Safe in-person handover with a refundable security deposit.
             </p>
           </form>
 

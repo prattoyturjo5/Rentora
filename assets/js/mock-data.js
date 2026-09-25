@@ -114,12 +114,9 @@ const CAMPUS_DATA = {
   ],
 
   pickupSpots: [
-    { id: "spot_1", name: "CU Central Library Front Gate", campus: "CU", note: "Near shuttle train platform & main fountain" },
-    { id: "spot_2", name: "Premier University GEC Campus Lounge", campus: "PUC", note: "Beside Prabartak Mor & cafeteria" },
-    { id: "spot_3", name: "IIUC Central Playground & Cafeteria", campus: "IIUC", note: "Kumira Main Campus" },
-    { id: "spot_4", name: "CUET Academic Building-1 Gate", campus: "CUET", note: "Near Central Auditorium" },
-    { id: "spot_5", name: "CUET Engineering Lab Complex (Paharika)", campus: "CUET", note: "Outside Hardware Lab 302" },
-    { id: "spot_6", name: "Sholoshahar University Shuttle Station Hub", campus: "City Center", note: "Adjacent to Platform 1 waiting lounge" }
+    { id: "spot_1", name: "Hazari Lane", campus: "PU", note: "Hazari Lane Campus" },
+    { id: "spot_2", name: "Wasa", campus: "PU", note: "Wasa Campus Point" },
+    { id: "spot_3", name: "GEC Campus", campus: "PU", note: "GEC Campus Point" }
   ],
 
   categories: [

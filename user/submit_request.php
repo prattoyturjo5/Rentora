@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['item_id'])) {
                 $pickup_spot = $item['campus_spot'];
             }
             if (empty($pickup_spot)) {
-                $pickup_spot = 'Central Library Front Gate';
+                $pickup_spot = 'Hazari Lane';
             }
             $handover_token = 'TRX-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
 

@@ -304,13 +304,13 @@ function initHandoverTokenVerifier() {
             </span>
             <div>
               <h4 class="font-bold text-emerald-900 text-base">Token Verified & Validated!</h4>
-              <p class="text-xs text-emerald-700">Security Escrow Deposit is 100% Guaranteed</p>
+              <p class="text-xs text-emerald-700">Refundable Security Deposit Confirmed</p>
             </div>
           </div>
           <div class="grid grid-cols-2 gap-2 text-xs bg-white p-3 rounded-xl border border-emerald-100 mb-3">
             <div><span class="text-slate-400">Renter:</span> <span class="font-bold text-slate-800">${match.renterName}</span> (${match.renterStudentId})</div>
             <div><span class="text-slate-400">Item:</span> <span class="font-bold text-slate-800">${match.itemTitle}</span></div>
-            <div><span class="text-slate-400">Escrow Paid:</span> <span class="font-bold text-emerald-600">৳${match.totalRent + match.deposit}</span></div>
+            <div><span class="text-slate-400">Total Payable:</span> <span class="font-bold text-emerald-600">৳${match.totalRent + match.deposit}</span></div>
             <div><span class="text-slate-400">Pickup Spot:</span> <span class="font-bold text-slate-800">${match.pickupSpot}</span></div>
           </div>
           <div class="flex items-center gap-2">

@@ -41,8 +41,8 @@ $active_rentals = safe_scalar($pdo, "SELECT COUNT(*) FROM rental_agreement WHERE
 // KPI 3: Exchange Agreements Count
 $total_exchanges = safe_scalar($pdo, "SELECT COUNT(*) FROM exchange_agreement");
 
-// KPI 4: Escrow Locked Balance
-$escrow_locked = safe_scalar($pdo, "SELECT SUM(deposit_amount) FROM rental_agreement WHERE status IN ('Approved', 'Active')");
+// KPI 4: Security Deposit Balance
+$deposit_locked = safe_scalar($pdo, "SELECT SUM(deposit_amount) FROM rental_agreement WHERE status IN ('Approved', 'Active')");
 
 // Member Verification Queue & Management
 $members = safe_query($pdo, "SELECT * FROM member ORDER BY member_id DESC");
@@ -178,13 +178,13 @@ require_once(__DIR__ . '/../includes/header.php');
 
       <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Escrow Security</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Security Deposits</span>
           <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm">
             ৳
           </span>
         </div>
-        <div class="mt-3 text-2xl font-extrabold text-navy-900">৳<?php echo number_format($escrow_locked, 2); ?></div>
-        <span class="text-[11px] text-slate-400">Locked in escrow trust</span>
+        <div class="mt-3 text-2xl font-extrabold text-navy-900">৳<?php echo number_format($deposit_locked, 2); ?></div>
+        <span class="text-[11px] text-slate-400">Locked in deposit trust</span>
       </div>
 
     </div>

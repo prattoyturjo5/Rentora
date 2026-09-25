@@ -17,7 +17,7 @@ $base_path = $base_path ?? '.';
             <span class="text-lg font-bold text-white tracking-tight">Rentora</span>
           </div>
           <p class="text-xs text-slate-400 leading-relaxed">
-            Campus Equipment Exchange & Rental Hub. Secure peer-to-peer equipment sharing, escrow security deposits, and handover token verification.
+            Campus Equipment Exchange & Rental Hub. Secure peer-to-peer equipment sharing, refundable security deposits, and handover token verification.
           </p>
         </div>
 
@@ -34,10 +34,9 @@ $base_path = $base_path ?? '.';
         <div>
           <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-4">Official Handover Spots</h4>
           <ul class="space-y-2 text-xs">
-            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Central Library Front Gate</li>
-            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Campus Cafeteria Entrance</li>
-            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Academic Building Gate</li>
-            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Engineering Lab Complex</li>
+            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Hazari Lane</li>
+            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Wasa</li>
+            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> GEC Campus</li>
           </ul>
         </div>
 
@@ -46,10 +45,10 @@ $base_path = $base_path ?? '.';
           <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs">
             <div class="flex items-center gap-2 mb-1.5">
               <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-              <span class="font-bold text-white">100% Escrow Guarantee</span>
+              <span class="font-bold text-white">Cash-Only Handover</span>
             </div>
             <p class="text-[11px] text-slate-400">
-              Security deposits are held securely. Always exchange equipment using the verified Handover Token protocol.
+              Cash handover only, no online payments. Safe in-person handover with a refundable security deposit.
             </p>
           </div>
         </div>
