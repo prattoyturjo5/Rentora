@@ -5,7 +5,27 @@
 $base_path = $base_path ?? '.';
 $current_role = $_SESSION['role'] ?? null;
 $current_name = $_SESSION['name'] ?? 'User';
-$current_user_id = $_SESSION['user_id'] ?? null;
+$current_user_id = $_SESSION['user_id'] ?? $_SESSION['member_id'] ?? null;
+
+$current_member_status = 'Pending';
+if ($current_role === 'member' && $current_user_id) {
+    if (!isset($pdo)) {
+        @require_once(__DIR__ . '/../config/db.php');
+    }
+    if (isset($pdo)) {
+        if (function_exists('get_member_status')) {
+            $current_member_status = get_member_status($pdo, $current_user_id);
+        } else {
+            try {
+                $stmt = $pdo->prepare("SELECT status FROM member WHERE member_id = :id LIMIT 1");
+                $stmt->execute(['id' => $current_user_id]);
+                $current_member_status = $stmt->fetchColumn() ?: 'Pending';
+            } catch (Exception $e) {
+                $current_member_status = 'Pending';
+            }
+        }
+    }
+}
 ?>
 <!-- Top Campus Notice Bar -->
 <div class="bg-navy-950 text-slate-300 text-xs py-2 px-4 border-b border-slate-800">
@@ -94,10 +114,22 @@ $current_user_id = $_SESSION['user_id'] ?? null;
             </div>
             <div class="text-left leading-tight hidden lg:block">
               <div class="text-xs font-bold text-navy-900"><?php echo htmlspecialchars($current_name); ?></div>
-              <div class="text-[11px] font-semibold text-emerald-600 flex items-center gap-1">
-                <span>Member</span>
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              </div>
+              <?php if ($current_member_status === 'Verified'): ?>
+                <div class="text-[11px] font-semibold text-emerald-600 flex items-center gap-1">
+                  <span>Verified</span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                </div>
+              <?php elseif ($current_member_status === 'Rejected'): ?>
+                <div class="text-[11px] font-semibold text-red-600 flex items-center gap-1">
+                  <span>Rejected</span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                </div>
+              <?php else: ?>
+                <div class="text-[11px] font-semibold text-amber-600 flex items-center gap-1">
+                  <span>Pending</span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                </div>
+              <?php endif; ?>
             </div>
             <a href="<?php echo $base_path; ?>/auth/change_password.php" title="Change Password" class="text-slate-400 hover:text-slate-600 transition-colors p-1">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>

@@ -9,8 +9,16 @@ if (($_SESSION['role'] ?? '') !== 'member') {
 require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/../includes/auth_guard.php');
 
+$owner_id = (int)($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
+$member_status = get_member_status($pdo, $owner_id);
+
+if ($member_status !== 'Verified') {
+    $err = ($member_status === 'Rejected') ? 'account_rejected' : 'account_pending';
+    header("Location: equipment.php?error=" . $err);
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['item_title']) || isset($_POST['title']) || isset($_POST['equipment_name']) || isset($_POST['add_equipment']))) {
-    $owner_id = (int)($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
     $equipment_name = trim($_POST['equipment_name'] ?? $_POST['item_title'] ?? $_POST['title'] ?? '');
     $category_id = (int)($_POST['category_id'] ?? 1);
     $condition = trim($_POST['condition_status'] ?? $_POST['item_condition'] ?? 'Good');

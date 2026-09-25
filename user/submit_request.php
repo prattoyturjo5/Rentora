@@ -9,9 +9,17 @@ if (($_SESSION['role'] ?? '') !== 'member') {
 require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/../includes/auth_guard.php');
 
+$renter_id = (int)($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
+$member_status = get_member_status($pdo, $renter_id);
+
+if ($member_status !== 'Verified') {
+    $err = ($member_status === 'Rejected') ? 'rejected_verification' : 'pending_verification';
+    header("Location: dashboard.php?error=" . $err);
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['item_id'])) {
     $item_id = (int)$_POST['item_id'];
-    $renter_id = (int)($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
     $start_date = trim($_POST['rental_start_date'] ?? date('Y-m-d'));
     $end_date = trim($_POST['rental_end_date'] ?? date('Y-m-d', strtotime('+1 day')));
     $pickup_spot = trim($_POST['pickup_spot'] ?? '');

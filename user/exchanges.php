@@ -10,6 +10,7 @@ require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/../includes/auth_guard.php');
 
 $user_id = $_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0;
+$member_status = get_member_status($pdo, $user_id);
 $error = "";
 $success = "";
 
@@ -18,57 +19,65 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     $action = $_GET['action'];
     $exchange_id = (int)$_GET['id'];
 
-    try {
-        if ($action === 'accept') {
-            $stmt = $pdo->prepare("UPDATE exchange_agreement SET status = 'Accepted' WHERE exchange_id = :id");
-            $stmt->execute(['id' => $exchange_id]);
-            $success = "Exchange agreement accepted! Coordinate with peer for equipment swap.";
-        } elseif ($action === 'decline' || $action === 'reject') {
-            $stmt = $pdo->prepare("UPDATE exchange_agreement SET status = 'Rejected' WHERE exchange_id = :id");
-            $stmt->execute(['id' => $exchange_id]);
-            $success = "Exchange proposal declined.";
-        } elseif ($action === 'complete') {
-            $stmt = $pdo->prepare("UPDATE exchange_agreement SET status = 'Completed' WHERE exchange_id = :id");
-            $stmt->execute(['id' => $exchange_id]);
-            $success = "Exchange marked as completed!";
+    if ($action === 'accept' && $member_status !== 'Verified') {
+        $error = ($member_status === 'Rejected') ? "Your account was rejected, contact an admin." : "Your account is pending verification. You cannot accept swap agreements until verified.";
+    } else {
+        try {
+            if ($action === 'accept') {
+                $stmt = $pdo->prepare("UPDATE exchange_agreement SET status = 'Accepted' WHERE exchange_id = :id");
+                $stmt->execute(['id' => $exchange_id]);
+                $success = "Exchange agreement accepted! Coordinate with peer for equipment swap.";
+            } elseif ($action === 'decline' || $action === 'reject') {
+                $stmt = $pdo->prepare("UPDATE exchange_agreement SET status = 'Rejected' WHERE exchange_id = :id");
+                $stmt->execute(['id' => $exchange_id]);
+                $success = "Exchange proposal declined.";
+            } elseif ($action === 'complete') {
+                $stmt = $pdo->prepare("UPDATE exchange_agreement SET status = 'Completed' WHERE exchange_id = :id");
+                $stmt->execute(['id' => $exchange_id]);
+                $success = "Exchange marked as completed!";
+            }
+        } catch (PDOException $e) {
+            $error = "Exchange update error: " . htmlspecialchars($e->getMessage());
         }
-    } catch (PDOException $e) {
-        $error = "Exchange update error: " . htmlspecialchars($e->getMessage());
     }
 }
 
 // Handle Propose New Exchange
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['propose_exchange'])) {
-    $equipment_a_id = (int)($_POST['equipment_a_id'] ?? $_POST['offered_equipment_id'] ?? 0);
-    $equipment_b_id = (int)($_POST['equipment_b_id'] ?? $_POST['requested_equipment_id'] ?? 0);
-
-    if ($equipment_a_id <= 0 || $equipment_b_id <= 0) {
-        $error = "Please select both your offered equipment and the item you wish to swap for.";
+    if ($member_status !== 'Verified') {
+        $error = ($member_status === 'Rejected') ? "Your account was rejected, contact an admin." : "Your account is pending verification. You cannot propose exchanges until verified.";
     } else {
-        try {
-            // Find owner (lender_b_id) of requested equipment
-            $ownerStmt = $pdo->prepare("SELECT owner_id FROM equipment WHERE equipment_id = :id LIMIT 1");
-            $ownerStmt->execute(['id' => $equipment_b_id]);
-            $lender_b_id = $ownerStmt->fetchColumn();
+        $equipment_a_id = (int)($_POST['equipment_a_id'] ?? $_POST['offered_equipment_id'] ?? 0);
+        $equipment_b_id = (int)($_POST['equipment_b_id'] ?? $_POST['requested_equipment_id'] ?? 0);
 
-            if ($lender_b_id) {
-                $lender_a_id = $user_id;
-                $ins = $pdo->prepare("
-                    INSERT INTO exchange_agreement (lender_a_id, lender_b_id, equipment_a_id, equipment_b_id, status)
-                    VALUES (:lender_a_id, :lender_b_id, :equipment_a_id, :equipment_b_id, 'Pending')
-                ");
-                $ins->execute([
-                    'lender_a_id'    => $lender_a_id,
-                    'lender_b_id'    => $lender_b_id,
-                    'equipment_a_id' => $equipment_a_id,
-                    'equipment_b_id' => $equipment_b_id
-                ]);
-                $success = "Exchange proposal submitted to owner!";
-            } else {
-                $error = "Requested equipment not found.";
+        if ($equipment_a_id <= 0 || $equipment_b_id <= 0) {
+            $error = "Please select both your offered equipment and the item you wish to swap for.";
+        } else {
+            try {
+                // Find owner (lender_b_id) of requested equipment
+                $ownerStmt = $pdo->prepare("SELECT owner_id FROM equipment WHERE equipment_id = :id LIMIT 1");
+                $ownerStmt->execute(['id' => $equipment_b_id]);
+                $lender_b_id = $ownerStmt->fetchColumn();
+
+                if ($lender_b_id) {
+                    $lender_a_id = $user_id;
+                    $ins = $pdo->prepare("
+                        INSERT INTO exchange_agreement (lender_a_id, lender_b_id, equipment_a_id, equipment_b_id, status)
+                        VALUES (:lender_a_id, :lender_b_id, :equipment_a_id, :equipment_b_id, 'Pending')
+                    ");
+                    $ins->execute([
+                        'lender_a_id'    => $lender_a_id,
+                        'lender_b_id'    => $lender_b_id,
+                        'equipment_a_id' => $equipment_a_id,
+                        'equipment_b_id' => $equipment_b_id
+                    ]);
+                    $success = "Exchange proposal submitted to owner!";
+                } else {
+                    $error = "Requested equipment not found.";
+                }
+            } catch (PDOException $e) {
+                $error = "Database notice: " . htmlspecialchars($e->getMessage());
             }
-        } catch (PDOException $e) {
-            $error = "Database notice: " . htmlspecialchars($e->getMessage());
         }
     }
 }
@@ -231,6 +240,15 @@ require_once(__DIR__ . '/../includes/nav.php');
         <p class="text-xs text-slate-500">Select one of your listed items to offer in exchange for another student's equipment</p>
       </div>
 
+      <?php if ($member_status !== 'Verified'): ?>
+        <div class="mb-5 p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
+          <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+          <span>
+            <?php echo ($member_status === 'Rejected') ? 'Your account was rejected. You cannot propose equipment swaps.' : 'Your account is pending verification. You will be able to propose swaps once approved by an administrator.'; ?>
+          </span>
+        </div>
+      <?php endif; ?>
+
       <form action="exchanges.php" method="POST" class="space-y-4">
         
         <div>
@@ -263,10 +281,17 @@ require_once(__DIR__ . '/../includes/nav.php');
           </select>
         </div>
 
-        <button type="submit" name="propose_exchange" class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-md shadow-indigo-600/30 transition-all flex items-center justify-center gap-2">
-          <span>Send Swap Proposal</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-        </button>
+        <?php if ($member_status === 'Verified'): ?>
+          <button type="submit" name="propose_exchange" class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-md shadow-indigo-600/30 transition-all flex items-center justify-center gap-2">
+            <span>Send Swap Proposal</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </button>
+        <?php else: ?>
+          <button type="button" disabled class="w-full py-3 px-4 bg-slate-200 text-slate-400 font-bold rounded-xl text-xs uppercase tracking-wider cursor-not-allowed flex items-center justify-center gap-2">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            <span>Verification Required to Swap</span>
+          </button>
+        <?php endif; ?>
 
       </form>
     </div>

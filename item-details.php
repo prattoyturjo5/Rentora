@@ -13,49 +13,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request'])) {
         exit();
     }
 
-    $req_item_id = (int)$_POST['item_id'];
     $renter_id = (int)($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
-    $start_date = trim($_POST['rental_start_date'] ?? date('Y-m-d'));
-    $end_date = trim($_POST['rental_end_date'] ?? date('Y-m-d', strtotime('+1 day')));
+    $member_status = get_member_status($pdo, $renter_id);
 
-    // Retrieve equipment details
-    $eqStmt = $pdo->prepare("SELECT * FROM equipment WHERE equipment_id = :id LIMIT 1");
-    $eqStmt->execute(['id' => $req_item_id]);
-    $eqItem = $eqStmt->fetch();
-
-    if ($eqItem) {
-        $start_ts = strtotime($start_date);
-        $end_ts = strtotime($end_date);
-        $diff_days = max(1, round(($end_ts - $start_ts) / 86400));
-
-        $total_cost = $diff_days * $eqItem['rental_rate'];
-        $deposit_amount = floatval($eqItem['security_deposit'] ?? 0);
-        $pickup_spot = trim($_POST['pickup_spot'] ?? $eqItem['campus_spot'] ?? 'Hazari Lane');
-        $handover_token = 'TRX-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
-
-        try {
-            $ins = $pdo->prepare("
-                INSERT INTO rental_agreement (equipment_id, renter_id, start_date, expected_end_date, total_cost, deposit_amount, handover_token, pickup_spot, fine, status)
-                VALUES (:eq_id, :renter_id, :start_date, :end_date, :total_cost, :deposit_amount, :handover_token, :pickup_spot, 0.00, 'Pending')
-            ");
-            $ins->execute([
-                'eq_id'          => $req_item_id,
-                'renter_id'      => $renter_id,
-                'start_date'     => $start_date,
-                'end_date'       => $end_date,
-                'total_cost'     => $total_cost,
-                'deposit_amount' => $deposit_amount,
-                'handover_token' => $handover_token,
-                'pickup_spot'    => $pickup_spot
-            ]);
-
-            header("Location: user/dashboard.php?msg=requested&token=" . urlencode($handover_token));
-            exit();
-        } catch (PDOException $e) {
-            $error = "Booking error: " . htmlspecialchars($e->getMessage());
-        }
+    if ($member_status !== 'Verified') {
+        $error = ($member_status === 'Rejected') 
+            ? "Your account was rejected, contact an admin." 
+            : "Your account is pending verification. Equipment rental requests are disabled until verified.";
     } else {
-        $error = "Item not found.";
+        $req_item_id = (int)$_POST['item_id'];
+        $start_date = trim($_POST['rental_start_date'] ?? date('Y-m-d'));
+        $end_date = trim($_POST['rental_end_date'] ?? date('Y-m-d', strtotime('+1 day')));
+
+        // Retrieve equipment details
+        $eqStmt = $pdo->prepare("SELECT * FROM equipment WHERE equipment_id = :id LIMIT 1");
+        $eqStmt->execute(['id' => $req_item_id]);
+        $eqItem = $eqStmt->fetch();
+
+        if ($eqItem) {
+            $start_ts = strtotime($start_date);
+            $end_ts = strtotime($end_date);
+            $diff_days = max(1, round(($end_ts - $start_ts) / 86400));
+
+            $total_cost = $diff_days * $eqItem['rental_rate'];
+            $deposit_amount = floatval($eqItem['security_deposit'] ?? 0);
+            $pickup_spot = trim($_POST['pickup_spot'] ?? $eqItem['campus_spot'] ?? 'Hazari Lane');
+            $handover_token = 'TRX-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
+
+            try {
+                $ins = $pdo->prepare("
+                    INSERT INTO rental_agreement (equipment_id, renter_id, start_date, expected_end_date, total_cost, deposit_amount, handover_token, pickup_spot, fine, status)
+                    VALUES (:eq_id, :renter_id, :start_date, :end_date, :total_cost, :deposit_amount, :handover_token, :pickup_spot, 0.00, 'Pending')
+                ");
+                $ins->execute([
+                    'eq_id'          => $req_item_id,
+                    'renter_id'      => $renter_id,
+                    'start_date'     => $start_date,
+                    'end_date'       => $end_date,
+                    'total_cost'     => $total_cost,
+                    'deposit_amount' => $deposit_amount,
+                    'handover_token' => $handover_token,
+                    'pickup_spot'    => $pickup_spot
+                ]);
+
+                header("Location: user/dashboard.php?msg=requested&token=" . urlencode($handover_token));
+                exit();
+            } catch (PDOException $e) {
+                $error = "Booking error: " . htmlspecialchars($e->getMessage());
+            }
+        } else {
+            $error = "Item not found.";
+        }
     }
 }
 
@@ -69,6 +77,7 @@ try {
                CONCAT(m.first_name, ' ', m.last_name) AS owner_name, 
                m.username AS owner_student_id, 
                m.phone_number AS owner_phone,
+               m.status AS owner_status,
                COALESCE(NULLIF(e.campus_spot, ''), m.campus_address) AS campus_spot
         FROM equipment e 
         LEFT JOIN category c ON e.category_id = c.category_id
@@ -159,10 +168,16 @@ require_once(__DIR__ . '/includes/nav.php');
             </div>
             <div>
               <h4 class="text-sm font-bold text-navy-900"><?php echo htmlspecialchars($item['owner_name'] ?? 'Lender'); ?></h4>
-              <p class="text-xs text-slate-500">Student Roll: <?php echo htmlspecialchars($item['owner_student_id'] ?? 'Verified'); ?></p>
+              <p class="text-xs text-slate-500">Student Roll: <?php echo htmlspecialchars($item['owner_student_id'] ?? 'Student'); ?></p>
             </div>
           </div>
-          <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Verified Peer</span>
+          <?php if (($item['owner_status'] ?? '') === 'Verified'): ?>
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Verified Peer</span>
+          <?php elseif (($item['owner_status'] ?? '') === 'Rejected'): ?>
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">Unverified</span>
+          <?php else: ?>
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">Verification Pending</span>
+          <?php endif; ?>
         </div>
       </div>
 
@@ -222,11 +237,29 @@ require_once(__DIR__ . '/includes/nav.php');
               </div>
             </div>
 
+            <?php 
+              $viewer_member_status = 'Pending';
+              if (is_member()) {
+                  $viewer_id = (int)($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
+                  $viewer_member_status = get_member_status($pdo, $viewer_id);
+              }
+            ?>
+
             <?php if (is_member()): ?>
-              <button type="submit" name="submit_request" class="w-full py-3.5 px-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2">
-                <span>Request Equipment Rental</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-              </button>
+              <?php if ($viewer_member_status === 'Verified'): ?>
+                <button type="submit" name="submit_request" class="w-full py-3.5 px-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2">
+                  <span>Request Equipment Rental</span>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+              <?php else: ?>
+                <button type="button" disabled class="w-full py-3.5 px-4 bg-slate-200 text-slate-400 font-bold rounded-xl text-xs uppercase tracking-wider cursor-not-allowed flex items-center justify-center gap-2">
+                  <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                  <span>Verification Required to Rent</span>
+                </button>
+                <p class="text-[11px] text-center text-amber-600 font-medium mt-1">
+                  <?php echo ($viewer_member_status === 'Rejected') ? 'Your account was rejected. Please contact an admin.' : 'Your account is pending verification. Rental requests will unlock once approved.'; ?>
+                </p>
+              <?php endif; ?>
             <?php else: ?>
               <a href="auth/login.php?msg=login_required" class="w-full py-3.5 px-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider text-center block shadow-lg shadow-blue-600/30">
                 Sign In as Member to Rent

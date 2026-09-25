@@ -52,6 +52,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['signin']) || isset($
                 $_SESSION['username'] = $member['username'];
                 $_SESSION['name'] = trim($member['first_name'] . ' ' . $member['last_name']);
                 $_SESSION['email'] = $member['university_email'] ?? '';
+                $_SESSION['student_id'] = $member['student_id'] ?? '';
+                $_SESSION['status'] = $member['status'] ?? 'Pending';
 
                 header("Location: ../user/dashboard.php");
                 exit();
