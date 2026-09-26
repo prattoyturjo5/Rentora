@@ -14,6 +14,10 @@ $member_status = get_member_status($pdo, $user_id);
 $error = "";
 $success = "";
 
+if (isset($_GET['msg']) && $_GET['msg'] === 'proposal_sent') {
+    $success = "Exchange proposal submitted to equipment owner successfully!";
+}
+
 // Handle Exchange Status Update (Accept / Decline / Complete)
 if (isset($_GET['action']) && isset($_GET['id'])) {
     $action = $_GET['action'];
@@ -112,18 +116,29 @@ try {
 $exchanges = [];
 try {
     $exStmt = $pdo->prepare("
-        SELECT ex.*, 
-               e_off.equipment_name as offered_title, 
-               e_req.equipment_name as requested_title,
-               CONCAT(m_req.first_name, ' ', m_req.last_name) as requester_name,
-               CONCAT(m_own.first_name, ' ', m_own.last_name) as owner_name
-        FROM exchange_agreement ex
-        LEFT JOIN equipment e_off ON ex.equipment_a_id = e_off.equipment_id
-        LEFT JOIN equipment e_req ON ex.equipment_b_id = e_req.equipment_id
-        LEFT JOIN member m_req ON ex.lender_a_id = m_req.member_id
-        LEFT JOIN member m_own ON ex.lender_b_id = m_own.member_id
-        WHERE ex.lender_a_id = :uid1 OR ex.lender_b_id = :uid2
-        ORDER BY ex.exchange_id DESC
+        SELECT 
+            ea.exchange_id,
+            ea.exchange_date,
+            ea.status,
+            ea.lender_a_id,
+            ea.lender_b_id,
+            ea.equipment_a_id,
+            ea.equipment_b_id,
+            eq_a.equipment_name AS gear_a_title,
+            eq_b.equipment_name AS gear_b_title,
+            CONCAT(mem_a.first_name, ' ', mem_a.last_name) AS lender_a_name,
+            CONCAT(mem_b.first_name, ' ', mem_b.last_name) AS lender_b_name,
+            mem_a.phone_number AS lender_a_phone,
+            mem_b.phone_number AS lender_b_phone,
+            mem_a.university_email AS lender_a_email,
+            mem_b.university_email AS lender_b_email
+        FROM exchange_agreement ea
+        JOIN equipment eq_a ON ea.equipment_a_id = eq_a.equipment_id
+        JOIN equipment eq_b ON ea.equipment_b_id = eq_b.equipment_id
+        JOIN member mem_a ON ea.lender_a_id = mem_a.member_id
+        JOIN member mem_b ON ea.lender_b_id = mem_b.member_id
+        WHERE ea.lender_a_id = :uid1 OR ea.lender_b_id = :uid2
+        ORDER BY ea.exchange_id DESC
     ");
     $exStmt->execute(['uid1' => $user_id, 'uid2' => $user_id]);
     $exchanges = $exStmt->fetchAll();
@@ -180,10 +195,11 @@ require_once(__DIR__ . '/../includes/nav.php');
         <table class="w-full text-left text-xs">
           <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase">
             <tr>
-              <th class="py-3 px-4">Offered Item</th>
-              <th class="py-3 px-4">Requested Item</th>
-              <th class="py-3 px-4">Requester</th>
-              <th class="py-3 px-4">Target Owner</th>
+              <th class="py-3 px-4">Swap ID</th>
+              <th class="py-3 px-4">Exchange Date</th>
+              <th class="py-3 px-4">Offered Gear (Gear A)</th>
+              <th class="py-3 px-4">Requested Gear (Gear B)</th>
+              <th class="py-3 px-4">Swap Partner & Contact</th>
               <th class="py-3 px-4">Status</th>
               <th class="py-3 px-4 text-right">Actions</th>
             </tr>
@@ -191,26 +207,52 @@ require_once(__DIR__ . '/../includes/nav.php');
           <tbody class="divide-y divide-slate-100">
             <?php if (empty($exchanges)): ?>
               <tr>
-                <td colspan="6" class="py-8 text-center text-slate-400 font-medium">
+                <td colspan="7" class="py-8 text-center text-slate-400 font-medium">
                   No active exchange agreements. Propose a swap below!
                 </td>
               </tr>
             <?php else: ?>
               <?php foreach ($exchanges as $ex): ?>
-                <?php $exId = $ex['exchange_id'] ?? $ex['id']; ?>
+                <?php 
+                  $exId = (int)$ex['exchange_id'];
+                  $is_initiator = ($ex['lender_a_id'] == $user_id);
+                  $partner_name = $is_initiator ? $ex['lender_b_name'] : $ex['lender_a_name'];
+                  $partner_phone = $is_initiator ? $ex['lender_b_phone'] : $ex['lender_a_phone'];
+                  $partner_email = $is_initiator ? $ex['lender_b_email'] : $ex['lender_a_email'];
+                  $formatted_date = !empty($ex['exchange_date']) ? date('M d, Y • h:i A', strtotime($ex['exchange_date'])) : 'N/A';
+                ?>
                 <tr class="hover:bg-slate-50/80 transition-colors">
-                  <td class="py-3 px-4 font-bold text-navy-900"><?php echo htmlspecialchars($ex['offered_title'] ?? 'Offered Item'); ?></td>
-                  <td class="py-3 px-4 font-bold text-primary-600"><?php echo htmlspecialchars($ex['requested_title'] ?? 'Requested Item'); ?></td>
-                  <td class="py-3 px-4 text-slate-700"><?php echo htmlspecialchars($ex['requester_name'] ?? 'Member'); ?></td>
-                  <td class="py-3 px-4 text-slate-700"><?php echo htmlspecialchars($ex['owner_name'] ?? 'Owner'); ?></td>
+                  <td class="py-3 px-4">
+                    <span class="font-mono bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-bold text-xs">#EX-<?php echo str_pad($exId, 4, '0', STR_PAD_LEFT); ?></span>
+                  </td>
+                  <td class="py-3 px-4 text-slate-600 font-medium whitespace-nowrap">
+                    <?php echo htmlspecialchars($formatted_date); ?>
+                  </td>
+                  <td class="py-3 px-4 font-bold text-navy-900">
+                    <div><?php echo htmlspecialchars($ex['gear_a_title'] ?? 'Offered Item'); ?></div>
+                    <div class="text-[10px] font-normal text-slate-400">By: <?php echo htmlspecialchars($ex['lender_a_name'] ?? 'Initiator'); ?> <?php echo $is_initiator ? '(You)' : ''; ?></div>
+                  </td>
+                  <td class="py-3 px-4 font-bold text-primary-600">
+                    <div><?php echo htmlspecialchars($ex['gear_b_title'] ?? 'Requested Item'); ?></div>
+                    <div class="text-[10px] font-normal text-slate-400">Owner: <?php echo htmlspecialchars($ex['lender_b_name'] ?? 'Owner'); ?> <?php echo (!$is_initiator && $ex['lender_b_id'] == $user_id) ? '(You)' : ''; ?></div>
+                  </td>
+                  <td class="py-3 px-4 text-slate-700">
+                    <div class="font-semibold text-slate-800"><?php echo htmlspecialchars($partner_name ?? 'Partner'); ?></div>
+                    <?php if (!empty($partner_phone)): ?>
+                      <div class="text-[11px] text-primary-600 font-medium"><?php echo htmlspecialchars($partner_phone); ?></div>
+                    <?php endif; ?>
+                    <?php if (!empty($partner_email)): ?>
+                      <div class="text-[10px] text-slate-400 truncate max-w-[140px]"><?php echo htmlspecialchars($partner_email); ?></div>
+                    <?php endif; ?>
+                  </td>
                   <td class="py-3 px-4">
                     <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold
                       <?php echo ($ex['status'] === 'Accepted') ? 'bg-emerald-100 text-emerald-800' : (($ex['status'] === 'Completed') ? 'bg-blue-100 text-blue-800' : (($ex['status'] === 'Rejected') ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800')); ?>">
                       <?php echo htmlspecialchars($ex['status'] ?? 'Pending'); ?>
                     </span>
                   </td>
-                  <td class="py-3 px-4 text-right space-x-1.5">
-                    <?php if ($ex['status'] === 'Pending' && (($ex['lender_b_id'] ?? $ex['owner_id'] ?? 0) == $user_id)): ?>
+                  <td class="py-3 px-4 text-right space-x-1.5 whitespace-nowrap">
+                    <?php if ($ex['status'] === 'Pending' && ($ex['lender_b_id'] == $user_id)): ?>
                       <a href="exchanges.php?action=accept&id=<?php echo $exId; ?>" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px]">
                         Accept
                       </a>
