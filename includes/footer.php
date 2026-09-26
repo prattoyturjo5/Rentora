@@ -28,9 +28,11 @@ $base_path = $base_path ?? '.';
           <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-4">Quick Navigation</h4>
           <ul class="space-y-2 text-xs">
             <li><a href="<?php echo $base_path; ?>/index.php" class="hover:text-white transition-colors">Browse All Equipment</a></li>
+            <li><a href="<?php echo $base_path; ?>/about.php" class="hover:text-white transition-colors">About Rentora Hub</a></li>
             <li><a href="<?php echo $base_path; ?>/user/equipment.php" class="hover:text-white transition-colors">Equipment Listings</a></li>
             <li><a href="<?php echo $base_path; ?>/user/rentals.php" class="hover:text-white transition-colors">Rental Agreements</a></li>
             <li><a href="<?php echo $base_path; ?>/user/exchanges.php" class="hover:text-white transition-colors">Exchange Hub</a></li>
+            <li><a href="<?php echo $base_path; ?>/terms.php" class="hover:text-white transition-colors">Terms &amp; Conditions</a></li>
           </ul>
         </div>
 
@@ -61,6 +63,7 @@ $base_path = $base_path ?? '.';
       <div class="mt-10 pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-400">
         <div>&copy; <?php echo date('Y'); ?> Rentora Hub. University DBMS Platform.</div>
         <div class="flex gap-4">
+          <a href="<?php echo $base_path; ?>/terms.php" class="hover:text-white">Terms &amp; Conditions</a>
           <a href="<?php echo $base_path; ?>/admin/login.php" class="text-amber-400 hover:underline font-semibold">Admin Console</a>
           <a href="<?php echo $base_path; ?>/auth/login.php" class="hover:text-white">Member Login</a>
         </div>
