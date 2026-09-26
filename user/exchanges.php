@@ -9,7 +9,7 @@ if (($_SESSION['role'] ?? '') !== 'member') {
 require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/../includes/auth_guard.php');
 
-$user_id = $_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0;
+$user_id = intval($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
 $member_status = get_member_status($pdo, $user_id);
 $error = "";
 $success = "";
@@ -23,25 +23,59 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     $action = $_GET['action'];
     $exchange_id = (int)$_GET['id'];
 
-    if ($action === 'accept' && $member_status !== 'Verified') {
-        $error = ($member_status === 'Rejected') ? "Your account was rejected, contact an admin." : "Your account is pending verification. You cannot accept swap agreements until verified.";
-    } else {
-        try {
-            if ($action === 'accept') {
-                $stmt = $pdo->prepare("UPDATE exchange_agreement SET status = 'Accepted' WHERE exchange_id = :id");
-                $stmt->execute(['id' => $exchange_id]);
-                $success = "Exchange agreement accepted! Coordinate with peer for equipment swap.";
-            } elseif ($action === 'decline' || $action === 'reject') {
-                $stmt = $pdo->prepare("UPDATE exchange_agreement SET status = 'Rejected' WHERE exchange_id = :id");
-                $stmt->execute(['id' => $exchange_id]);
-                $success = "Exchange proposal declined.";
-            } elseif ($action === 'complete') {
+    // 1. Fetch exchange agreement details first to verify server-side permissions
+    $checkEx = $pdo->prepare("SELECT * FROM exchange_agreement WHERE exchange_id = :id LIMIT 1");
+    $checkEx->execute(['id' => $exchange_id]);
+    $exRow = $checkEx->fetch(PDO::FETCH_ASSOC);
+
+    if (!$exRow) {
+        $error = "Exchange agreement #EX-" . str_pad($exchange_id, 4, '0', STR_PAD_LEFT) . " not found.";
+    } elseif ($action === 'accept' || $action === 'decline' || $action === 'reject') {
+        // Strict server-side verification: only the recipient (lender_b_id) can accept or reject
+        if ((int)$exRow['lender_b_id'] !== (int)$user_id) {
+            $error = "Unauthorized: Only the equipment owner (recipient of this swap proposal) can accept or reject this agreement.";
+        } elseif ($member_status !== 'Verified') {
+            $error = ($member_status === 'Rejected') ? "Your account was rejected, contact an admin." : "Your account is pending verification. You cannot accept swap agreements until verified.";
+        } elseif ($exRow['status'] !== 'Pending' && !empty($exRow['status'])) {
+            $error = "This exchange proposal is already marked as " . htmlspecialchars($exRow['status']) . ".";
+        } else {
+            try {
+                if ($action === 'accept') {
+                    $stmt = $pdo->prepare("UPDATE exchange_agreement SET status = 'Accepted' WHERE exchange_id = :id AND lender_b_id = :uid");
+                    $stmt->execute(['id' => $exchange_id, 'uid' => $user_id]);
+                    $success = "Exchange agreement accepted! Coordinate with peer for equipment swap.";
+                } else {
+                    $stmt = $pdo->prepare("UPDATE exchange_agreement SET status = 'Rejected' WHERE exchange_id = :id AND lender_b_id = :uid");
+                    $stmt->execute(['id' => $exchange_id, 'uid' => $user_id]);
+                    $success = "Exchange proposal declined.";
+                }
+            } catch (PDOException $e) {
+                $error = "Exchange update error: " . htmlspecialchars($e->getMessage());
+            }
+        }
+    } elseif ($action === 'complete') {
+        // Either participating member can mark completed once accepted
+        if ((int)$exRow['lender_a_id'] !== (int)$user_id && (int)$exRow['lender_b_id'] !== (int)$user_id) {
+            $error = "Unauthorized: You are not a party in this exchange agreement.";
+        } elseif ($exRow['status'] !== 'Accepted') {
+            $error = "Only accepted exchanges can be marked as completed.";
+        } else {
+            try {
+                // Mark exchange completed
                 $stmt = $pdo->prepare("UPDATE exchange_agreement SET status = 'Completed' WHERE exchange_id = :id");
                 $stmt->execute(['id' => $exchange_id]);
-                $success = "Exchange marked as completed!";
+
+                // Permanently swap equipment ownership between the two members
+                $upA = $pdo->prepare("UPDATE equipment SET owner_id = :new_owner WHERE equipment_id = :eq_id");
+                $upA->execute(['new_owner' => $exRow['lender_b_id'], 'eq_id' => $exRow['equipment_a_id']]);
+
+                $upB = $pdo->prepare("UPDATE equipment SET owner_id = :new_owner WHERE equipment_id = :eq_id");
+                $upB->execute(['new_owner' => $exRow['lender_a_id'], 'eq_id' => $exRow['equipment_b_id']]);
+
+                $success = "Exchange completed! Ownership of both equipment listings has been permanently transferred between members.";
+            } catch (PDOException $e) {
+                $error = "Exchange completion error: " . htmlspecialchars($e->getMessage());
             }
-        } catch (PDOException $e) {
-            $error = "Exchange update error: " . htmlspecialchars($e->getMessage());
         }
     }
 }
@@ -112,7 +146,7 @@ try {
     $other_items = [];
 }
 
-// Fetch exchange agreements involving this member
+// Fetch exchange agreements involving this member (BOTH incoming and outgoing) with gear rates and values
 $exchanges = [];
 try {
     $exStmt = $pdo->prepare("
@@ -125,7 +159,11 @@ try {
             ea.equipment_a_id,
             ea.equipment_b_id,
             eq_a.equipment_name AS gear_a_title,
+            eq_a.rental_rate AS gear_a_rate,
+            eq_a.security_deposit AS gear_a_val,
             eq_b.equipment_name AS gear_b_title,
+            eq_b.rental_rate AS gear_b_rate,
+            eq_b.security_deposit AS gear_b_val,
             CONCAT(mem_a.first_name, ' ', mem_a.last_name) AS lender_a_name,
             CONCAT(mem_b.first_name, ' ', mem_b.last_name) AS lender_b_name,
             mem_a.phone_number AS lender_a_phone,
@@ -137,11 +175,11 @@ try {
         JOIN equipment eq_b ON ea.equipment_b_id = eq_b.equipment_id
         JOIN member mem_a ON ea.lender_a_id = mem_a.member_id
         JOIN member mem_b ON ea.lender_b_id = mem_b.member_id
-        WHERE ea.lender_a_id = :uid1 OR ea.lender_b_id = :uid2
+        WHERE ea.lender_a_id = ? OR ea.lender_b_id = ?
         ORDER BY ea.exchange_id DESC
     ");
-    $exStmt->execute(['uid1' => $user_id, 'uid2' => $user_id]);
-    $exchanges = $exStmt->fetchAll();
+    $exStmt->execute([$user_id, $user_id]);
+    $exchanges = $exStmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
     $exchanges = [];
 }
@@ -157,7 +195,7 @@ require_once(__DIR__ . '/../includes/nav.php');
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
       <div>
         <h1 class="text-2xl font-extrabold text-navy-900 tracking-tight">Campus Equipment Exchanges</h1>
-        <p class="text-sm text-slate-500 mt-0.5">Peer-to-peer equipment swap agreements without daily monetary rental fees.</p>
+        <p class="text-sm text-slate-500 mt-0.5">Permanent peer-to-peer equipment swap agreements with optional cash compensation negotiation.</p>
       </div>
 
       <a href="#propose-modal" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md shadow-indigo-600/20 transition-all flex items-center gap-1.5">
@@ -196,6 +234,7 @@ require_once(__DIR__ . '/../includes/nav.php');
           <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase">
             <tr>
               <th class="py-3 px-4">Swap ID</th>
+              <th class="py-3 px-4">Direction</th>
               <th class="py-3 px-4">Exchange Date</th>
               <th class="py-3 px-4">Offered Gear (Gear A)</th>
               <th class="py-3 px-4">Requested Gear (Gear B)</th>
@@ -207,7 +246,7 @@ require_once(__DIR__ . '/../includes/nav.php');
           <tbody class="divide-y divide-slate-100">
             <?php if (empty($exchanges)): ?>
               <tr>
-                <td colspan="7" class="py-8 text-center text-slate-400 font-medium">
+                <td colspan="8" class="py-8 text-center text-slate-400 font-medium">
                   No active exchange agreements. Propose a swap below!
                 </td>
               </tr>
@@ -215,29 +254,51 @@ require_once(__DIR__ . '/../includes/nav.php');
               <?php foreach ($exchanges as $ex): ?>
                 <?php 
                   $exId = (int)$ex['exchange_id'];
-                  $is_initiator = ($ex['lender_a_id'] == $user_id);
-                  $partner_name = $is_initiator ? $ex['lender_b_name'] : $ex['lender_a_name'];
-                  $partner_phone = $is_initiator ? $ex['lender_b_phone'] : $ex['lender_a_phone'];
-                  $partner_email = $is_initiator ? $ex['lender_b_email'] : $ex['lender_a_email'];
+                  $is_outgoing = ((int)$ex['lender_a_id'] === (int)$user_id);
+                  $is_incoming = ((int)$ex['lender_b_id'] === (int)$user_id);
+
+                  $partner_name = $is_outgoing ? $ex['lender_b_name'] : $ex['lender_a_name'];
+                  $partner_phone = $is_outgoing ? $ex['lender_b_phone'] : $ex['lender_a_phone'];
+                  $partner_email = $is_outgoing ? $ex['lender_b_email'] : $ex['lender_a_email'];
                   $formatted_date = !empty($ex['exchange_date']) ? date('M d, Y • h:i A', strtotime($ex['exchange_date'])) : 'N/A';
+
+                  $s = $ex['status'] ?? 'Pending';
+                  $val_a = floatval((!empty($ex['gear_a_val']) && $ex['gear_a_val'] > 0) ? $ex['gear_a_val'] : (($ex['gear_a_rate'] ?? 0) * 10));
+                  $val_b = floatval((!empty($ex['gear_b_val']) && $ex['gear_b_val'] > 0) ? $ex['gear_b_val'] : (($ex['gear_b_rate'] ?? 0) * 10));
+                  $diff  = $val_a - $val_b; // Positive means Gear A is higher value
+                  $is_sender = $is_outgoing;
                 ?>
                 <tr class="hover:bg-slate-50/80 transition-colors">
                   <td class="py-3 px-4">
                     <span class="font-mono bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-bold text-xs">#EX-<?php echo str_pad($exId, 4, '0', STR_PAD_LEFT); ?></span>
+                  </td>
+                  <td class="py-3 px-4 whitespace-nowrap">
+                    <?php if ($is_outgoing): ?>
+                      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                        Outgoing &rarr;
+                      </span>
+                    <?php else: ?>
+                      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                        &larr; Incoming
+                      </span>
+                    <?php endif; ?>
                   </td>
                   <td class="py-3 px-4 text-slate-600 font-medium whitespace-nowrap">
                     <?php echo htmlspecialchars($formatted_date); ?>
                   </td>
                   <td class="py-3 px-4 font-bold text-navy-900">
                     <div><?php echo htmlspecialchars($ex['gear_a_title'] ?? 'Offered Item'); ?></div>
-                    <div class="text-[10px] font-normal text-slate-400">By: <?php echo htmlspecialchars($ex['lender_a_name'] ?? 'Initiator'); ?> <?php echo $is_initiator ? '(You)' : ''; ?></div>
+                    <div class="text-[10px] font-normal text-slate-400">By: <?php echo htmlspecialchars($ex['lender_a_name'] ?? 'Initiator'); ?> <?php echo $is_outgoing ? '(You)' : ''; ?></div>
                   </td>
                   <td class="py-3 px-4 font-bold text-primary-600">
                     <div><?php echo htmlspecialchars($ex['gear_b_title'] ?? 'Requested Item'); ?></div>
-                    <div class="text-[10px] font-normal text-slate-400">Owner: <?php echo htmlspecialchars($ex['lender_b_name'] ?? 'Owner'); ?> <?php echo (!$is_initiator && $ex['lender_b_id'] == $user_id) ? '(You)' : ''; ?></div>
+                    <div class="text-[10px] font-normal text-slate-400">Owner: <?php echo htmlspecialchars($ex['lender_b_name'] ?? 'Owner'); ?> <?php echo $is_incoming ? '(You)' : ''; ?></div>
                   </td>
                   <td class="py-3 px-4 text-slate-700">
-                    <div class="font-semibold text-slate-800"><?php echo htmlspecialchars($partner_name ?? 'Partner'); ?></div>
+                    <div class="font-semibold text-slate-800">
+                      <?php echo htmlspecialchars($partner_name ?? 'Partner'); ?>
+                      <span class="text-[10px] font-normal text-slate-400">(<?php echo $is_outgoing ? 'Owner' : 'Proposer'; ?>)</span>
+                    </div>
                     <?php if (!empty($partner_phone)): ?>
                       <div class="text-[11px] text-primary-600 font-medium"><?php echo htmlspecialchars($partner_phone); ?></div>
                     <?php endif; ?>
@@ -245,24 +306,67 @@ require_once(__DIR__ . '/../includes/nav.php');
                       <div class="text-[10px] text-slate-400 truncate max-w-[140px]"><?php echo htmlspecialchars($partner_email); ?></div>
                     <?php endif; ?>
                   </td>
-                  <td class="py-3 px-4">
-                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold
-                      <?php echo ($ex['status'] === 'Accepted') ? 'bg-emerald-100 text-emerald-800' : (($ex['status'] === 'Completed') ? 'bg-blue-100 text-blue-800' : (($ex['status'] === 'Rejected') ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800')); ?>">
-                      <?php echo htmlspecialchars($ex['status'] ?? 'Pending'); ?>
-                    </span>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="flex flex-col gap-1 items-start">
+                      <!-- Status Pill -->
+                      <?php if (empty($s) || $s === 'Pending'): ?>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                          Pending
+                        </span>
+                      <?php elseif ($s === 'Accepted' || $s === 'Completed'): ?>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          <?php echo htmlspecialchars($s); ?>
+                        </span>
+                      <?php else: ?>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                          <?php echo htmlspecialchars($s); ?>
+                        </span>
+                      <?php endif; ?>
+
+                      <!-- Dynamic Value Compensation Badge -->
+                      <?php if (abs($diff) > 0): ?>
+                        <?php if ($diff > 0): ?>
+                          <!-- Gear A is worth more than Gear B -->
+                          <?php if ($is_sender): ?>
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-purple-100 text-purple-800 border border-purple-200">
+                              💰 You Demand: +৳<?php echo number_format($diff, 2); ?>
+                            </span>
+                          <?php else: ?>
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-200 animate-pulse">
+                              ⚠️ Partner Demands: ৳<?php echo number_format($diff, 2); ?>
+                            </span>
+                          <?php endif; ?>
+                        <?php else: ?>
+                          <!-- Gear B is worth more than Gear A -->
+                          <?php if ($is_sender): ?>
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                              💸 You Pay: ৳<?php echo number_format(abs($diff), 2); ?>
+                            </span>
+                          <?php else: ?>
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                              🎁 Partner Pays You: +৳<?php echo number_format(abs($diff), 2); ?>
+                            </span>
+                          <?php endif; ?>
+                        <?php endif; ?>
+                      <?php else: ?>
+                        <span class="text-[11px] text-slate-400 font-medium">Even Trade (৳0)</span>
+                      <?php endif; ?>
+                    </div>
                   </td>
                   <td class="py-3 px-4 text-right space-x-1.5 whitespace-nowrap">
-                    <?php if ($ex['status'] === 'Pending' && ($ex['lender_b_id'] == $user_id)): ?>
-                      <a href="exchanges.php?action=accept&id=<?php echo $exId; ?>" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px]">
+                    <?php if ($is_incoming && (empty($s) || $s === 'Pending')): ?>
+                      <a href="exchanges.php?action=accept&id=<?php echo $exId; ?>" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-sm transition">
                         Accept
                       </a>
-                      <a href="exchanges.php?action=decline&id=<?php echo $exId; ?>" class="px-2.5 py-1 rounded-lg bg-red-100 hover:bg-red-200 text-red-700 font-bold text-[11px]">
-                        Decline
+                      <a href="exchanges.php?action=reject&id=<?php echo $exId; ?>" class="px-2.5 py-1 rounded-lg bg-red-100 hover:bg-red-200 text-red-700 font-bold text-[11px] transition">
+                        Reject
                       </a>
-                    <?php elseif ($ex['status'] === 'Accepted'): ?>
-                      <a href="exchanges.php?action=complete&id=<?php echo $exId; ?>" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px]">
+                    <?php elseif ($s === 'Accepted'): ?>
+                      <a href="exchanges.php?action=complete&id=<?php echo $exId; ?>" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] shadow-sm transition">
                         Mark Completed
                       </a>
+                    <?php elseif ($is_outgoing && (empty($s) || $s === 'Pending')): ?>
+                      <span class="text-slate-400 text-[11px] font-medium">Waiting for Owner</span>
                     <?php else: ?>
                       <span class="text-slate-400 text-[11px]">-</span>
                     <?php endif; ?>

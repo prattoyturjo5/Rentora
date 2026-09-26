@@ -7,6 +7,40 @@ $current_role = $_SESSION['role'] ?? null;
 $current_name = $_SESSION['name'] ?? 'User';
 // MERGED: also check member_id as fallback (from origin/main)
 $current_user_id = $_SESSION['user_id'] ?? $_SESSION['member_id'] ?? null;
+$nav_user_id = intval($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
+$incoming_swaps_count = 0;
+
+if ($nav_user_id > 0) {
+    if (!isset($conn) || !$conn) {
+        @require_once(__DIR__ . '/../config/db.php');
+    }
+    if (isset($conn) && $conn) {
+        // Count only Pending requests where the user is the recipient (lender_b_id)
+        $swap_badge_query = mysqli_query($conn, "
+            SELECT COUNT(exchange_id) AS total_pending 
+            FROM exchange_agreement 
+            WHERE lender_b_id = '$nav_user_id' 
+              AND status = 'Pending'
+        ");
+        if ($swap_badge_query) {
+            $badge_data = mysqli_fetch_assoc($swap_badge_query);
+            $incoming_swaps_count = intval($badge_data['total_pending'] ?? 0);
+        }
+    } elseif (isset($pdo)) {
+        try {
+            $stmt = $pdo->prepare("
+                SELECT COUNT(exchange_id) 
+                FROM exchange_agreement 
+                WHERE lender_b_id = ? 
+                  AND status = 'Pending'
+            ");
+            $stmt->execute([$nav_user_id]);
+            $incoming_swaps_count = intval($stmt->fetchColumn() ?? 0);
+        } catch (Exception $e) {
+            $incoming_swaps_count = 0;
+        }
+    }
+}
 
 // MERGED: fetch live member verification status from DB (from origin/main)
 $current_member_status = 'Pending';
@@ -125,7 +159,13 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-600 h
           </a>
           <a href="<?php echo $base_path; ?>/user/exchanges.php" class="<?php echo ($is_exchanges_active ? $nav_active_class : $nav_inactive_class); ?> flex items-center gap-1.5" data-nav-key="exchanges" <?php if ($is_exchanges_active): ?>aria-current="page"<?php endif; ?>>
             <span>Exchanges</span>
-            <span class="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold">Swap</span>
+            <?php if ($incoming_swaps_count > 0): ?>
+              <span class="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-extrabold bg-purple-600 text-white rounded-full animate-pulse shadow-sm min-w-[18px]">
+                <?php echo $incoming_swaps_count; ?>
+              </span>
+            <?php else: ?>
+              <span class="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold">Swap</span>
+            <?php endif; ?>
           </a>
         <?php elseif ($current_role === 'admin'): ?>
           <a href="<?php echo $base_path; ?>/admin/dashboard.php" class="px-3.5 py-2 text-sm font-semibold text-emerald-700 bg-emerald-50 rounded-lg transition-colors" <?php if ($is_admin_active): ?>aria-current="page"<?php endif; ?>>

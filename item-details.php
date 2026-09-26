@@ -483,35 +483,40 @@ require_once(__DIR__ . '/includes/nav.php');
             </div>
 
             <!-- Panel 2: Swap Proposal Form -->
-            <div id="panel-swap" class="p-6 space-y-4 hidden">
-              <form action="item-details.php?id=<?php echo $item_id; ?>" method="POST" class="space-y-4">
-                <input type="hidden" name="item_id" value="<?php echo $item_id; ?>">
+            <div id="panel-swap" class="p-5 space-y-4 hidden">
+              <form method="POST" action="submit_exchange.php" class="space-y-4">
+                <input type="hidden" name="target_equipment_id" value="<?php echo intval($_GET['id'] ?? $item['equipment_id']); ?>">
+                <input type="hidden" name="lender_b_id" value="<?php echo intval($item['owner_id']); ?>">
 
                 <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-3.5 text-xs text-indigo-900 space-y-1">
                   <div class="font-bold flex items-center gap-1.5">
                     <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span>Direct Peer Swap Mechanism</span>
+                    <span>Permanent Ownership Exchange</span>
                   </div>
-                  <p class="text-[11px] text-indigo-700">Swap one of your listed items with this gear. Both parties meet on campus to exchange items with zero daily rent fees.</p>
+                  <p class="text-[11px] text-indigo-700">Permanently swap gear with another member with optional cash compensation to balance differences in item value.</p>
                 </div>
 
+                <!-- Gear Selection -->
                 <div>
-                  <label for="offered_equipment_id" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Select Your Gear to Offer *</label>
-                  <select id="offered_equipment_id" name="offered_equipment_id" required class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-600 font-medium text-slate-800">
-                    <?php if (empty($user_equipment_options)): ?>
-                      <option value="">(You have no available equipment listed to swap)</option>
-                    <?php else: ?>
-                      <option value="">-- Choose one of your listed items --</option>
-                      <?php foreach ($user_equipment_options as $ue): ?>
-                        <option value="<?php echo (int)$ue['equipment_id']; ?>">
-                          <?php echo htmlspecialchars($ue['title']); ?>
-                        </option>
-                      <?php endforeach; ?>
-                    <?php endif; ?>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Select Your Gear to Offer *</label>
+                  <select name="offered_equipment_id" required 
+                          class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <option value="" disabled selected>Choose from your listed gear</option>
+                    <?php
+                    $my_user_id = intval($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
+                    $my_gear_query = mysqli_query($conn, "SELECT equipment_id, equipment_name AS title FROM equipment WHERE owner_id = '$my_user_id' AND availability_status = 'Available' AND equipment_id != '" . intval($item['equipment_id']) . "'");
+                    $has_gear = false;
+                    if ($my_gear_query) {
+                        while ($gear = mysqli_fetch_assoc($my_gear_query)) {
+                            $has_gear = true;
+                            echo '<option value="' . $gear['equipment_id'] . '">' . htmlspecialchars($gear['title']) . '</option>';
+                        }
+                    }
+                    ?>
                   </select>
                 </div>
 
-                <?php if (empty($user_equipment_options) && is_member()): ?>
+                <?php if (!$has_gear && is_member()): ?>
                   <div class="text-center p-3 bg-slate-50 border border-slate-200 rounded-xl">
                     <p class="text-[11px] text-slate-600 mb-2">You need to list at least one available item in your inventory to offer in a swap.</p>
                     <a href="user/equipment.php" class="inline-flex items-center gap-1 text-xs font-bold text-primary-600 hover:underline">
@@ -520,15 +525,86 @@ require_once(__DIR__ . '/includes/nav.php');
                   </div>
                 <?php endif; ?>
 
+                <!-- Row 1: Exchange Date & Exchange Time -->
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Proposed Swap Date *</label>
+                    <input type="date" name="swap_date" required 
+                           value="<?php echo date('Y-m-d'); ?>"
+                           min="<?php echo date('Y-m-d'); ?>"
+                           class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Handover Time *</label>
+                    <input type="time" name="swap_time" value="10:00" required 
+                           class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                  </div>
+                </div>
+
+                <!-- Row 2: Campus Handover Spot & Cash Compensation Direction -->
+                <div class="space-y-3">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-xs font-semibold text-slate-700 mb-1">Campus Handover Spot *</label>
+                      <select name="campus_spot" required 
+                              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <option value="Hazari Lane">Hazari Lane</option>
+                        <option value="Wasa Campus">Wasa Campus</option>
+                        <option value="GEC Campus">GEC Campus</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-semibold text-slate-700 mb-1">Cash Adjustment Type</label>
+                      <select id="cash_direction" name="cash_direction" 
+                              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <option value="none">Even Trade (No Cash)</option>
+                        <option value="demand">I Demand Extra Cash (+৳)</option>
+                        <option value="offer">I Will Pay Extra Cash (-৳)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Amount Input (Hidden when Even Trade) -->
+                  <div id="cash_amount_container" class="hidden">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1" id="cash_amount_label">Adjustment Amount (৳) *</label>
+                    <div class="relative">
+                      <span class="absolute left-3 top-2 text-slate-400 font-bold text-sm">৳</span>
+                      <input type="number" id="cash_amount" name="cash_compensation" min="0" step="50" value="0" placeholder="e.g. 1000"
+                             class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-8 pr-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1" id="cash_help_text">Specify the compensation balance.</p>
+                  </div>
+                </div>
+
+                <!-- Summary Line Items -->
+                <div class="pt-3 border-t border-slate-100 space-y-1.5 text-xs">
+                  <div class="flex justify-between text-slate-600">
+                    <span>Requested Gear:</span>
+                    <span class="font-semibold text-slate-900"><?php echo htmlspecialchars($item['title']); ?></span>
+                  </div>
+                  <div class="flex justify-between text-slate-600">
+                    <span>Swap Type:</span>
+                    <span class="font-semibold text-purple-700">Permanent Ownership Exchange</span>
+                  </div>
+                  <div class="flex justify-between text-slate-600">
+                    <span>Cash Adjustment:</span>
+                    <span class="font-bold text-slate-500" id="cash_adjustment_display">৳0.00 (Even Trade)</span>
+                  </div>
+                </div>
+
+                <!-- Action Button -->
                 <?php if (is_member()): ?>
                   <?php if ($viewer_member_status === 'Verified'): ?>
-                    <button type="submit" name="submit_swap_proposal" <?php echo empty($user_equipment_options) ? 'disabled' : ''; ?> class="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2">
+                    <button type="submit" name="submit_swap_proposal" <?php echo !$has_gear ? 'disabled' : ''; ?>
+                            class="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 active:scale-[0.99] disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition">
                       <span>Send Swap Proposal</span>
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                      </svg>
                     </button>
                   <?php else: ?>
-                    <button type="button" disabled class="w-full py-3.5 px-4 bg-slate-200 text-slate-400 font-bold rounded-xl text-xs uppercase tracking-wider cursor-not-allowed flex items-center justify-center gap-2">
-                      <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    <button type="button" disabled class="w-full py-3 px-4 bg-slate-200 text-slate-400 font-bold rounded-xl text-xs uppercase tracking-wider cursor-not-allowed flex items-center justify-center gap-2">
+                      <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                       <span>Verification Required to Swap</span>
                     </button>
                     <p class="text-[11px] text-center text-amber-600 font-medium mt-1">
@@ -536,13 +612,13 @@ require_once(__DIR__ . '/includes/nav.php');
                     </p>
                   <?php endif; ?>
                 <?php else: ?>
-                  <a href="auth/login.php?msg=login_required" class="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider text-center block shadow-lg shadow-indigo-600/30">
+                  <a href="auth/login.php?msg=login_required" class="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold text-xs uppercase tracking-wider text-center block shadow-sm">
                     Sign In as Member to Propose Swap
                   </a>
                 <?php endif; ?>
 
                 <p class="text-[11px] text-center text-slate-400">
-                  🤝 Proposals go directly to the owner's dashboard. You can track progress under Exchanges.
+                  🤝 Safe campus exchange. Both parties meet at the designated spot to verify gear before accepting.
                 </p>
               </form>
             </div>
@@ -686,6 +762,42 @@ require_once(__DIR__ . '/includes/nav.php');
       });
       returnInput.addEventListener(evt, updatePricing);
     });
+
+    // Cash direction and adjustment live update
+    const dirSelect = document.getElementById('cash_direction');
+    const amtBox = document.getElementById('cash_amount_container');
+    const amtInput = document.getElementById('cash_amount');
+    const amtLabel = document.getElementById('cash_amount_label');
+    const helpText = document.getElementById('cash_help_text');
+    const displaySpan = document.getElementById('cash_adjustment_display') || document.getElementById('cash_adj_display');
+
+    function updateCashUI() {
+      if (!dirSelect || !amtBox || !amtInput) return;
+      const val = dirSelect.value;
+      const amount = parseFloat(amtInput.value) || 0;
+
+      if (val === 'none') {
+        amtBox.classList.add('hidden');
+        amtInput.value = '0';
+        if (displaySpan) displaySpan.innerHTML = '<span class="text-slate-500 font-bold">৳0.00 (Even Trade)</span>';
+      } else if (val === 'demand') {
+        amtBox.classList.remove('hidden');
+        if (amtLabel) amtLabel.innerText = "Money You Demand From Owner (৳) *";
+        if (helpText) helpText.innerText = "The gear owner must pay you this amount during handover.";
+        if (displaySpan) displaySpan.innerHTML = `<span class="text-emerald-600 font-bold">+৳${amount.toFixed(2)} (You receive)</span>`;
+      } else if (val === 'offer') {
+        amtBox.classList.remove('hidden');
+        if (amtLabel) amtLabel.innerText = "Extra Money You Will Pay (৳) *";
+        if (helpText) helpText.innerText = "You agree to pay this extra amount to the gear owner during handover.";
+        if (displaySpan) displaySpan.innerHTML = `<span class="text-purple-600 font-bold">-৳${amount.toFixed(2)} (You pay)</span>`;
+      }
+    }
+
+    if (dirSelect && amtInput) {
+      dirSelect.addEventListener('change', updateCashUI);
+      amtInput.addEventListener('input', updateCashUI);
+      updateCashUI();
+    }
 
     // Initial calculation on page load
     updatePricing();
