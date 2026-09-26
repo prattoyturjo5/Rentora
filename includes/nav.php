@@ -5,8 +5,10 @@
 $base_path = $base_path ?? '.';
 $current_role = $_SESSION['role'] ?? null;
 $current_name = $_SESSION['name'] ?? 'User';
+// MERGED: also check member_id as fallback (from origin/main)
 $current_user_id = $_SESSION['user_id'] ?? $_SESSION['member_id'] ?? null;
 
+// MERGED: fetch live member verification status from DB (from origin/main)
 $current_member_status = 'Pending';
 if ($current_role === 'member' && $current_user_id) {
     if (!isset($pdo)) {
@@ -26,6 +28,31 @@ if ($current_role === 'member' && $current_user_id) {
         }
     }
 }
+
+// Determine active navigation item dynamically from current script/URL
+$current_script = strtolower(str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? $_SERVER['PHP_SELF'] ?? ''));
+$current_page = basename($current_script);
+$request_uri = strtolower(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '');
+
+$is_dashboard_active = ($current_page === 'dashboard.php' && strpos($current_script, '/admin/') === false);
+$is_equipment_active = ($current_page === 'equipment.php' || $current_page === 'add_item.php');
+$is_rentals_active = ($current_page === 'rentals.php');
+$is_exchanges_active = ($current_page === 'exchanges.php');
+$is_browse_active = (!$is_dashboard_active && !$is_equipment_active && !$is_rentals_active && !$is_exchanges_active) &&
+                    ($current_page === 'index.php' || $current_page === 'item-details.php' || $current_page === '' || substr($request_uri, -1) === '/' || substr($request_uri, -8) === '/rentora');
+$is_admin_active = ($current_page === 'dashboard.php' && strpos($current_script, '/admin/') !== false);
+
+// Support optional manual override via $active_nav variable if set by caller
+if (isset($active_nav)) {
+    $is_browse_active = ($active_nav === 'browse');
+    $is_dashboard_active = ($active_nav === 'dashboard');
+    $is_equipment_active = ($active_nav === 'equipment');
+    $is_rentals_active = ($active_nav === 'rentals');
+    $is_exchanges_active = ($active_nav === 'exchanges');
+}
+
+$nav_active_class   = 'nav-link nav-link-active px-3.5 py-2 text-sm font-semibold text-primary-700 rounded-lg relative z-10';
+$nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-primary-600 rounded-lg relative z-10';
 ?>
 <!-- Top Campus Notice Bar -->
 <div class="bg-navy-950 text-slate-300 text-xs py-2 px-4 border-b border-slate-800">
@@ -38,7 +65,7 @@ if ($current_role === 'member' && $current_user_id) {
     <div class="flex items-center gap-4 text-slate-400">
       <span class="flex items-center gap-1">
         <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
-        Pickup Points: Hazari Lane, Wasa & GEC Campus
+        Pickup Points: Hazari Lane, Wasa &amp; GEC Campus
       </span>
       <span class="hidden sm:inline">|</span>
       <?php if ($current_role === 'admin'): ?>
@@ -76,32 +103,32 @@ if ($current_role === 'member' && $current_user_id) {
       </a>
 
       <!-- Desktop Navigation Links -->
-      <?php 
-        $current_script = basename($_SERVER['SCRIPT_NAME'] ?? '');
-      ?>
-      <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
-        <a href="<?php echo $base_path; ?>/index.php" class="px-3.5 py-2 text-sm rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] <?php echo ($current_script === 'index.php' || $current_script === '') ? 'bg-blue-50 text-primary-600 font-bold shadow-xs' : 'text-slate-700 hover:text-primary-600 hover:bg-slate-100 font-medium'; ?>">
+      <nav id="main-nav" class="hidden md:flex items-center space-x-1 lg:space-x-2 relative">
+        <!-- Sliding active pill indicator -->
+        <div id="nav-pill" aria-hidden="true"></div>
+
+        <a href="<?php echo $base_path; ?>/index.php" class="<?php echo $is_browse_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="browse" <?php if ($is_browse_active): ?>aria-current="page"<?php endif; ?>>
           Browse Equipment
         </a>
 
         <?php if ($current_role === 'member'): ?>
-          <a href="<?php echo $base_path; ?>/user/dashboard.php" class="px-3.5 py-2 text-sm rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] <?php echo ($current_script === 'dashboard.php') ? 'bg-blue-50 text-primary-600 font-bold shadow-xs' : 'text-slate-700 hover:text-primary-600 hover:bg-slate-100 font-medium'; ?>">
+          <a href="<?php echo $base_path; ?>/user/dashboard.php" class="<?php echo $is_dashboard_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="dashboard" <?php if ($is_dashboard_active): ?>aria-current="page"<?php endif; ?>>
             Dashboard
           </a>
-          <a href="<?php echo $base_path; ?>/user/equipment.php" class="px-3.5 py-2 text-sm rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1.5 <?php echo ($current_script === 'equipment.php') ? 'bg-blue-50 text-primary-600 font-bold shadow-xs' : 'text-slate-700 hover:text-primary-600 hover:bg-slate-100 font-medium'; ?>">
+          <a href="<?php echo $base_path; ?>/user/equipment.php" class="<?php echo ($is_equipment_active ? $nav_active_class : $nav_inactive_class); ?> flex items-center gap-1.5" data-nav-key="equipment" <?php if ($is_equipment_active): ?>aria-current="page"<?php endif; ?>>
             <span>My Equipment</span>
-            <span class="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded-full font-bold">Lender</span>
+            <span class="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-bold">Lender</span>
           </a>
-          <a href="<?php echo $base_path; ?>/user/rentals.php" class="px-3.5 py-2 text-sm rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1.5 <?php echo ($current_script === 'rentals.php') ? 'bg-blue-50 text-primary-600 font-bold shadow-xs' : 'text-slate-700 hover:text-primary-600 hover:bg-slate-100 font-medium'; ?>">
+          <a href="<?php echo $base_path; ?>/user/rentals.php" class="<?php echo ($is_rentals_active ? $nav_active_class : $nav_inactive_class); ?> flex items-center gap-1.5" data-nav-key="rentals" <?php if ($is_rentals_active): ?>aria-current="page"<?php endif; ?>>
             <span>Rentals</span>
-            <span class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full font-bold">Active</span>
+            <span class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">Active</span>
           </a>
-          <a href="<?php echo $base_path; ?>/user/exchanges.php" class="px-3.5 py-2 text-sm rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1.5 <?php echo ($current_script === 'exchanges.php') ? 'bg-blue-50 text-primary-600 font-bold shadow-xs' : 'text-slate-700 hover:text-primary-600 hover:bg-slate-100 font-medium'; ?>">
+          <a href="<?php echo $base_path; ?>/user/exchanges.php" class="<?php echo ($is_exchanges_active ? $nav_active_class : $nav_inactive_class); ?> flex items-center gap-1.5" data-nav-key="exchanges" <?php if ($is_exchanges_active): ?>aria-current="page"<?php endif; ?>>
             <span>Exchanges</span>
-            <span class="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded-full font-bold">Swap</span>
+            <span class="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold">Swap</span>
           </a>
         <?php elseif ($current_role === 'admin'): ?>
-          <a href="<?php echo $base_path; ?>/admin/dashboard.php" class="px-3.5 py-2 text-sm font-semibold text-emerald-700 bg-emerald-50 rounded-xl transition-all duration-200 hover:scale-[1.02] shadow-xs">
+          <a href="<?php echo $base_path; ?>/admin/dashboard.php" class="px-3.5 py-2 text-sm font-semibold text-emerald-700 bg-emerald-50 rounded-lg transition-colors" <?php if ($is_admin_active): ?>aria-current="page"<?php endif; ?>>
             Operations Console
           </a>
         <?php endif; ?>
@@ -117,6 +144,7 @@ if ($current_role === 'member' && $current_user_id) {
             </div>
             <div class="text-left leading-tight hidden lg:block">
               <div class="text-xs font-bold text-navy-900"><?php echo htmlspecialchars($current_name); ?></div>
+              <!-- MERGED: show live verification status (from origin/main) -->
               <?php if ($current_member_status === 'Verified'): ?>
                 <div class="text-[11px] font-semibold text-emerald-600 flex items-center gap-1">
                   <span>Verified</span>
@@ -189,3 +217,192 @@ if ($current_role === 'member' && $current_user_id) {
     </div>
   </div>
 </header>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ─────────────────────────────────────────────────────────────
+     Config
+  ───────────────────────────────────────────────────────────── */
+  var SK         = 'rentora_nav_state';   // sessionStorage key
+  var DURATION   = 300;                   // slide ms
+  var EASE       = 'cubic-bezier(0.4,0,0.2,1)';
+  var TRANSITION = [
+    'left '   + DURATION + 'ms ' + EASE,
+    'width '  + DURATION + 'ms ' + EASE,
+    'top '    + DURATION + 'ms ' + EASE,
+    'height ' + DURATION + 'ms ' + EASE
+  ].join(', ');
+
+  /* Respect prefers-reduced-motion */
+  var reducedMotion = (
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
+
+  /* ─────────────────────────────────────────────────────────────
+     sessionStorage helpers (wrapped so SSR/private-mode never throws)
+  ───────────────────────────────────────────────────────────── */
+  function readState() {
+    try { return JSON.parse(sessionStorage.getItem(SK)) || null; }
+    catch (_) { return null; }
+  }
+  function writeState(obj) {
+    try { sessionStorage.setItem(SK, JSON.stringify(obj)); }
+    catch (_) {}
+  }
+  function clearState() {
+    try { sessionStorage.removeItem(SK); }
+    catch (_) {}
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     Geometry helpers
+  ───────────────────────────────────────────────────────────── */
+  function measure(link, nav) {
+    var nR = nav.getBoundingClientRect();
+    var lR = link.getBoundingClientRect();
+    return { left: lR.left - nR.left, top: lR.top - nR.top,
+             width: lR.width, height: lR.height };
+  }
+
+  function applyPos(pill, pos, animate) {
+    pill.style.transition = animate ? TRANSITION : 'none';
+    pill.style.left    = pos.left   + 'px';
+    pill.style.top     = pos.top    + 'px';
+    pill.style.width   = pos.width  + 'px';
+    pill.style.height  = pos.height + 'px';
+    pill.style.opacity = '1';
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     Detect if a native View Transition is currently in progress.
+     If yes, the browser is already animating nav-pill via the
+     @view-transition CSS — skip the JS animation to avoid doubling.
+  ───────────────────────────────────────────────────────────── */
+  function isViewTransitionActive() {
+    try {
+      /* Chrome 126+ sets :root::view-transition when a VT is running */
+      return document.documentElement.classList.contains('vt-active') ||
+             document.getAnimations().some(function (a) {
+               return a.effect &&
+                      a.effect.target &&
+                      /view-transition/.test(a.effect.target.nodeName || '');
+             });
+    } catch (_) { return false; }
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     PHASE 1 — Synchronous snap (runs before first browser paint)
+     ─────────────────────────────────────────────────────────────
+     The <script> tag lives right after </header>, so the nav DOM
+     is already parsed and getBoundingClientRect() is usable.
+     Positioning the pill here means the VERY FIRST PAINT shows
+     it already correctly placed — zero visible pop / flash.
+  ───────────────────────────────────────────────────────────── */
+  var nav        = document.getElementById('main-nav');
+  var pill       = document.getElementById('nav-pill');
+  var activeLink = nav ? nav.querySelector('a[aria-current="page"]') : null;
+  var currentKey = activeLink ? activeLink.getAttribute('data-nav-key') : null;
+
+  var prevState  = readState();
+  var prevLink   = null;
+  var doAnimate  = false;
+
+  if (nav && pill && activeLink) {
+    if (!reducedMotion && prevState && prevState.key && prevState.key !== currentKey) {
+      var vwDelta = Math.abs((prevState.viewportWidth || 0) - window.innerWidth);
+      if (vwDelta <= 120) {
+        prevLink  = nav.querySelector('a[data-nav-key="' + prevState.key + '"]');
+        doAnimate = !!prevLink;
+      }
+    }
+
+    if (doAnimate) {
+      /* Snap pill to the FROM position — no transition, runs synchronously */
+      applyPos(pill, measure(prevLink, nav), false);
+    } else {
+      /* No animation (first visit / direct URL / refresh / large resize) */
+      applyPos(pill, measure(activeLink, nav), false);
+      clearState();
+    }
+  } else if (pill) {
+    pill.style.opacity = '0'; /* no active item — hide pill */
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     PHASE 2 — Slide to the CURRENT position
+     ─────────────────────────────────────────────────────────────
+     We need one layout flush between the snap and the slide.
+     `void pill.offsetWidth` inside rAF forces synchronous reflow,
+     committing the "from" geometry before the animation starts.
+     This is more reliable than double-rAF.
+  ───────────────────────────────────────────────────────────── */
+  if (doAnimate && pill && nav && activeLink) {
+    requestAnimationFrame(function () {
+
+      /* Skip JS animation if the browser's native View Transition
+         is already morphing the pill (Chrome 126+ with navigation: auto) */
+      if (isViewTransitionActive()) {
+        clearState();
+        return;
+      }
+
+      /* Force layout: commits the "from" styles to the render tree */
+      void pill.offsetWidth;
+
+      /* Slide to destination */
+      applyPos(pill, measure(activeLink, nav), true);
+
+      /* Clean up sessionStorage exactly when the slide finishes */
+      function onEnd(e) {
+        if (e.propertyName === 'left' || e.propertyName === 'width') {
+          pill.removeEventListener('transitionend', onEnd);
+          clearState();
+        }
+      }
+      pill.addEventListener('transitionend', onEnd);
+
+      /* Safety-net: clear state after 600ms regardless (e.g. tab hidden) */
+      setTimeout(clearState, DURATION * 2);
+    });
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     PHASE 3 — Click handlers + resize (deferred, not blocking)
+  ───────────────────────────────────────────────────────────── */
+  function setupHandlers() {
+    if (!nav || !activeLink) return;
+
+    /* On click: store WHERE WE ARE so the next page can slide FROM here */
+    nav.querySelectorAll('a[data-nav-key]').forEach(function (link) {
+      link.addEventListener('click', function () {
+        var destKey = link.getAttribute('data-nav-key');
+        if (destKey === currentKey) return; /* same page — nothing to animate */
+        writeState({ key: currentKey, viewportWidth: window.innerWidth });
+      });
+    });
+
+    /* Resize: re-snap without animation (debounced) */
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        var al = nav.querySelector('a[aria-current="page"]');
+        if (al && pill) applyPos(pill, measure(al, nav), false);
+      }, 80);
+    });
+  }
+
+  /* Handlers need full DOM; Phase 1 already ran synchronously above */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupHandlers);
+  } else {
+    setupHandlers();
+  }
+
+})();
+</script>
+<?php $has_page_container = true; ?>
+<!-- Page Content Container for Smooth Sliding Transitions -->
+<div id="page-container" class="page-container flex-1 flex flex-col relative w-full overflow-x-hidden">

@@ -110,3 +110,163 @@ body {
   border-bottom: 2px solid #2563eb;
   font-weight: 600;
 }
+
+/* ==========================================================================
+   Sliding Active Navigation Pill
+   ========================================================================== */
+
+/* The pill itself — absolutely positioned within the <nav>
+   Transition is applied by JS so the INITIAL placement is always instant. */
+#nav-pill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 0;
+  width: 0;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1.5px solid #bfdbfe;
+  border-radius: 0.5rem;
+  box-shadow:
+    0 1px 4px 0 rgba(37, 99, 235, 0.10),
+    inset 0 -2px 0 0 rgba(37, 99, 235, 0.20);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+  /* View Transition API: tag this element for cross-document position morph */
+  view-transition-name: nav-pill;
+  /* contain: layout breaks VT capture — keep it off */
+}
+
+/* ── Nav link base ── */
+.nav-link {
+  position: relative;
+  z-index: 1;
+  /* Smooth colour + background transitions for hover */
+  transition: color 180ms ease, background-color 180ms ease;
+  border-radius: 0.5rem;
+}
+
+/* ── Active link ── */
+.nav-link-active {
+  color: #1d4ed8 !important; /* blue-700, overrides Tailwind text-slate-700 */
+  font-weight: 600;
+}
+
+/* ── Inactive link hover — subtle tint so the bar feels alive ── */
+.nav-link:not(.nav-link-active):hover {
+  color: #2563eb;                     /* blue-600 */
+  background-color: rgba(239,246,255,0.70); /* blue-50 @ 70% */
+}
+
+/* ==========================================================================
+   View Transition API — cross-document nav-pill slide (Chrome 126+)
+   Gracefully no-ops in Firefox / Safari / older Chrome.
+   ========================================================================== */
+
+/* Only opt-in when the user hasn't requested reduced motion */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+
+/*
+ * Override the default cross-fade with a position+size morph for nav-pill.
+ * The ::view-transition-group animates the bounding box automatically;
+ * we just need to suppress the inner cross-fade so the pill looks solid.
+ */
+::view-transition-group(nav-pill) {
+  animation-duration: 300ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Keep both snapshots fully opaque — only the group (position/size) moves */
+::view-transition-old(nav-pill),
+::view-transition-new(nav-pill) {
+  animation: none;
+  opacity: 1;
+  mix-blend-mode: normal;
+}
+
+/* ==========================================================================
+   Smooth Sliding Page Transitions
+   ========================================================================== */
+.page-container {
+  position: relative;
+  width: 100%;
+  overflow-x: hidden;
+  min-height: calc(100vh - 4rem - 36px);
+}
+
+.page-slide-panel {
+  width: 100%;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-slide-panel.slide-animating {
+  transition: transform 320ms cubic-bezier(0.25, 1, 0.5, 1),
+              opacity 320ms cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform, opacity;
+}
+
+/* Forward: Outgoing slides out to the left (-100%), fading smoothly */
+.slide-out-left {
+  transform: translateX(-100%) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Backward: Outgoing slides out to the right (100%), fading smoothly */
+.slide-out-right {
+  transform: translateX(100%) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Forward: Incoming prepared off-screen to the right (100%) */
+.slide-prep-right {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  transform: translateX(100%) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Backward: Incoming prepared off-screen to the left (-100%) */
+.slide-prep-left {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  transform: translateX(-100%) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Incoming active center state */
+.slide-in-center {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  transform: translateX(0) !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-slide-panel.slide-animating {
+    transition: opacity 200ms ease;
+  }
+  .slide-out-left,
+  .slide-out-right,
+  .slide-prep-right,
+  .slide-prep-left {
+    transform: none !important;
+  }
+}
+
