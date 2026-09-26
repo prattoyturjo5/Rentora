@@ -38,7 +38,7 @@ if ($category_id > 0) {
     $params['cat_id'] = $category_id;
 }
 if (!empty($pickup_spot) && $pickup_spot !== 'ALL') {
-    $where_clauses[] = "(m.campus_address = :spot OR e.campus_spot = :spot)";
+    $where_clauses[] = "e.campus_spot = :spot";
     $params['spot'] = $pickup_spot;
 }
 
@@ -50,6 +50,8 @@ if ($sort === 'price_asc') {
     $order_sql = "ORDER BY e.rental_rate ASC";
 } elseif ($sort === 'price_desc') {
     $order_sql = "ORDER BY e.rental_rate DESC";
+} elseif ($sort === 'deposit_asc') {
+    $order_sql = "ORDER BY e.security_deposit ASC";
 }
 
 $items = [];
@@ -59,7 +61,7 @@ try {
                          e.condition_status AS item_condition, c.category_name, 
                          CONCAT(m.first_name, ' ', m.last_name) AS owner_name, 
                          m.username AS owner_student_id,
-                         m.campus_address AS campus_spot
+                         e.campus_spot
                   FROM equipment e 
                   LEFT JOIN category c ON e.category_id = c.category_id 
                   LEFT JOIN member m ON e.owner_id = m.member_id 

@@ -349,6 +349,224 @@ function renderNotificationCounts() {
 }
 
 // ==============================================================================
+// Route-Aware Navigation Active State Engine
+// ==============================================================================
+function getRouteFromPath(path) {
+  if (!path) return '';
+  const cleanPath = path.split('?')[0].split('#')[0].toLowerCase();
+  
+  if (cleanPath.includes('dashboard.php') && !cleanPath.includes('/admin/')) {
+    return 'dashboard';
+  }
+  if (cleanPath.includes('equipment.php') || cleanPath.includes('add_item.php')) {
+    return 'equipment';
+  }
+  if (cleanPath.includes('rentals.php')) {
+    return 'rentals';
+  }
+  if (cleanPath.includes('exchanges.php')) {
+    return 'exchanges';
+  }
+  if (
+    cleanPath.includes('index.php') || 
+    cleanPath.endsWith('/rentora') || 
+    cleanPath.endsWith('/rentora/') || 
+    cleanPath === '/' || 
+    cleanPath.endsWith('/index.html') ||
+    cleanPath.includes('item-details.php')
+  ) {
+    return 'browse';
+  }
+  return '';
+}
+
+function getLinkRoute(link) {
+  const href = (link.getAttribute('href') || '').toLowerCase();
+  const text = (link.textContent || '').trim().toLowerCase();
+
+  if (href.includes('dashboard.php') && !href.includes('/admin/')) return 'dashboard';
+  if (href.includes('equipment.php')) return 'equipment';
+  if (href.includes('rentals.php')) return 'rentals';
+  if (href.includes('exchanges.php')) return 'exchanges';
+  if (href.includes('index.php')) return 'browse';
+
+  // Fallback text check
+  if (text === 'dashboard') return 'dashboard';
+  if (text.includes('my equipment')) return 'equipment';
+  if (text.includes('rentals')) return 'rentals';
+  if (text.includes('exchanges')) return 'exchanges';
+  if (text.includes('browse equipment')) return 'browse';
+
+  return '';
+}
+
+function updateNavbarActiveState(targetUrl) {
+  const nav = document.querySelector('header nav');
+  if (!nav) return;
+
+  const currentPath = targetUrl || window.location.pathname || window.location.href;
+  const activeRoute = getRouteFromPath(currentPath);
+
+  const activeClasses = ['font-semibold', 'text-primary-600', 'hover:bg-blue-50/80'];
+  const inactiveClasses = ['font-medium', 'text-slate-700', 'hover:text-primary-600', 'hover:bg-slate-100'];
+
+  const links = nav.querySelectorAll('a');
+  links.forEach(link => {
+    const linkRoute = getLinkRoute(link);
+    if (!linkRoute) return;
+
+    if (activeRoute && linkRoute === activeRoute) {
+      inactiveClasses.forEach(cls => link.classList.remove(cls));
+      activeClasses.forEach(cls => {
+        if (!link.classList.contains(cls)) {
+          link.classList.add(cls);
+        }
+      });
+      link.setAttribute('aria-current', 'page');
+    } else {
+      activeClasses.forEach(cls => link.classList.remove(cls));
+      inactiveClasses.forEach(cls => {
+        if (!link.classList.contains(cls)) {
+          link.classList.add(cls);
+        }
+      });
+      link.removeAttribute('aria-current');
+    }
+  });
+}
+
+// ==============================================================================
+// Page Transition Engine
+// ==============================================================================
+
+/**
+ * Load a new page via AJAX and apply slide transition.
+ * @param {string} targetUrl - URL to navigate to (relative or absolute).
+ * @param {boolean} addToHistory - Whether to push a new history entry (false for popstate handling).
+ */
+function navigateTo(targetUrl, addToHistory = true) {
+  const container = document.getElementById('page-container');
+  if (!container) return;
+
+  // Resolve relative URLs against current location
+  const resolvedUrl = new URL(targetUrl, window.location.origin).href;
+
+  fetch(resolvedUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+    .then(resp => resp.text())
+    .then(html => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const newContainer = doc.getElementById('page-container');
+      if (!newContainer) {
+        // Fallback to normal navigation if container missing
+        if (addToHistory) window.location.href = targetUrl;
+        return;
+      }
+
+      // Prepare incoming panel off‑screen to the right
+      const incoming = document.createElement('div');
+      incoming.id = 'page-container';
+      incoming.className = 'page-slide-panel slide-prep-right';
+      incoming.innerHTML = newContainer.innerHTML;
+
+      // Insert after current panel
+      container.parentNode.appendChild(incoming);
+
+      // Trigger animations on next frame
+      requestAnimationFrame(() => {
+        container.classList.add('slide-animating', 'slide-out-left');
+        incoming.classList.add('slide-animating', 'slide-in-center');
+      });
+
+      const onAnimEnd = (e) => {
+        // Cleanup old panel
+        if (container && container.parentNode) {
+          container.parentNode.removeChild(container);
+        }
+        // Reset incoming panel classes to regular page container
+        incoming.className = 'page-container flex-1 flex flex-col relative w-full overflow-x-hidden';
+        // Re‑initialise dynamic UI (navbar active state, etc.)
+        if (typeof initDynamicHeader === 'function') initDynamicHeader();
+        // Push history if required
+        if (addToHistory) {
+          window.history.pushState(null, '', targetUrl);
+        }
+        incoming.removeEventListener('transitionend', onAnimEnd);
+      };
+
+      // Listen for the end of the incoming animation
+      incoming.addEventListener('transitionend', onAnimEnd);
+    })
+    .catch(err => {
+      console.error('Navigation error:', err);
+      // Fallback to full navigation on error
+      if (addToHistory) window.location.href = targetUrl;
+    });
+}
+
+// Extend initNavbarRouting to use navigateTo for internal clicks and back/forward navigation
+function initNavbarRouting() {
+  updateNavbarActiveState();
+
+  // Listen to popstate and hashchange events (back/forward or hash changes)
+  window.addEventListener('popstate', () => {
+    const url = window.location.pathname + window.location.search;
+    updateNavbarActiveState();
+    navigateTo(url, false); // load without pushing another state
+  });
+  window.addEventListener('hashchange', () => {
+    updateNavbarActiveState();
+  });
+
+  // Intercept history.pushState and history.replaceState for in-browser client navigation
+  if (window.history && typeof window.history.pushState === 'function') {
+    const originalPushState = window.history.pushState;
+    if (!originalPushState._isIntercepted) {
+      window.history.pushState = function(...args) {
+        const res = originalPushState.apply(this, args);
+        updateNavbarActiveState();
+        return res;
+      };
+      window.history.pushState._isIntercepted = true;
+    }
+  }
+
+  if (window.history && typeof window.history.replaceState === 'function') {
+    const originalReplaceState = window.history.replaceState;
+    if (!originalReplaceState._isIntercepted) {
+      window.history.replaceState = function(...args) {
+        const res = originalReplaceState.apply(this, args);
+        updateNavbarActiveState();
+        return res;
+      };
+      window.history.replaceState._isIntercepted = true;
+    }
+  }
+
+  // Intercept clicks on header navigation links to update active state & animate transition
+  const nav = document.querySelector('header nav');
+  if (nav && !nav._activeClickAttached) {
+    nav.addEventListener('click', (e) => {
+      const link = e.target.closest('a');
+      if (link && nav.contains(link)) {
+        const href = link.getAttribute('href');
+        if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
+          e.preventDefault(); // stop full page navigation
+          updateNavbarActiveState(href);
+          navigateTo(href);
+        }
+      }
+    });
+    nav._activeClickAttached = true;
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.updateNavbarActiveState = updateNavbarActiveState;
+  window.initNavbarRouting = initNavbarRouting;
+}
+
+// ==============================================================================
 // Dynamic Navigation Header & Profile Dropdown Engine
 // ==============================================================================
 function renderUserAvatarHTML(user, sizeClass = "w-8 h-8", textClass = "text-xs") {
@@ -362,6 +580,7 @@ function renderUserAvatarHTML(user, sizeClass = "w-8 h-8", textClass = "text-xs"
 }
 
 function initDynamicHeader() {
+  initNavbarRouting();
   renderNotificationCounts();
   const container = document.getElementById('header-auth-container') || document.querySelector('.header-profile-section');
   const mobileMenu = document.getElementById('mobile-menu');

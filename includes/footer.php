@@ -4,6 +4,9 @@
  */
 $base_path = $base_path ?? '.';
 ?>
+<?php if (!empty($has_page_container)): ?>
+</div><!-- /#page-container -->
+<?php endif; ?>
   <!-- Footer -->
   <footer class="mt-auto bg-navy-950 text-slate-400 py-12 border-t border-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
