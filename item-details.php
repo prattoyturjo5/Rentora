@@ -98,6 +98,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request'])) {
     }
 }
 
+// Handle Exchange/Swap Proposal Submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_swap_proposal'])) {
+    if (!is_member()) {
+        header("Location: auth/login.php?msg=login_required");
+        exit();
+    }
+
+    $lender_a_id = (int)($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
+    $member_status = get_member_status($pdo, $lender_a_id);
+
+    if ($member_status !== 'Verified') {
+        $error = ($member_status === 'Rejected') 
+            ? "Your account was rejected, contact an admin." 
+            : "Your account is pending verification. Exchange proposals are disabled until verified.";
+    } else {
+        $equipment_b_id = (int)($_POST['item_id'] ?? $item_id);
+        $equipment_a_id = (int)($_POST['offered_equipment_id'] ?? 0);
+
+        // Fetch equipment B details
+        $eqBStmt = $pdo->prepare("SELECT owner_id FROM equipment WHERE equipment_id = :id LIMIT 1");
+        $eqBStmt->execute(['id' => $equipment_b_id]);
+        $lender_b_id = (int)$eqBStmt->fetchColumn();
+
+        if ($equipment_a_id <= 0) {
+            $error = "Please select an item from your listed equipment to offer in exchange.";
+        } elseif ($lender_a_id === $lender_b_id) {
+            $error = "You cannot propose an exchange on your own listing.";
+        } elseif ($equipment_a_id === $equipment_b_id) {
+            $error = "Cannot swap an item with itself.";
+        } else {
+            try {
+                $insSwap = $pdo->prepare("
+                    INSERT INTO exchange_agreement (lender_a_id, lender_b_id, equipment_a_id, equipment_b_id, status)
+                    VALUES (:lender_a_id, :lender_b_id, :equipment_a_id, :equipment_b_id, 'Pending')
+                ");
+                $insSwap->execute([
+                    'lender_a_id'    => $lender_a_id,
+                    'lender_b_id'    => $lender_b_id,
+                    'equipment_a_id' => $equipment_a_id,
+                    'equipment_b_id' => $equipment_b_id
+                ]);
+                header("Location: user/exchanges.php?msg=proposal_sent");
+                exit();
+            } catch (PDOException $e) {
+                $error = "Exchange proposal error: " . htmlspecialchars($e->getMessage());
+            }
+        }
+    }
+}
+
 // Fetch Item Data
 $item = null;
 $item_stats = ['total_rentals' => 0, 'active_bookings' => 0];
@@ -138,6 +188,19 @@ try {
 if (!$item) {
     header("Location: index.php");
     exit();
+}
+
+// Fetch current user's available equipment for swap proposal
+$user_equipment_options = [];
+if (is_member()) {
+    $curr_uid = (int)($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
+    try {
+        $ueStmt = $pdo->prepare("SELECT equipment_id, equipment_name AS title FROM equipment WHERE owner_id = :uid AND availability_status = 'Available' AND equipment_id != :item_id");
+        $ueStmt->execute(['uid' => $curr_uid, 'item_id' => $item_id]);
+        $user_equipment_options = $ueStmt->fetchAll();
+    } catch (Exception $e) {
+        $user_equipment_options = [];
+    }
 }
 
 $base_path = '.';
@@ -195,37 +258,45 @@ require_once(__DIR__ . '/includes/nav.php');
             <h1 class="text-2xl font-extrabold text-navy-900"><?php echo htmlspecialchars($item['title'] ?? ''); ?></h1>
             
             <?php
-            // Zero Schema Change: Calculate aggregate rentals dynamically from rental_agreement
-            $item_eq_id = intval($_GET['id'] ?? $item['equipment_id'] ?? 0);
-            $analytics_res = mysqli_query($conn, "
-                SELECT 
-                    COUNT(rental_id) AS total_rent_count,
-                    COALESCE(SUM(DATEDIFF(expected_end_date, start_date)), 0) AS total_rented_days
-                FROM rental_agreement 
-                WHERE equipment_id = '$item_eq_id' 
-                  AND status IN ('Active', 'Completed')
+            $eq_id = intval($_GET['id'] ?? $item['equipment_id'] ?? 0);
+            $stat_sql = "SELECT 
+                            COUNT(rental_id) AS rent_count,
+                            COALESCE(SUM(DATEDIFF(COALESCE(actual_end_date, expected_end_date), start_date)), 0) AS total_days
+                         FROM rental_agreement 
+                         WHERE equipment_id = '$eq_id' AND status IN ('Active', 'Completed')";
+            $stat_res = mysqli_query($conn, $stat_sql);
+            $stat_row = ($stat_res) ? mysqli_fetch_assoc($stat_res) : [];
+            $rent_count = intval($stat_row['rent_count'] ?? 0);
+            $total_days = intval($stat_row['total_days'] ?? 0);
+
+            $swap_stats = mysqli_query($conn, "
+                SELECT COUNT(exchange_id) AS total_swaps
+                FROM exchange_agreement 
+                WHERE (equipment_a_id = '$eq_id' OR equipment_b_id = '$eq_id')
+                  AND status IN ('Accepted', 'Completed')
             ");
-            $analytics = ($analytics_res) ? mysqli_fetch_assoc($analytics_res) : [];
-            $total_rent_count = intval($analytics['total_rent_count'] ?? 0);
-            $total_rented_days = intval($analytics['total_rented_days'] ?? 0);
+            $swap_data = ($swap_stats) ? mysqli_fetch_assoc($swap_stats) : [];
+            $total_swaps = intval($swap_data['total_swaps'] ?? 0);
             ?>
 
-            <div class="flex flex-wrap items-center gap-2.5 my-3">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 shadow-sm">
-                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                    </svg>
-                    Rented: <?php echo $total_rent_count; ?> <?php echo ($total_rent_count === 1) ? 'time' : 'times'; ?>
+            <div class="flex flex-wrap items-center gap-2 mt-3 mb-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 shadow-xs">
+                    <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                    Swapped: <?php echo $total_swaps; ?> <?php echo ($total_swaps === 1) ? 'time' : 'times'; ?>
                 </span>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 shadow-sm">
-                    <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    Total Duration: <?php echo $total_rented_days; ?> days
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-100 shadow-xs">
+                    🤝 Status: Available for Swap
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                    <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    Rented: <?php echo $rent_count; ?> <?php echo ($rent_count === 1) ? 'time' : 'times'; ?>
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium bg-blue-50 text-blue-600 border border-blue-100">
+                    <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    Duration: <?php echo $total_days; ?> <?php echo ($total_days === 1) ? 'day' : 'days'; ?>
                 </span>
             </div>
-
-            <p class="text-xs text-slate-500 mt-1">Campus Handover Spot: <strong class="text-slate-700"><?php echo htmlspecialchars($item['campus_spot'] ?? 'Campus Spot'); ?></strong></p>
+            <p class="text-xs text-slate-500 font-medium">Campus Handover Spot: <span class="text-slate-700 font-semibold"><?php echo htmlspecialchars($item['campus_spot'] ?? $item['handover_spot'] ?? 'Hazari Lane'); ?></span></p>
 
             <div class="mt-6 pt-6 border-t border-slate-100">
               <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Item Description & Specifications</h3>
@@ -270,11 +341,24 @@ require_once(__DIR__ . '/includes/nav.php');
         </div>
       </div>
 
-      <!-- Right 5 Cols: Rental Calculation & Booking Form -->
+      <!-- Right 5 Cols: Rental & Swap Proposal Action Panel -->
       <div class="lg:col-span-5">
         <div class="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden sticky top-24">
           
-          <div class="bg-navy-900 p-6 text-white">
+          <!-- Mode Tabs: Rent vs Swap -->
+          <div class="grid grid-cols-2 bg-slate-100 p-1.5 border-b border-slate-200">
+            <button type="button" id="tab-rent-btn" onclick="switchActionTab('rent')" class="py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-white text-navy-900 shadow-xs">
+              <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>Cash Rental</span>
+            </button>
+            <button type="button" id="tab-swap-btn" onclick="switchActionTab('swap')" class="py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 text-slate-500 hover:text-slate-800">
+              <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+              <span>Peer Swap (0৳)</span>
+            </button>
+          </div>
+
+          <!-- Price / Terms Header -->
+          <div class="bg-navy-900 p-6 text-white" id="action-header-pricing">
             <div class="flex justify-between items-baseline">
               <div>
                 <span class="text-xs text-slate-400 uppercase tracking-wider font-bold">Daily Rent</span>
@@ -288,9 +372,25 @@ require_once(__DIR__ . '/includes/nav.php');
             </div>
           </div>
 
+          <div class="bg-indigo-950 p-6 text-white hidden" id="action-header-swap">
+            <div class="flex justify-between items-center">
+              <div>
+                <span class="text-xs text-indigo-300 uppercase tracking-wider font-bold">Swap Terms</span>
+                <div class="text-2xl font-extrabold text-white">0.00৳ Daily Rent</div>
+              </div>
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/30 text-indigo-200 border border-indigo-400/40">
+                Item-for-Item Swap
+              </span>
+            </div>
+          </div>
+
           <?php 
             $current_user_id = (int)($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
             $is_owner = (is_member() && $current_user_id > 0 && $current_user_id === (int)($item['owner_id'] ?? 0));
+            $viewer_member_status = 'Pending';
+            if (is_member()) {
+                $viewer_member_status = get_member_status($pdo, $current_user_id);
+            }
           ?>
 
           <?php if ($is_owner): ?>
@@ -300,91 +400,153 @@ require_once(__DIR__ . '/includes/nav.php');
                       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                   </div>
                   <h4 class="text-sm font-bold text-slate-800">You Own This Equipment</h4>
-                  <p class="text-xs text-slate-600 mt-1 mb-4">You cannot rent an item you have listed. You can manage or unlist this gear from your dashboard.</p>
+                  <p class="text-xs text-slate-600 mt-1 mb-4">You cannot rent or propose an exchange on your own listing. You can manage or unlist this gear from your dashboard.</p>
                   <a href="user/equipment.php" class="inline-flex items-center justify-center w-full px-4 py-2 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition shadow-sm">
                       Manage in My Equipment &rarr;
                   </a>
               </div>
             </div>
           <?php else: ?>
-            <form action="item-details.php?id=<?php echo $item_id; ?>" method="POST" id="rentalForm" class="p-6 space-y-4">
-              <input type="hidden" name="item_id" value="<?php echo $item_id; ?>">
 
-              <div class="grid grid-cols-2 gap-3">
-                <div>
-                  <label for="pickup_date" class="block text-xs font-bold text-slate-700 mb-1">Pickup Date *</label>
-                  <input type="date" id="pickup_date" name="rental_start_date" required class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 font-medium text-slate-800">
-                </div>
-                <div>
-                  <label for="return_date" class="block text-xs font-bold text-slate-700 mb-1">Return Date *</label>
-                  <input type="date" id="return_date" name="rental_end_date" required class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 font-medium text-slate-800">
-                </div>
-              </div>
+            <!-- Panel 1: Cash Rental Form -->
+            <div id="panel-rent" class="p-6 space-y-4">
+              <form action="item-details.php?id=<?php echo $item_id; ?>" method="POST" id="rentalForm" class="space-y-4">
+                <input type="hidden" name="item_id" value="<?php echo $item_id; ?>">
 
-              <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label for="pickup_date" class="block text-xs font-bold text-slate-700 mb-1">Pickup Date *</label>
+                    <input type="date" id="pickup_date" name="rental_start_date" required class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 font-medium text-slate-800">
+                  </div>
+                  <div>
+                    <label for="return_date" class="block text-xs font-bold text-slate-700 mb-1">Return Date *</label>
+                    <input type="date" id="return_date" name="rental_end_date" required class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 font-medium text-slate-800">
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label for="pickup_spot" class="block text-xs font-bold text-slate-700 mb-1">Campus Spot *</label>
+                    <select id="pickup_spot" name="pickup_spot" required class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 font-medium text-slate-800">
+                      <option value="Hazari Lane">Hazari Lane</option>
+                      <option value="Wasa">Wasa</option>
+                      <option value="GEC Campus">GEC Campus</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="pickup_time" class="block text-xs font-bold text-slate-700 mb-1">Pickup Time</label>
+                    <input type="time" id="pickup_time" name="pickup_time" value="10:00" class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 font-medium text-slate-800">
+                  </div>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-2" id="price_breakdown_card" data-daily-rate="<?php echo htmlspecialchars($item['daily_rate'] ?? 0); ?>" data-deposit="<?php echo htmlspecialchars($item['security_deposit'] ?? 0); ?>">
+                  <div class="flex justify-between text-slate-600">
+                    <span id="rental_rate_label">Rent (1 day × ৳<?php echo number_format($item['daily_rate'] ?? 0, 2); ?>):</span>
+                    <span class="font-bold text-slate-800" id="rental_total_display">৳<?php echo number_format($item['daily_rate'] ?? 0, 2); ?></span>
+                  </div>
+                  <div class="flex justify-between text-slate-600">
+                    <span>Refundable Deposit:</span>
+                    <span class="font-bold text-emerald-600" id="deposit_total_display">৳<?php echo number_format($item['security_deposit'] ?? 0, 2); ?></span>
+                  </div>
+                  <div class="pt-2 border-t border-slate-200 flex justify-between font-bold text-navy-900">
+                    <span>Estimated Total:</span>
+                    <span id="grand_total_display">৳<?php echo number_format(($item['daily_rate'] ?? 0) + ($item['security_deposit'] ?? 0), 2); ?></span>
+                  </div>
+                  <div id="date_validation_msg" class="hidden text-[11px] text-amber-600 font-medium pt-1"></div>
+                </div>
+
+                <?php if (is_member()): ?>
+                  <?php if ($viewer_member_status === 'Verified'): ?>
+                    <button type="submit" name="submit_request" class="w-full py-3.5 px-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2">
+                      <span>Request Equipment Rental</span>
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </button>
+                  <?php else: ?>
+                    <button type="button" disabled class="w-full py-3.5 px-4 bg-slate-200 text-slate-400 font-bold rounded-xl text-xs uppercase tracking-wider cursor-not-allowed flex items-center justify-center gap-2">
+                      <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                      <span>Verification Required to Rent</span>
+                    </button>
+                    <p class="text-[11px] text-center text-amber-600 font-medium mt-1">
+                      <?php echo ($viewer_member_status === 'Rejected') ? 'Your account was rejected. Please contact an admin.' : 'Your account is pending verification. Rental requests will unlock once approved.'; ?>
+                    </p>
+                  <?php endif; ?>
+                <?php else: ?>
+                  <a href="auth/login.php?msg=login_required" class="w-full py-3.5 px-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider text-center block shadow-lg shadow-blue-600/30">
+                    Sign In as Member to Rent
+                  </a>
+                <?php endif; ?>
+
+                <p class="text-[11px] text-center text-slate-400">
+                  🔒 Handover token is required for physical exchange. Safe in-person handover with a refundable security deposit.
+                </p>
+              </form>
+            </div>
+
+            <!-- Panel 2: Swap Proposal Form -->
+            <div id="panel-swap" class="p-6 space-y-4 hidden">
+              <form action="item-details.php?id=<?php echo $item_id; ?>" method="POST" class="space-y-4">
+                <input type="hidden" name="item_id" value="<?php echo $item_id; ?>">
+
+                <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-3.5 text-xs text-indigo-900 space-y-1">
+                  <div class="font-bold flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Direct Peer Swap Mechanism</span>
+                  </div>
+                  <p class="text-[11px] text-indigo-700">Swap one of your listed items with this gear. Both parties meet on campus to exchange items with zero daily rent fees.</p>
+                </div>
+
                 <div>
-                  <label for="pickup_spot" class="block text-xs font-bold text-slate-700 mb-1">Campus Spot *</label>
-                  <select id="pickup_spot" name="pickup_spot" required class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 font-medium text-slate-800">
-                    <option value="Hazari Lane">Hazari Lane</option>
-                    <option value="Wasa">Wasa</option>
-                    <option value="GEC Campus">GEC Campus</option>
+                  <label for="offered_equipment_id" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Select Your Gear to Offer *</label>
+                  <select id="offered_equipment_id" name="offered_equipment_id" required class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-600 font-medium text-slate-800">
+                    <?php if (empty($user_equipment_options)): ?>
+                      <option value="">(You have no available equipment listed to swap)</option>
+                    <?php else: ?>
+                      <option value="">-- Choose one of your listed items --</option>
+                      <?php foreach ($user_equipment_options as $ue): ?>
+                        <option value="<?php echo (int)$ue['equipment_id']; ?>">
+                          <?php echo htmlspecialchars($ue['title']); ?>
+                        </option>
+                      <?php endforeach; ?>
+                    <?php endif; ?>
                   </select>
                 </div>
-                <div>
-                  <label for="pickup_time" class="block text-xs font-bold text-slate-700 mb-1">Pickup Time</label>
-                  <input type="time" id="pickup_time" name="pickup_time" value="10:00" class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 font-medium text-slate-800">
-                </div>
-              </div>
 
-              <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-2" id="price_breakdown_card" data-daily-rate="<?php echo htmlspecialchars($item['daily_rate'] ?? 0); ?>" data-deposit="<?php echo htmlspecialchars($item['security_deposit'] ?? 0); ?>">
-                <div class="flex justify-between text-slate-600">
-                  <span id="rental_rate_label">Rent (1 day × ৳<?php echo number_format($item['daily_rate'] ?? 0, 2); ?>):</span>
-                  <span class="font-bold text-slate-800" id="rental_total_display">৳<?php echo number_format($item['daily_rate'] ?? 0, 2); ?></span>
-                </div>
-                <div class="flex justify-between text-slate-600">
-                  <span>Refundable Deposit:</span>
-                  <span class="font-bold text-emerald-600" id="deposit_total_display">৳<?php echo number_format($item['security_deposit'] ?? 0, 2); ?></span>
-                </div>
-                <div class="pt-2 border-t border-slate-200 flex justify-between font-bold text-navy-900">
-                  <span>Estimated Total:</span>
-                  <span id="grand_total_display">৳<?php echo number_format(($item['daily_rate'] ?? 0) + ($item['security_deposit'] ?? 0), 2); ?></span>
-                </div>
-                <div id="date_validation_msg" class="hidden text-[11px] text-amber-600 font-medium pt-1"></div>
-              </div>
-
-              <?php 
-                $viewer_member_status = 'Pending';
-                if (is_member()) {
-                    $viewer_id = (int)($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
-                    $viewer_member_status = get_member_status($pdo, $viewer_id);
-                }
-              ?>
-
-              <?php if (is_member()): ?>
-                <?php if ($viewer_member_status === 'Verified'): ?>
-                  <button type="submit" name="submit_request" class="w-full py-3.5 px-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2">
-                    <span>Request Equipment Rental</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                  </button>
-                <?php else: ?>
-                  <button type="button" disabled class="w-full py-3.5 px-4 bg-slate-200 text-slate-400 font-bold rounded-xl text-xs uppercase tracking-wider cursor-not-allowed flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                    <span>Verification Required to Rent</span>
-                  </button>
-                  <p class="text-[11px] text-center text-amber-600 font-medium mt-1">
-                    <?php echo ($viewer_member_status === 'Rejected') ? 'Your account was rejected. Please contact an admin.' : 'Your account is pending verification. Rental requests will unlock once approved.'; ?>
-                  </p>
+                <?php if (empty($user_equipment_options) && is_member()): ?>
+                  <div class="text-center p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                    <p class="text-[11px] text-slate-600 mb-2">You need to list at least one available item in your inventory to offer in a swap.</p>
+                    <a href="user/equipment.php" class="inline-flex items-center gap-1 text-xs font-bold text-primary-600 hover:underline">
+                      + List Equipment First &rarr;
+                    </a>
+                  </div>
                 <?php endif; ?>
-              <?php else: ?>
-                <a href="auth/login.php?msg=login_required" class="w-full py-3.5 px-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider text-center block shadow-lg shadow-blue-600/30">
-                  Sign In as Member to Rent
-                </a>
-              <?php endif; ?>
 
-              <p class="text-[11px] text-center text-slate-400">
-                🔒 Handover token is required for physical exchange. Safe in-person handover with a refundable security deposit.
-              </p>
-            </form>
+                <?php if (is_member()): ?>
+                  <?php if ($viewer_member_status === 'Verified'): ?>
+                    <button type="submit" name="submit_swap_proposal" <?php echo empty($user_equipment_options) ? 'disabled' : ''; ?> class="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2">
+                      <span>Send Swap Proposal</span>
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </button>
+                  <?php else: ?>
+                    <button type="button" disabled class="w-full py-3.5 px-4 bg-slate-200 text-slate-400 font-bold rounded-xl text-xs uppercase tracking-wider cursor-not-allowed flex items-center justify-center gap-2">
+                      <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                      <span>Verification Required to Swap</span>
+                    </button>
+                    <p class="text-[11px] text-center text-amber-600 font-medium mt-1">
+                      <?php echo ($viewer_member_status === 'Rejected') ? 'Your account was rejected. Please contact an admin.' : 'Your account is pending verification. Exchange proposals will unlock once approved.'; ?>
+                    </p>
+                  <?php endif; ?>
+                <?php else: ?>
+                  <a href="auth/login.php?msg=login_required" class="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider text-center block shadow-lg shadow-indigo-600/30">
+                    Sign In as Member to Propose Swap
+                  </a>
+                <?php endif; ?>
+
+                <p class="text-[11px] text-center text-slate-400">
+                  🤝 Proposals go directly to the owner's dashboard. You can track progress under Exchanges.
+                </p>
+              </form>
+            </div>
+
           <?php endif; ?>
 
         </div>
@@ -395,6 +557,39 @@ require_once(__DIR__ . '/includes/nav.php');
   </main>
 
   <script>
+  function switchActionTab(tab) {
+    const rentBtn = document.getElementById('tab-rent-btn');
+    const swapBtn = document.getElementById('tab-swap-btn');
+    const rentPanel = document.getElementById('panel-rent');
+    const swapPanel = document.getElementById('panel-swap');
+    const rentHeader = document.getElementById('action-header-pricing');
+    const swapHeader = document.getElementById('action-header-swap');
+
+    if (!rentBtn || !swapBtn) return;
+
+    if (tab === 'swap') {
+      rentBtn.classList.remove('bg-white', 'text-navy-900', 'shadow-xs');
+      rentBtn.classList.add('text-slate-500');
+      swapBtn.classList.add('bg-white', 'text-navy-900', 'shadow-xs');
+      swapBtn.classList.remove('text-slate-500');
+
+      if (rentPanel) rentPanel.classList.add('hidden');
+      if (swapPanel) swapPanel.classList.remove('hidden');
+      if (rentHeader) rentHeader.classList.add('hidden');
+      if (swapHeader) swapHeader.classList.remove('hidden');
+    } else {
+      swapBtn.classList.remove('bg-white', 'text-navy-900', 'shadow-xs');
+      swapBtn.classList.add('text-slate-500');
+      rentBtn.classList.add('bg-white', 'text-navy-900', 'shadow-xs');
+      rentBtn.classList.remove('text-slate-500');
+
+      if (swapPanel) swapPanel.classList.add('hidden');
+      if (rentPanel) rentPanel.classList.remove('hidden');
+      if (swapHeader) swapHeader.classList.add('hidden');
+      if (rentHeader) rentHeader.classList.remove('hidden');
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
     const pickupInput = document.getElementById('pickup_date') || document.getElementById('rental_start_date');
     const returnInput = document.getElementById('return_date') || document.getElementById('rental_end_date');
