@@ -72,13 +72,17 @@ $is_dashboard_active = ($current_page === 'dashboard.php' && strpos($current_scr
 $is_equipment_active = ($current_page === 'equipment.php' || $current_page === 'add_item.php');
 $is_rentals_active = ($current_page === 'rentals.php');
 $is_exchanges_active = ($current_page === 'exchanges.php');
-$is_browse_active = (!$is_dashboard_active && !$is_equipment_active && !$is_rentals_active && !$is_exchanges_active) &&
+$is_about_active = ($current_page === 'about.php');
+$is_terms_active = ($current_page === 'terms.php');
+$is_browse_active = (!$is_dashboard_active && !$is_equipment_active && !$is_rentals_active && !$is_exchanges_active && !$is_about_active && !$is_terms_active) &&
                     ($current_page === 'index.php' || $current_page === 'item-details.php' || $current_page === '' || substr($request_uri, -1) === '/' || substr($request_uri, -8) === '/rentora');
 $is_admin_active = ($current_page === 'dashboard.php' && strpos($current_script, '/admin/') !== false);
 
 // Support optional manual override via $active_nav variable if set by caller
 if (isset($active_nav)) {
     $is_browse_active = ($active_nav === 'browse');
+    $is_about_active = ($active_nav === 'about');
+    $is_terms_active = ($active_nav === 'terms');
     $is_dashboard_active = ($active_nav === 'dashboard');
     $is_equipment_active = ($active_nav === 'equipment');
     $is_rentals_active = ($active_nav === 'rentals');
@@ -143,6 +147,14 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-600 h
 
         <a href="<?php echo $base_path; ?>/index.php" class="<?php echo $is_browse_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="browse" <?php if ($is_browse_active): ?>aria-current="page"<?php endif; ?>>
           Browse Equipment
+        </a>
+
+        <a href="<?php echo $base_path; ?>/about.php" class="<?php echo $is_about_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="about" <?php if ($is_about_active): ?>aria-current="page"<?php endif; ?>>
+          About
+        </a>
+
+        <a href="<?php echo $base_path; ?>/terms.php" class="<?php echo $is_terms_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="terms" <?php if ($is_terms_active): ?>aria-current="page"<?php endif; ?>>
+          Terms
         </a>
 
         <?php if ($current_role === 'member'): ?>
