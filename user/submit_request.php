@@ -9,22 +9,51 @@ if (($_SESSION['role'] ?? '') !== 'member') {
 require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/../includes/auth_guard.php');
 
+$renter_id = (int)($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
+$member_status = get_member_status($pdo, $renter_id);
+
+if ($member_status !== 'Verified') {
+    $err = ($member_status === 'Rejected') ? 'rejected_verification' : 'pending_verification';
+    header("Location: dashboard.php?error=" . $err);
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['item_id'])) {
     $item_id = (int)$_POST['item_id'];
-    $renter_id = (int)($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
     $start_date = trim($_POST['rental_start_date'] ?? date('Y-m-d'));
     $end_date = trim($_POST['rental_end_date'] ?? date('Y-m-d', strtotime('+1 day')));
     $pickup_spot = trim($_POST['pickup_spot'] ?? '');
 
     try {
-        $stmt = $pdo->prepare("SELECT rental_rate, security_deposit, campus_spot FROM equipment WHERE equipment_id = :id LIMIT 1");
+        $stmt = $pdo->prepare("SELECT rental_rate, security_deposit, campus_spot, owner_id FROM equipment WHERE equipment_id = :id LIMIT 1");
         $stmt->execute(['id' => $item_id]);
         $item = $stmt->fetch();
 
         if ($item) {
+            // Guard 1: Prevent owner from renting their own listed equipment
+            if ((int)$item['owner_id'] === $renter_id) {
+                header("Location: ../item-details.php?id=" . $item_id . "&error=self_rent_forbidden");
+                exit();
+            }
+
+            // Guard 2: Date Overlap / Collision Prevention
+            $collision_check = mysqli_query($conn, "
+                SELECT rental_id 
+                FROM rental_agreement 
+                WHERE equipment_id = '$item_id' 
+                  AND status IN ('Approved', 'Active', 'Pending') 
+                  AND ('$start_date' <= expected_end_date AND '$end_date' >= start_date)
+                LIMIT 1
+            ");
+
+            if ($collision_check && mysqli_num_rows($collision_check) > 0) {
+                header("Location: ../item-details.php?id=" . $item_id . "&error=dates_taken");
+                exit();
+            }
+
             $start_ts = strtotime($start_date);
             $end_ts = strtotime($end_date);
-            $diff_days = max(1, round(($end_ts - $start_ts) / 86400));
+            $diff_days = max(1, (int)round(($end_ts - $start_ts) / 86400));
 
             $total_cost = $diff_days * $item['rental_rate'];
             $deposit_amount = floatval($item['security_deposit'] ?? 0);

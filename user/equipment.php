@@ -10,15 +10,40 @@ require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/../includes/auth_guard.php');
 
 $user_id = $_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0;
+$member_status = get_member_status($pdo, $user_id);
 $error = "";
 $success = "";
 
-if (isset($_GET['msg']) && $_GET['msg'] === 'item_added') {
-    $success = "Equipment listing added successfully!";
+$member_phone = '';
+$member_email = $_SESSION['email'] ?? '';
+try {
+    $mStmt = $pdo->prepare("SELECT phone_number, university_email FROM member WHERE member_id = :id LIMIT 1");
+    $mStmt->execute(['id' => $user_id]);
+    $mRow = $mStmt->fetch();
+    if ($mRow) {
+        $member_phone = $mRow['phone_number'] ?? '';
+        if (!empty($mRow['university_email'])) {
+            $member_email = $mRow['university_email'];
+        }
+    }
+} catch (Exception $e) {}
+
+if (isset($_GET['msg'])) {
+    if ($_GET['msg'] === 'item_added') {
+        $success = "Equipment listing added successfully!";
+    } elseif ($_GET['msg'] === 'deleted') {
+        $success = "Equipment listing deleted successfully.";
+    } elseif ($_GET['msg'] === 'archived') {
+        $success = "Equipment is linked to existing rental records and has been archived (marked Unavailable) to protect relational integrity.";
+    }
 }
 if (isset($_GET['error'])) {
     $errCode = $_GET['error'];
-    if ($errCode === 'missing_fields') {
+    if ($errCode === 'account_pending') {
+        $error = "Your account is pending verification. Equipment listing is disabled until verified by an administrator.";
+    } elseif ($errCode === 'account_rejected') {
+        $error = "Your account was rejected. Please contact an admin for assistance.";
+    } elseif ($errCode === 'missing_fields') {
         $error = "Please fill in all required equipment fields (Title, Rental Rate, and Equipment Image).";
     } elseif ($errCode === 'missing_image') {
         $error = "An equipment image is required. Please upload a photo (JPG, PNG, or WebP).";
@@ -46,17 +71,54 @@ try {
 
 // Handle Direct Add Equipment Submission (delegates to add_item.php)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['add_equipment']) || isset($_POST['title']) || isset($_POST['equipment_name']))) {
+    if ($member_status !== 'Verified') {
+        $err = ($member_status === 'Rejected') ? 'account_rejected' : 'account_pending';
+        header("Location: equipment.php?error=" . $err);
+        exit();
+    }
     require_once(__DIR__ . '/add_item.php');
     exit();
 }
 
 // Handle Delete Equipment
 if (isset($_GET['delete'])) {
-    $del_id = (int)$_GET['delete'];
+    $equipment_id = (int)$_GET['delete'];
+    $owner_id = (int)$user_id;
+
     try {
-        $delStmt = $pdo->prepare("DELETE FROM equipment WHERE equipment_id = :id AND owner_id = :owner_id");
-        $delStmt->execute(['id' => $del_id, 'owner_id' => $user_id]);
-        $success = "Equipment listing deleted.";
+        // 1. Verify ownership
+        $checkStmt = $pdo->prepare("SELECT * FROM equipment WHERE equipment_id = :id AND owner_id = :owner_id LIMIT 1");
+        $checkStmt->execute(['id' => $equipment_id, 'owner_id' => $owner_id]);
+        $ownedItem = $checkStmt->fetch();
+
+        if ($ownedItem) {
+            // 2. Check if equipment is linked to existing rental agreements
+            $checkRentals = $pdo->prepare("SELECT COUNT(*) AS total FROM rental_agreement WHERE equipment_id = :id");
+            $checkRentals->execute(['id' => $equipment_id]);
+            $rentalCount = (int)($checkRentals->fetch()['total'] ?? 0);
+
+            // Also check exchange agreements if present
+            $checkExchanges = $pdo->prepare("SELECT COUNT(*) AS total FROM exchange_agreement WHERE equipment_a_id = :id1 OR equipment_b_id = :id2");
+            $checkExchanges->execute(['id1' => $equipment_id, 'id2' => $equipment_id]);
+            $exchangeCount = (int)($checkExchanges->fetch()['total'] ?? 0);
+
+            if ($rentalCount > 0 || $exchangeCount > 0) {
+                // Soft delete / Archive: Retain database relational integrity
+                // Set availability to Unavailable so it hides from browse & active lists
+                $archiveStmt = $pdo->prepare("UPDATE equipment SET availability_status = 'Unavailable' WHERE equipment_id = :id AND owner_id = :owner_id");
+                $archiveStmt->execute(['id' => $equipment_id, 'owner_id' => $owner_id]);
+                header("Location: equipment.php?msg=archived");
+                exit();
+            } else {
+                // No child records exist: Safe to perform hard delete
+                $delStmt = $pdo->prepare("DELETE FROM equipment WHERE equipment_id = :id AND owner_id = :owner_id");
+                $delStmt->execute(['id' => $equipment_id, 'owner_id' => $owner_id]);
+                header("Location: equipment.php?msg=deleted");
+                exit();
+            }
+        } else {
+            $error = "Equipment listing not found or you do not have permission to delete it.";
+        }
     } catch (PDOException $e) {
         $error = "Could not delete equipment: " . htmlspecialchars($e->getMessage());
     }
@@ -215,6 +277,15 @@ require_once(__DIR__ . '/../includes/nav.php');
         </div>
       <?php endif; ?>
 
+      <?php if ($member_status !== 'Verified'): ?>
+        <div class="mb-5 p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
+          <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+          <span>
+            <?php echo ($member_status === 'Rejected') ? 'Your account was rejected. You cannot publish equipment listings.' : 'Your account is pending verification. You will be able to publish listings once approved by an administrator.'; ?>
+          </span>
+        </div>
+      <?php endif; ?>
+
       <form action="add_item.php" method="POST" enctype="multipart/form-data" class="space-y-4">
         
         <div>
@@ -262,6 +333,17 @@ require_once(__DIR__ . '/../includes/nav.php');
             <option value="Wasa">Wasa</option>
             <option value="GEC Campus">GEC Campus</option>
           </select>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="lender_phone" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Contact Phone (Visible to Renters) *</label>
+            <input type="tel" id="lender_phone" name="lender_phone" required placeholder="018XXXXXXXX" value="<?php echo htmlspecialchars($member_phone); ?>" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
+          </div>
+          <div>
+            <label for="lender_email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Contact Email *</label>
+            <input type="email" id="lender_email" name="lender_email" required value="<?php echo htmlspecialchars($member_email); ?>" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
+          </div>
         </div>
 
         <div>
@@ -337,10 +419,17 @@ require_once(__DIR__ . '/../includes/nav.php');
           <textarea id="description" name="description" rows="3" placeholder="Condition, included accessories, batteries, allowed exams, etc." class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800"></textarea>
         </div>
 
-        <button type="submit" name="add_equipment" class="w-full py-3 px-4 bg-navy-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-md shadow-slate-900/20 transition-all flex items-center justify-center gap-2">
-          <span>Publish Equipment Listing</span>
-          <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-        </button>
+        <?php if ($member_status === 'Verified'): ?>
+          <button type="submit" name="add_equipment" class="w-full py-3 px-4 bg-navy-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-md shadow-slate-900/20 transition-all flex items-center justify-center gap-2">
+            <span>Publish Equipment Listing</span>
+            <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </button>
+        <?php else: ?>
+          <button type="button" disabled class="w-full py-3 px-4 bg-slate-200 text-slate-400 font-bold rounded-xl text-xs uppercase tracking-wider cursor-not-allowed flex items-center justify-center gap-2">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            <span>Verification Required to Publish</span>
+          </button>
+        <?php endif; ?>
 
       </form>
     </div>

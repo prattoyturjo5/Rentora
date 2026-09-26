@@ -5,7 +5,29 @@
 $base_path = $base_path ?? '.';
 $current_role = $_SESSION['role'] ?? null;
 $current_name = $_SESSION['name'] ?? 'User';
-$current_user_id = $_SESSION['user_id'] ?? null;
+// MERGED: also check member_id as fallback (from origin/main)
+$current_user_id = $_SESSION['user_id'] ?? $_SESSION['member_id'] ?? null;
+
+// MERGED: fetch live member verification status from DB (from origin/main)
+$current_member_status = 'Pending';
+if ($current_role === 'member' && $current_user_id) {
+    if (!isset($pdo)) {
+        @require_once(__DIR__ . '/../config/db.php');
+    }
+    if (isset($pdo)) {
+        if (function_exists('get_member_status')) {
+            $current_member_status = get_member_status($pdo, $current_user_id);
+        } else {
+            try {
+                $stmt = $pdo->prepare("SELECT status FROM member WHERE member_id = :id LIMIT 1");
+                $stmt->execute(['id' => $current_user_id]);
+                $current_member_status = $stmt->fetchColumn() ?: 'Pending';
+            } catch (Exception $e) {
+                $current_member_status = 'Pending';
+            }
+        }
+    }
+}
 
 // Determine active navigation item dynamically from current script/URL
 $current_script = strtolower(str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? $_SERVER['PHP_SELF'] ?? ''));
@@ -16,7 +38,7 @@ $is_dashboard_active = ($current_page === 'dashboard.php' && strpos($current_scr
 $is_equipment_active = ($current_page === 'equipment.php' || $current_page === 'add_item.php');
 $is_rentals_active = ($current_page === 'rentals.php');
 $is_exchanges_active = ($current_page === 'exchanges.php');
-$is_browse_active = (!$is_dashboard_active && !$is_equipment_active && !$is_rentals_active && !$is_exchanges_active) && 
+$is_browse_active = (!$is_dashboard_active && !$is_equipment_active && !$is_rentals_active && !$is_exchanges_active) &&
                     ($current_page === 'index.php' || $current_page === 'item-details.php' || $current_page === '' || substr($request_uri, -1) === '/' || substr($request_uri, -8) === '/rentora');
 $is_admin_active = ($current_page === 'dashboard.php' && strpos($current_script, '/admin/') !== false);
 
@@ -43,7 +65,7 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-600 h
     <div class="flex items-center gap-4 text-slate-400">
       <span class="flex items-center gap-1">
         <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
-        Pickup Points: Hazari Lane, Wasa & GEC Campus
+        Pickup Points: Hazari Lane, Wasa &amp; GEC Campus
       </span>
       <span class="hidden sm:inline">|</span>
       <?php if ($current_role === 'admin'): ?>
@@ -122,10 +144,23 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-600 h
             </div>
             <div class="text-left leading-tight hidden lg:block">
               <div class="text-xs font-bold text-navy-900"><?php echo htmlspecialchars($current_name); ?></div>
-              <div class="text-[11px] font-semibold text-emerald-600 flex items-center gap-1">
-                <span>Member</span>
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              </div>
+              <!-- MERGED: show live verification status (from origin/main) -->
+              <?php if ($current_member_status === 'Verified'): ?>
+                <div class="text-[11px] font-semibold text-emerald-600 flex items-center gap-1">
+                  <span>Verified</span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                </div>
+              <?php elseif ($current_member_status === 'Rejected'): ?>
+                <div class="text-[11px] font-semibold text-red-600 flex items-center gap-1">
+                  <span>Rejected</span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                </div>
+              <?php else: ?>
+                <div class="text-[11px] font-semibold text-amber-600 flex items-center gap-1">
+                  <span>Pending</span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                </div>
+              <?php endif; ?>
             </div>
             <a href="<?php echo $base_path; ?>/auth/change_password.php" title="Change Password" class="text-slate-400 hover:text-slate-600 transition-colors p-1">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>

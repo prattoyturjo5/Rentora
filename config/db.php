@@ -37,3 +37,8 @@ try {
         die("Database connection failed: " . htmlspecialchars($e->getMessage()));
     }
 }
+
+$conn = @mysqli_connect($host, $username, $password, $dbname);
+if ($conn) {
+    mysqli_set_charset($conn, $charset);
+}
