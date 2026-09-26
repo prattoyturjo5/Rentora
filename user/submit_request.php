@@ -25,14 +25,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['item_id'])) {
     $pickup_spot = trim($_POST['pickup_spot'] ?? '');
 
     try {
-        $stmt = $pdo->prepare("SELECT rental_rate, security_deposit, campus_spot FROM equipment WHERE equipment_id = :id LIMIT 1");
+        $stmt = $pdo->prepare("SELECT rental_rate, security_deposit, campus_spot, owner_id FROM equipment WHERE equipment_id = :id LIMIT 1");
         $stmt->execute(['id' => $item_id]);
         $item = $stmt->fetch();
 
         if ($item) {
+            // Guard: Prevent owner from renting their own listed equipment
+            if ((int)$item['owner_id'] === $renter_id) {
+                header("Location: ../item-details.php?id=" . $item_id . "&error=self_rent_forbidden");
+                exit();
+            }
+
             $start_ts = strtotime($start_date);
             $end_ts = strtotime($end_date);
-            $diff_days = max(1, round(($end_ts - $start_ts) / 86400));
+            $diff_days = max(1, (int)round(($end_ts - $start_ts) / 86400));
 
             $total_cost = $diff_days * $item['rental_rate'];
             $deposit_amount = floatval($item['security_deposit'] ?? 0);

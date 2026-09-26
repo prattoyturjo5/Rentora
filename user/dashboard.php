@@ -43,6 +43,13 @@ $dashboard_msg = "";
 if (isset($_GET['msg']) && $_GET['msg'] === 'requested') {
     $dashboard_msg = "Rental request submitted successfully! Your handover token is generated below.";
 }
+if (isset($_GET['verify_status'])) {
+    if ($_GET['verify_status'] === 'success') {
+        $dashboard_msg = "Token verified successfully! The rental is now Active, and both parties are verified.";
+    } elseif ($_GET['verify_status'] === 'invalid') {
+        $dashboard_error = "Invalid or expired handover token. Please confirm the code with the renter.";
+    }
+}
 if (isset($_GET['error'])) {
     $errCode = $_GET['error'];
     if ($errCode === 'pending_verification' || $errCode === 'account_pending') {
@@ -79,57 +86,61 @@ function safe_user_scalar($pdo, $sql, $params = [], $default = 0) {
 // 1. My Equipment Listings Count
 $my_equipment_count = safe_user_scalar($pdo, "
     SELECT COUNT(*) FROM equipment 
-    WHERE member_id = :uid1 OR member_id = :uid2
-", ['uid1' => $user_id, 'uid2' => $user_id]);
+    WHERE owner_id = :uid
+", ['uid' => $user_id]);
 
 // 2. My Active Rentals Count
 $my_active_rentals_count = safe_user_scalar($pdo, "
     SELECT COUNT(*) FROM rental_agreement 
-    WHERE (renter_id = :uid1 OR renter_id = :uid2) AND status IN ('Approved', 'Active')
-", ['uid1' => $user_id, 'uid2' => $user_id]);
+    WHERE renter_id = :uid AND status IN ('Pending', 'Active')
+", ['uid' => $user_id]);
 
 // 3. My Exchanges Count
 $my_exchanges_count = safe_user_scalar($pdo, "
     SELECT COUNT(*) FROM exchange_agreement 
-    WHERE requester_id = :uid1 OR owner_id = :uid2
+    WHERE lender_a_id = :uid1 OR lender_b_id = :uid2
 ", ['uid1' => $user_id, 'uid2' => $user_id]);
 
 // 4. Security Deposit Total
 $security_deposit_total = safe_user_scalar($pdo, "
-    SELECT SUM(deposit) FROM rental_agreement 
-    WHERE (renter_id = :uid1 OR renter_id = :uid2) AND status IN ('Approved', 'Active')
-", ['uid1' => $user_id, 'uid2' => $user_id]);
+    SELECT SUM(deposit_amount) FROM rental_agreement 
+    WHERE renter_id = :uid AND status IN ('Pending', 'Active')
+", ['uid' => $user_id]);
 
-// Active Handover Token Card (latest approved or active rental)
+// Active Handover Token Card (latest pending or active rental)
 $active_tokens = safe_user_query($pdo, "
-    SELECT r.*, e.title, e.campus_spot, e.image_url, m.name as owner_name, m.phone as owner_phone
+    SELECT r.*, e.equipment_name AS title, e.campus_spot, e.image_url, 
+           CONCAT(m.first_name, ' ', m.last_name) AS owner_name, 
+           m.phone_number AS owner_phone
     FROM rental_agreement r
-    LEFT JOIN equipment e ON r.equipment_id = e.equipment_id OR r.equipment_id = e.id
-    LEFT JOIN member m ON e.member_id = m.member_id OR e.member_id = m.id
-    WHERE (r.renter_id = :uid1 OR r.renter_id = :uid2) AND r.status IN ('Approved', 'Active')
+    LEFT JOIN equipment e ON r.equipment_id = e.equipment_id
+    LEFT JOIN member m ON e.owner_id = m.member_id
+    WHERE r.renter_id = :uid AND r.status IN ('Pending', 'Active')
     ORDER BY r.rental_id DESC LIMIT 1
-", ['uid1' => $user_id, 'uid2' => $user_id]);
+", ['uid' => $user_id]);
 
 $latest_token_rental = !empty($active_tokens) ? $active_tokens[0] : null;
 
 // Recent Rental Agreements
 $my_recent_rentals = safe_user_query($pdo, "
-    SELECT r.*, e.title, e.daily_rate, e.campus_spot, m.name as owner_name
+    SELECT r.*, r.expected_end_date AS end_date, r.total_cost AS total_rent, r.deposit_amount AS deposit,
+           e.equipment_name AS title, e.rental_rate AS daily_rate, e.campus_spot, 
+           CONCAT(m.first_name, ' ', m.last_name) AS owner_name
     FROM rental_agreement r
-    LEFT JOIN equipment e ON r.equipment_id = e.equipment_id OR r.equipment_id = e.id
-    LEFT JOIN member m ON e.member_id = m.member_id OR e.member_id = m.id
-    WHERE r.renter_id = :uid1 OR r.renter_id = :uid2
+    LEFT JOIN equipment e ON r.equipment_id = e.equipment_id
+    LEFT JOIN member m ON e.owner_id = m.member_id
+    WHERE r.renter_id = :uid
     ORDER BY r.rental_id DESC LIMIT 5
-", ['uid1' => $user_id, 'uid2' => $user_id]);
+", ['uid' => $user_id]);
 
 // Recent Equipment Listed by Member
 $my_recent_equipment = safe_user_query($pdo, "
-    SELECT e.*, c.name as category_name
+    SELECT e.*, e.equipment_name AS title, c.category_name
     FROM equipment e
-    LEFT JOIN category c ON e.category_id = c.category_id OR e.category_id = c.id
-    WHERE e.member_id = :uid1 OR e.member_id = :uid2
+    LEFT JOIN category c ON e.category_id = c.category_id
+    WHERE e.owner_id = :uid
     ORDER BY e.equipment_id DESC LIMIT 5
-", ['uid1' => $user_id, 'uid2' => $user_id]);
+", ['uid' => $user_id]);
 
 $base_path = '..';
 $page_title = 'Member Dashboard - Rentora';
@@ -147,7 +158,27 @@ require_once(__DIR__ . '/../includes/nav.php');
       </div>
     <?php endif; ?>
 
-    <?php if (!empty($dashboard_msg)): ?>
+    <?php if (isset($_GET['msg']) && $_GET['msg'] === 'requested' && isset($_GET['token']) && !empty($_GET['token'])): ?>
+      <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 mb-6">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                      ✓
+                  </div>
+                  <div>
+                      <h4 class="text-sm font-bold text-slate-800">Rental Request Submitted Successfully</h4>
+                      <p class="text-xs text-slate-600">Present this token to the owner during physical gear handover on campus.</p>
+                  </div>
+              </div>
+              <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-emerald-300 shadow-sm">
+                  <span class="text-xs text-slate-500 font-medium">YOUR TOKEN:</span>
+                  <span class="font-mono text-base font-bold text-emerald-800 tracking-wider">
+                      <?php echo htmlspecialchars($_GET['token']); ?>
+                  </span>
+              </div>
+          </div>
+      </div>
+    <?php elseif (!empty($dashboard_msg)): ?>
       <div class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2 shadow-sm">
         <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
         <span class="font-medium"><?php echo htmlspecialchars($dashboard_msg); ?></span>
@@ -190,7 +221,7 @@ require_once(__DIR__ . '/../includes/nav.php');
               <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
               <span>Platform Support &amp; Appeals</span>
             </div>
-            <a href="mailto:support.rentora@bscse.puc.ac.bd?subject=Verification%20Appeal%20-%20Student%20ID%3A%20<?php echo urlencode($member_student_id); ?>&body=Dear%20Rentora%20Admins%2C%0A%0AMy%20student%20verification%20was%20declined.%20Please%20re-audit%20my%20account.%0A%0AStudent%20Name%3A%20<?php echo urlencode($member_name); ?>%0AStudent%20ID%3A%20<?php echo urlencode($member_student_id); ?>%0AUniversity%20Email%3A%20<?php echo urlencode($member_email); ?>" class="text-blue-600 font-semibold text-xs hover:underline inline-flex items-center gap-1 mt-1">
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=support.rentora@bscse.puc.ac.bd&su=Verification+Appeal+-+Student+ID:+<?php echo urlencode($member_student_id); ?>" target="_blank" rel="noopener noreferrer" class="text-blue-600 font-semibold text-xs hover:underline inline-flex items-center gap-1 mt-1">
               <span>support.rentora@bscse.puc.ac.bd</span>
             </a>
             <p class="text-[11px] text-slate-600 mt-1.5">
@@ -201,8 +232,10 @@ require_once(__DIR__ . '/../includes/nav.php');
 
         <!-- Action Controls -->
         <div class="mt-5 pt-4 border-t border-red-200/80 flex flex-wrap items-center gap-2.5">
-          <a href="mailto:support.rentora@bscse.puc.ac.bd?subject=Verification%20Appeal%20-%20Student%20ID%3A%20<?php echo urlencode($member_student_id); ?>&body=Dear%20Rentora%20Admins%2C%0A%0AMy%20student%20verification%20was%20declined.%20Please%20re-audit%20my%20account.%0A%0AStudent%20Name%3A%20<?php echo urlencode($member_name); ?>%0AStudent%20ID%3A%20<?php echo urlencode($member_student_id); ?>%0AUniversity%20Email%3A%20<?php echo urlencode($member_email); ?>" class="inline-flex items-center gap-2 px-4 py-2 bg-red-700 hover:bg-red-800 text-white text-xs font-bold rounded-xl shadow-xs transition-colors">
-            <svg class="w-4 h-4 text-red-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+          <a href="https://mail.google.com/mail/?view=cm&fs=1&to=support.rentora@bscse.puc.ac.bd&su=Verification+Appeal+-+Student+ID:+<?php echo urlencode($member_student_id); ?>" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white rounded-xl font-medium shadow-sm transition text-sm">
+            <svg class="w-4 h-4 text-red-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
             <span>Email Platform Admin</span>
           </a>
           <button type="button" onclick="document.getElementById('guidelines-modal').classList.remove('hidden')" class="inline-flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 text-xs font-bold rounded-xl shadow-xs transition-colors">

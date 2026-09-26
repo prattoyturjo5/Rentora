@@ -14,8 +14,14 @@ $member_status = get_member_status($pdo, $user_id);
 $error = "";
 $success = "";
 
-if (isset($_GET['msg']) && $_GET['msg'] === 'item_added') {
-    $success = "Equipment listing added successfully!";
+if (isset($_GET['msg'])) {
+    if ($_GET['msg'] === 'item_added') {
+        $success = "Equipment listing added successfully!";
+    } elseif ($_GET['msg'] === 'deleted') {
+        $success = "Equipment listing deleted successfully.";
+    } elseif ($_GET['msg'] === 'archived') {
+        $success = "Equipment is linked to existing rental records and has been archived (marked Unavailable) to protect relational integrity.";
+    }
 }
 if (isset($_GET['error'])) {
     $errCode = $_GET['error'];
@@ -62,11 +68,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['add_equipment']) || 
 
 // Handle Delete Equipment
 if (isset($_GET['delete'])) {
-    $del_id = (int)$_GET['delete'];
+    $equipment_id = (int)$_GET['delete'];
+    $owner_id = (int)$user_id;
+
     try {
-        $delStmt = $pdo->prepare("DELETE FROM equipment WHERE equipment_id = :id AND owner_id = :owner_id");
-        $delStmt->execute(['id' => $del_id, 'owner_id' => $user_id]);
-        $success = "Equipment listing deleted.";
+        // 1. Verify ownership
+        $checkStmt = $pdo->prepare("SELECT * FROM equipment WHERE equipment_id = :id AND owner_id = :owner_id LIMIT 1");
+        $checkStmt->execute(['id' => $equipment_id, 'owner_id' => $owner_id]);
+        $ownedItem = $checkStmt->fetch();
+
+        if ($ownedItem) {
+            // 2. Check if equipment is linked to existing rental agreements
+            $checkRentals = $pdo->prepare("SELECT COUNT(*) AS total FROM rental_agreement WHERE equipment_id = :id");
+            $checkRentals->execute(['id' => $equipment_id]);
+            $rentalCount = (int)($checkRentals->fetch()['total'] ?? 0);
+
+            // Also check exchange agreements if present
+            $checkExchanges = $pdo->prepare("SELECT COUNT(*) AS total FROM exchange_agreement WHERE equipment_a_id = :id1 OR equipment_b_id = :id2");
+            $checkExchanges->execute(['id1' => $equipment_id, 'id2' => $equipment_id]);
+            $exchangeCount = (int)($checkExchanges->fetch()['total'] ?? 0);
+
+            if ($rentalCount > 0 || $exchangeCount > 0) {
+                // Soft delete / Archive: Retain database relational integrity
+                // Set availability to Unavailable so it hides from browse & active lists
+                $archiveStmt = $pdo->prepare("UPDATE equipment SET availability_status = 'Unavailable' WHERE equipment_id = :id AND owner_id = :owner_id");
+                $archiveStmt->execute(['id' => $equipment_id, 'owner_id' => $owner_id]);
+                header("Location: equipment.php?msg=archived");
+                exit();
+            } else {
+                // No child records exist: Safe to perform hard delete
+                $delStmt = $pdo->prepare("DELETE FROM equipment WHERE equipment_id = :id AND owner_id = :owner_id");
+                $delStmt->execute(['id' => $equipment_id, 'owner_id' => $owner_id]);
+                header("Location: equipment.php?msg=deleted");
+                exit();
+            }
+        } else {
+            $error = "Equipment listing not found or you do not have permission to delete it.";
+        }
     } catch (PDOException $e) {
         $error = "Could not delete equipment: " . htmlspecialchars($e->getMessage());
     }
