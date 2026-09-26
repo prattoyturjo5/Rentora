@@ -9,6 +9,8 @@ $error = "";
 if (isset($_GET['error'])) {
     if ($_GET['error'] === 'self_rent_forbidden') {
         $error = "You cannot rent your own equipment listing.";
+    } elseif ($_GET['error'] === 'dates_taken') {
+        $error = "This equipment is already booked or rented for the selected dates. Please choose different dates.";
     } else {
         $error = htmlspecialchars($_GET['error']);
     }
@@ -39,9 +41,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request'])) {
         $eqItem = $eqStmt->fetch();
 
         if ($eqItem) {
-            // Guard: Self-renting prevention
+            // Guard 1: Self-renting prevention
             if ((int)$eqItem['owner_id'] === $renter_id) {
                 header("Location: item-details.php?id=" . $req_item_id . "&error=self_rent_forbidden");
+                exit();
+            }
+
+            // Guard 2: Date Overlap / Collision Prevention
+            $collision_check = mysqli_query($conn, "
+                SELECT rental_id 
+                FROM rental_agreement 
+                WHERE equipment_id = '$req_item_id' 
+                  AND status IN ('Approved', 'Active', 'Pending') 
+                  AND ('$start_date' <= expected_end_date AND '$end_date' >= start_date)
+                LIMIT 1
+            ");
+
+            if ($collision_check && mysqli_num_rows($collision_check) > 0) {
+                header("Location: item-details.php?id=" . $req_item_id . "&error=dates_taken");
                 exit();
             }
 
@@ -83,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request'])) {
 
 // Fetch Item Data
 $item = null;
+$item_stats = ['total_rentals' => 0, 'active_bookings' => 0];
 try {
     $stmt = $pdo->prepare("
         SELECT e.*, e.equipment_name AS title, e.rental_rate AS daily_rate, 
@@ -91,6 +109,7 @@ try {
                CONCAT(m.first_name, ' ', m.last_name) AS owner_name, 
                m.username AS owner_student_id, 
                m.phone_number AS owner_phone,
+               m.university_email AS owner_email,
                m.status AS owner_status,
                COALESCE(NULLIF(e.campus_spot, ''), m.campus_address) AS campus_spot
         FROM equipment e 
@@ -101,6 +120,17 @@ try {
     ");
     $stmt->execute(['id' => $item_id]);
     $item = $stmt->fetch();
+
+    if ($item) {
+        $statsStmt = $pdo->prepare("
+            SELECT COUNT(*) AS total_rentals,
+                   COUNT(CASE WHEN status IN ('Active', 'Pending') THEN 1 END) AS active_bookings
+            FROM rental_agreement 
+            WHERE equipment_id = :id
+        ");
+        $statsStmt->execute(['id' => $item_id]);
+        $item_stats = $statsStmt->fetch() ?: $item_stats;
+    }
 } catch (Exception $e) {
     $item = null;
 }
@@ -163,6 +193,38 @@ require_once(__DIR__ . '/includes/nav.php');
 
           <div class="p-6">
             <h1 class="text-2xl font-extrabold text-navy-900"><?php echo htmlspecialchars($item['title'] ?? ''); ?></h1>
+            
+            <?php
+            // Zero Schema Change: Calculate aggregate rentals dynamically from rental_agreement
+            $item_eq_id = intval($_GET['id'] ?? $item['equipment_id'] ?? 0);
+            $analytics_res = mysqli_query($conn, "
+                SELECT 
+                    COUNT(rental_id) AS total_rent_count,
+                    COALESCE(SUM(DATEDIFF(expected_end_date, start_date)), 0) AS total_rented_days
+                FROM rental_agreement 
+                WHERE equipment_id = '$item_eq_id' 
+                  AND status IN ('Active', 'Completed')
+            ");
+            $analytics = ($analytics_res) ? mysqli_fetch_assoc($analytics_res) : [];
+            $total_rent_count = intval($analytics['total_rent_count'] ?? 0);
+            $total_rented_days = intval($analytics['total_rented_days'] ?? 0);
+            ?>
+
+            <div class="flex flex-wrap items-center gap-2.5 my-3">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 shadow-sm">
+                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Rented: <?php echo $total_rent_count; ?> <?php echo ($total_rent_count === 1) ? 'time' : 'times'; ?>
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 shadow-sm">
+                    <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    Total Duration: <?php echo $total_rented_days; ?> days
+                </span>
+            </div>
+
             <p class="text-xs text-slate-500 mt-1">Campus Handover Spot: <strong class="text-slate-700"><?php echo htmlspecialchars($item['campus_spot'] ?? 'Campus Spot'); ?></strong></p>
 
             <div class="mt-6 pt-6 border-t border-slate-100">
@@ -175,23 +237,36 @@ require_once(__DIR__ . '/includes/nav.php');
         </div>
 
         <!-- Lender Profile Card -->
-        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-primary-600 to-navy-900 text-white flex items-center justify-center font-bold text-lg">
-              <?php echo strtoupper(substr($item['owner_name'] ?? 'L', 0, 1)); ?>
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-primary-600 to-navy-900 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                <?php echo strtoupper(substr($item['owner_name'] ?? 'L', 0, 1)); ?>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-navy-900"><?php echo htmlspecialchars($item['owner_name'] ?? 'Lender'); ?></h4>
+                <p class="text-xs text-slate-500">Student ID / Roll: <?php echo htmlspecialchars($item['owner_student_id'] ?? 'Student'); ?></p>
+              </div>
             </div>
-            <div>
-              <h4 class="text-sm font-bold text-navy-900"><?php echo htmlspecialchars($item['owner_name'] ?? 'Lender'); ?></h4>
-              <p class="text-xs text-slate-500">Student Roll: <?php echo htmlspecialchars($item['owner_student_id'] ?? 'Student'); ?></p>
+            <?php if (($item['owner_status'] ?? '') === 'Verified'): ?>
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Verified Peer</span>
+            <?php elseif (($item['owner_status'] ?? '') === 'Rejected'): ?>
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">Unverified</span>
+            <?php else: ?>
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">Verification Pending</span>
+            <?php endif; ?>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-100 text-xs">
+            <div class="flex items-center gap-2 text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+              <svg class="w-4 h-4 text-primary-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+              <span class="font-medium"><?php echo htmlspecialchars(!empty($item['owner_phone']) ? $item['owner_phone'] : 'Phone on Booking'); ?></span>
+            </div>
+            <div class="flex items-center gap-2 text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100 truncate">
+              <svg class="w-4 h-4 text-primary-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              <span class="font-medium truncate"><?php echo htmlspecialchars(!empty($item['owner_email']) ? $item['owner_email'] : 'Email on Booking'); ?></span>
             </div>
           </div>
-          <?php if (($item['owner_status'] ?? '') === 'Verified'): ?>
-            <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Verified Peer</span>
-          <?php elseif (($item['owner_status'] ?? '') === 'Rejected'): ?>
-            <span class="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">Unverified</span>
-          <?php else: ?>
-            <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">Verification Pending</span>
-          <?php endif; ?>
         </div>
       </div>
 
@@ -246,13 +321,19 @@ require_once(__DIR__ . '/includes/nav.php');
                 </div>
               </div>
 
-              <div>
-                <label for="pickup_spot" class="block text-xs font-bold text-slate-700 mb-1">Campus Handover Spot *</label>
-                <select id="pickup_spot" name="pickup_spot" required class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 font-medium text-slate-800">
-                  <option value="Hazari Lane">Hazari Lane</option>
-                  <option value="Wasa">Wasa</option>
-                  <option value="GEC Campus">GEC Campus</option>
-                </select>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label for="pickup_spot" class="block text-xs font-bold text-slate-700 mb-1">Campus Spot *</label>
+                  <select id="pickup_spot" name="pickup_spot" required class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 font-medium text-slate-800">
+                    <option value="Hazari Lane">Hazari Lane</option>
+                    <option value="Wasa">Wasa</option>
+                    <option value="GEC Campus">GEC Campus</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="pickup_time" class="block text-xs font-bold text-slate-700 mb-1">Pickup Time</label>
+                  <input type="time" id="pickup_time" name="pickup_time" value="10:00" class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 font-medium text-slate-800">
+                </div>
               </div>
 
               <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-2" id="price_breakdown_card" data-daily-rate="<?php echo htmlspecialchars($item['daily_rate'] ?? 0); ?>" data-deposit="<?php echo htmlspecialchars($item['security_deposit'] ?? 0); ?>">

@@ -14,6 +14,20 @@ $member_status = get_member_status($pdo, $user_id);
 $error = "";
 $success = "";
 
+$member_phone = '';
+$member_email = $_SESSION['email'] ?? '';
+try {
+    $mStmt = $pdo->prepare("SELECT phone_number, university_email FROM member WHERE member_id = :id LIMIT 1");
+    $mStmt->execute(['id' => $user_id]);
+    $mRow = $mStmt->fetch();
+    if ($mRow) {
+        $member_phone = $mRow['phone_number'] ?? '';
+        if (!empty($mRow['university_email'])) {
+            $member_email = $mRow['university_email'];
+        }
+    }
+} catch (Exception $e) {}
+
 if (isset($_GET['msg'])) {
     if ($_GET['msg'] === 'item_added') {
         $success = "Equipment listing added successfully!";
@@ -319,6 +333,17 @@ require_once(__DIR__ . '/../includes/nav.php');
             <option value="Wasa">Wasa</option>
             <option value="GEC Campus">GEC Campus</option>
           </select>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="lender_phone" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Contact Phone (Visible to Renters) *</label>
+            <input type="tel" id="lender_phone" name="lender_phone" required placeholder="018XXXXXXXX" value="<?php echo htmlspecialchars($member_phone); ?>" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
+          </div>
+          <div>
+            <label for="lender_email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Contact Email *</label>
+            <input type="email" id="lender_email" name="lender_email" required value="<?php echo htmlspecialchars($member_email); ?>" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
+          </div>
         </div>
 
         <div>

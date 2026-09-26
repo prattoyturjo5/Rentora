@@ -76,29 +76,32 @@ if ($current_role === 'member' && $current_user_id) {
       </a>
 
       <!-- Desktop Navigation Links -->
+      <?php 
+        $current_script = basename($_SERVER['SCRIPT_NAME'] ?? '');
+      ?>
       <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
-        <a href="<?php echo $base_path; ?>/index.php" class="px-3.5 py-2 text-sm font-semibold text-primary-600 rounded-lg hover:bg-blue-50/80 transition-colors">
+        <a href="<?php echo $base_path; ?>/index.php" class="px-3.5 py-2 text-sm rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] <?php echo ($current_script === 'index.php' || $current_script === '') ? 'bg-blue-50 text-primary-600 font-bold shadow-xs' : 'text-slate-700 hover:text-primary-600 hover:bg-slate-100 font-medium'; ?>">
           Browse Equipment
         </a>
 
         <?php if ($current_role === 'member'): ?>
-          <a href="<?php echo $base_path; ?>/user/dashboard.php" class="px-3.5 py-2 text-sm font-medium text-slate-700 hover:text-primary-600 hover:bg-slate-100 rounded-lg transition-colors">
+          <a href="<?php echo $base_path; ?>/user/dashboard.php" class="px-3.5 py-2 text-sm rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] <?php echo ($current_script === 'dashboard.php') ? 'bg-blue-50 text-primary-600 font-bold shadow-xs' : 'text-slate-700 hover:text-primary-600 hover:bg-slate-100 font-medium'; ?>">
             Dashboard
           </a>
-          <a href="<?php echo $base_path; ?>/user/equipment.php" class="px-3.5 py-2 text-sm font-medium text-slate-700 hover:text-primary-600 hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-1.5">
+          <a href="<?php echo $base_path; ?>/user/equipment.php" class="px-3.5 py-2 text-sm rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1.5 <?php echo ($current_script === 'equipment.php') ? 'bg-blue-50 text-primary-600 font-bold shadow-xs' : 'text-slate-700 hover:text-primary-600 hover:bg-slate-100 font-medium'; ?>">
             <span>My Equipment</span>
-            <span class="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-bold">Lender</span>
+            <span class="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded-full font-bold">Lender</span>
           </a>
-          <a href="<?php echo $base_path; ?>/user/rentals.php" class="px-3.5 py-2 text-sm font-medium text-slate-700 hover:text-primary-600 hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-1.5">
+          <a href="<?php echo $base_path; ?>/user/rentals.php" class="px-3.5 py-2 text-sm rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1.5 <?php echo ($current_script === 'rentals.php') ? 'bg-blue-50 text-primary-600 font-bold shadow-xs' : 'text-slate-700 hover:text-primary-600 hover:bg-slate-100 font-medium'; ?>">
             <span>Rentals</span>
-            <span class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">Active</span>
+            <span class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full font-bold">Active</span>
           </a>
-          <a href="<?php echo $base_path; ?>/user/exchanges.php" class="px-3.5 py-2 text-sm font-medium text-slate-700 hover:text-primary-600 hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-1.5">
+          <a href="<?php echo $base_path; ?>/user/exchanges.php" class="px-3.5 py-2 text-sm rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1.5 <?php echo ($current_script === 'exchanges.php') ? 'bg-blue-50 text-primary-600 font-bold shadow-xs' : 'text-slate-700 hover:text-primary-600 hover:bg-slate-100 font-medium'; ?>">
             <span>Exchanges</span>
-            <span class="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold">Swap</span>
+            <span class="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded-full font-bold">Swap</span>
           </a>
         <?php elseif ($current_role === 'admin'): ?>
-          <a href="<?php echo $base_path; ?>/admin/dashboard.php" class="px-3.5 py-2 text-sm font-semibold text-emerald-700 bg-emerald-50 rounded-lg transition-colors">
+          <a href="<?php echo $base_path; ?>/admin/dashboard.php" class="px-3.5 py-2 text-sm font-semibold text-emerald-700 bg-emerald-50 rounded-xl transition-all duration-200 hover:scale-[1.02] shadow-xs">
             Operations Console
           </a>
         <?php endif; ?>

@@ -30,9 +30,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['item_id'])) {
         $item = $stmt->fetch();
 
         if ($item) {
-            // Guard: Prevent owner from renting their own listed equipment
+            // Guard 1: Prevent owner from renting their own listed equipment
             if ((int)$item['owner_id'] === $renter_id) {
                 header("Location: ../item-details.php?id=" . $item_id . "&error=self_rent_forbidden");
+                exit();
+            }
+
+            // Guard 2: Date Overlap / Collision Prevention
+            $collision_check = mysqli_query($conn, "
+                SELECT rental_id 
+                FROM rental_agreement 
+                WHERE equipment_id = '$item_id' 
+                  AND status IN ('Approved', 'Active', 'Pending') 
+                  AND ('$start_date' <= expected_end_date AND '$end_date' >= start_date)
+                LIMIT 1
+            ");
+
+            if ($collision_check && mysqli_num_rows($collision_check) > 0) {
+                header("Location: ../item-details.php?id=" . $item_id . "&error=dates_taken");
                 exit();
             }
 

@@ -32,6 +32,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['item_title']) || iss
     $security_deposit = floatval($_POST['security_deposit'] ?? $_POST['deposit'] ?? 0);
     $campus_spot = trim($_POST['campus_spot'] ?? $_POST['pickup_spot'] ?? 'Hazari Lane');
     $description = trim($_POST['item_description'] ?? $_POST['description'] ?? '');
+    $lender_phone = trim($_POST['lender_phone'] ?? '');
+    $lender_email = trim($_POST['lender_email'] ?? '');
+
+    // Synchronize lender contact details to member profile without schema changes
+    if (!empty($lender_phone) || !empty($lender_email)) {
+        try {
+            $upCols = [];
+            $upParams = ['id' => $owner_id];
+            if (!empty($lender_phone)) {
+                $upCols[] = "phone_number = :phone";
+                $upParams['phone'] = $lender_phone;
+            }
+            if (!empty($lender_email)) {
+                $upCols[] = "university_email = :email";
+                $upParams['email'] = $lender_email;
+            }
+            if (!empty($upCols)) {
+                $upSql = "UPDATE member SET " . implode(', ', $upCols) . " WHERE member_id = :id";
+                $upStmt = $pdo->prepare($upSql);
+                $upStmt->execute($upParams);
+            }
+        } catch (Exception $e) {
+            // Non-fatal if schema prevents update
+        }
+    }
 
     // 1. Text field validation
     if (empty($equipment_name) || $rental_rate <= 0) {

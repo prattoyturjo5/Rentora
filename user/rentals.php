@@ -59,7 +59,8 @@ try {
         SELECT r.*, r.expected_end_date AS end_date, r.deposit_amount AS deposit, r.total_cost AS total_rent,
                e.equipment_name AS title, e.campus_spot, e.rental_rate AS daily_rate, 
                CONCAT(m.first_name, ' ', m.last_name) AS owner_name, 
-               m.phone_number AS owner_phone
+               m.phone_number AS owner_phone,
+               m.university_email AS owner_email
         FROM rental_agreement r
         LEFT JOIN equipment e ON r.equipment_id = e.equipment_id
         LEFT JOIN member m ON e.owner_id = m.member_id
@@ -79,8 +80,9 @@ try {
         SELECT r.*, r.expected_end_date AS end_date, r.deposit_amount AS deposit, r.total_cost AS total_rent,
                e.equipment_name AS title, 
                CONCAT(m.first_name, ' ', m.last_name) AS renter_name, 
-               m.student_id AS renter_student_id, 
-               m.phone_number AS renter_phone
+               m.username AS renter_student_id, 
+               m.phone_number AS renter_phone,
+               m.university_email AS renter_email
         FROM rental_agreement r
         JOIN equipment e ON r.equipment_id = e.equipment_id
         LEFT JOIN member m ON r.renter_id = m.member_id
@@ -178,7 +180,12 @@ require_once(__DIR__ . '/../includes/nav.php');
                   <td class="py-3 px-4 font-bold text-navy-900"><?php echo htmlspecialchars($req['title'] ?? 'Equipment'); ?></td>
                   <td class="py-3 px-4">
                     <span class="font-semibold text-slate-800"><?php echo htmlspecialchars($req['renter_name'] ?? 'Student'); ?></span>
-                    <span class="block text-[10px] text-slate-400"><?php echo htmlspecialchars($req['renter_student_id'] ?? ''); ?></span>
+                    <?php if (!empty($req['renter_phone'])): ?>
+                      <span class="block text-[11px] text-primary-600 font-medium"><?php echo htmlspecialchars($req['renter_phone']); ?></span>
+                    <?php endif; ?>
+                    <?php if (!empty($req['renter_email'])): ?>
+                      <span class="block text-[10px] text-slate-400 truncate max-w-[150px]"><?php echo htmlspecialchars($req['renter_email']); ?></span>
+                    <?php endif; ?>
                   </td>
                   <td class="py-3 px-4 text-slate-600"><?php echo htmlspecialchars($req['start_date'] ?? ''); ?> &rarr; <?php echo htmlspecialchars($req['end_date'] ?? ''); ?></td>
                   <td class="py-3 px-4 font-bold text-navy-900">৳<?php echo number_format($req['total_rent'] ?? 0, 2); ?></td>
@@ -225,7 +232,7 @@ require_once(__DIR__ . '/../includes/nav.php');
           <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase">
             <tr>
               <th class="py-3 px-4">Equipment</th>
-              <th class="py-3 px-4">Lender</th>
+              <th class="py-3 px-4">Lender Contact</th>
               <th class="py-3 px-4">Dates</th>
               <th class="py-3 px-4">Handover Token</th>
               <th class="py-3 px-4">Deposit</th>
@@ -246,7 +253,10 @@ require_once(__DIR__ . '/../includes/nav.php');
                   <td class="py-3 px-4 text-slate-700">
                     <span class="font-semibold"><?php echo htmlspecialchars($b['owner_name'] ?? 'Lender'); ?></span>
                     <?php if (!empty($b['owner_phone'])): ?>
-                      <span class="block text-[10px] text-slate-400"><?php echo htmlspecialchars($b['owner_phone']); ?></span>
+                      <span class="block text-[11px] text-primary-600 font-medium"><?php echo htmlspecialchars($b['owner_phone']); ?></span>
+                    <?php endif; ?>
+                    <?php if (!empty($b['owner_email'])): ?>
+                      <span class="block text-[10px] text-slate-400 truncate max-w-[150px]"><?php echo htmlspecialchars($b['owner_email']); ?></span>
                     <?php endif; ?>
                   </td>
                   <td class="py-3 px-4 text-slate-600"><?php echo htmlspecialchars($b['start_date'] ?? ''); ?> &rarr; <?php echo htmlspecialchars($b['end_date'] ?? ''); ?></td>
