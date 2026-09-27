@@ -144,6 +144,7 @@ $my_recent_equipment = safe_user_query($pdo, "
 
 $base_path = '..';
 $page_title = 'Member Dashboard - Rentora';
+$dark_sector = true;
 require_once(__DIR__ . '/../includes/header.php');
 require_once(__DIR__ . '/../includes/nav.php');
 ?>

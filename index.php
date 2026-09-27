@@ -95,152 +95,189 @@ require_once(__DIR__ . '/includes/header.php');
 require_once(__DIR__ . '/includes/nav.php');
 ?>
 
-  <!-- Hero Section with Multi-Parameter Search -->
-  <section class="relative bg-gradient-to-b from-navy-900 via-navy-900 to-slate-900 text-white pt-12 pb-20 overflow-hidden">
-    <div class="absolute -top-24 -right-24 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute bottom-0 -left-20 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-    
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+  <!-- Living Holographic Interface & Spacetime Canvas Container -->
+  <div class="antimatter-viewport relative w-full overflow-hidden">
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         01 HERO — Dense, High-Impact Gravitational Singularity Core
+         (Purged of rogue anomalies & recalibrated vertical Y-axis)
+    ════════════════════════════════════════════════════════════════ -->
+    <section class="relative bg-gradient-to-br from-navy-950 via-navy-900 to-slate-900 text-white overflow-hidden py-10 sm:py-12 border-b border-blue-900/50">
       
-      <!-- Academic Badge -->
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-blue-200 mb-6 backdrop-blur-sm">
-        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-        <span>Trusted University Equipment Exchange & Handover Protocol</span>
-      </div>
+      <!-- Subtle Microdot Coordinate Texture (Zero Drag) -->
+      <div class="absolute inset-0 pointer-events-none opacity-40" style="background-image:radial-gradient(rgba(255,255,255,.08) 1px,transparent 1px);background-size:24px 24px;"></div>
 
-      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white max-w-3xl mx-auto leading-tight">
-        Rent & Exchange Lab Kits & Gear <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Directly on Campus</span>
-      </h1>
-      <p class="mt-4 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto font-normal">
-        Exchange scientific calculators, drafters, cameras, and IoT kits with verified classmates. Safe in-person handover with a refundable security deposit.
-      </p>
+      <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+        
+        <!-- Glassmorphic Verified Protocol Badge -->
+        <div class="ab-fade ab-fade-d1 inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-blue-200 mb-4 backdrop-blur-md shadow-md">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Premier University Equipment Protocol &bull; Verified Academic Registry</span>
+        </div>
 
-      <!-- Search & Filter Form -->
-      <div class="mt-8 max-w-4xl mx-auto bg-white p-3 sm:p-4 rounded-2xl shadow-2xl border border-slate-200/80 text-left">
-        <form id="filter-form" action="index.php" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          
-          <!-- Search Input -->
-          <div class="relative">
-            <label for="search_query" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Keyword</label>
+        <!-- Radiant Gradient Headline -->
+        <h1 class="ab-fade ab-fade-d2 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight max-w-3xl mx-auto">
+          Precision Campus Lab Equipment <br class="hidden sm:inline">
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-emerald-300 to-teal-300">
+            Institutional Exchange Monolith
+          </span>
+        </h1>
+        
+        <p class="ab-fade ab-fade-d3 mt-3 text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed font-normal">
+          Frictionless university equipment exchange for scientific calculators, drafting systems, oscilloscopes &amp; engineering kits. Verified student identity, zero platform fee, and refundable deposit protocol.
+        </p>
+
+        <!-- Glassmorphic Quantum Search Command Deck (Dense & High-Impact) -->
+        <div class="ab-fade ab-fade-d4 mt-6 max-w-4xl mx-auto glass-search-deck text-left p-4 sm:p-5">
+          <form id="filter-form" action="index.php" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            
+            <!-- Search Keyword Input -->
             <div class="relative">
-              <input type="text" id="search_query" name="query" value="<?php echo htmlspecialchars($query); ?>" placeholder="e.g. Casio, Drafter, Arduino" class="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-slate-800 placeholder-slate-400 font-medium">
-              <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              <label for="search_query" class="block text-[11px] font-bold text-blue-200 uppercase tracking-widest mb-1 font-mono">
+                // Asset Search
+              </label>
+              <div class="relative">
+                <input type="text" id="search_query" name="query" value="<?php echo htmlspecialchars($query); ?>" placeholder="e.g. Casio, Arduino, Rigol..." class="glass-input w-full pl-9 pr-3 py-2 text-sm placeholder-slate-400 font-medium">
+                <svg class="w-4 h-4 text-blue-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              </div>
             </div>
-          </div>
 
-          <!-- Category Selector -->
-          <div>
-            <label for="category_id" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Category</label>
-            <select id="category_id" name="category_id" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-slate-800 font-medium">
-              <option value="ALL">All Categories</option>
-              <?php foreach ($categories as $cat): ?>
-                <?php $cid = $cat['category_id'] ?? $cat['id']; ?>
-                <option value="<?php echo $cid; ?>" <?php if ($category_id == $cid) echo 'selected'; ?>>
-                  <?php echo htmlspecialchars($cat['category_name'] ?? $cat['name'] ?? ''); ?> (<?php echo $cat['item_count'] ?? 0; ?>)
-                </option>
-              <?php endforeach; ?>
-            </select>
-          </div>
+            <!-- Category Selector -->
+            <div>
+              <label for="category_id" class="block text-[11px] font-bold text-blue-200 uppercase tracking-widest mb-1 font-mono">
+                // Discipline Category
+              </label>
+              <select id="category_id" name="category_id" class="glass-input w-full px-3 py-2 text-sm font-medium">
+                <option value="ALL">All Disciplines</option>
+                <?php foreach ($categories as $cat): ?>
+                  <?php $cid = $cat['category_id'] ?? $cat['id']; ?>
+                  <option value="<?php echo $cid; ?>" <?php if ($category_id == $cid) echo 'selected'; ?>>
+                    <?php echo htmlspecialchars($cat['category_name'] ?? $cat['name'] ?? ''); ?> (<?php echo $cat['item_count'] ?? 0; ?>)
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
 
-          <!-- Campus Pickup Spot -->
-          <div>
-            <label for="pickup_spot" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Campus Spot</label>
-            <select id="pickup_spot" name="pickup_spot" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-slate-800 font-medium">
-              <option value="ALL">Any Campus Spot</option>
-              <option value="Hazari Lane" <?php if ($pickup_spot === 'Hazari Lane') echo 'selected'; ?>>Hazari Lane</option>
-              <option value="Wasa" <?php if ($pickup_spot === 'Wasa') echo 'selected'; ?>>Wasa</option>
-              <option value="GEC Campus" <?php if ($pickup_spot === 'GEC Campus') echo 'selected'; ?>>GEC Campus</option>
-            </select>
-          </div>
+            <!-- Campus Pickup Spot -->
+            <div>
+              <label for="pickup_spot" class="block text-[11px] font-bold text-blue-200 uppercase tracking-widest mb-1 font-mono">
+                // Campus Sector
+              </label>
+              <select id="pickup_spot" name="pickup_spot" class="glass-input w-full px-3 py-2 text-sm font-medium">
+                <option value="ALL">All Campus Sectors</option>
+                <option value="Hazari Lane" <?php if ($pickup_spot === 'Hazari Lane') echo 'selected'; ?>>Hazari Lane Campus</option>
+                <option value="Wasa" <?php if ($pickup_spot === 'Wasa') echo 'selected'; ?>>Wasa Campus Hub</option>
+                <option value="GEC Campus" <?php if ($pickup_spot === 'GEC Campus') echo 'selected'; ?>>GEC Campus Point</option>
+              </select>
+            </div>
 
-          <!-- Submit Button -->
-          <div class="flex items-end">
-            <button type="submit" class="w-full py-2.5 px-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl text-sm shadow-md shadow-blue-600/30 transition-all flex items-center justify-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-              <span>Search Gear</span>
-            </button>
-          </div>
-        </form>
-      </div>
+            <!-- Terminal Velocity Submit Button -->
+            <div class="flex items-end">
+              <button type="submit" class="quantum-submit-btn w-full py-2 px-4 text-sm flex items-center justify-center gap-2">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <span>Execute Query</span>
+              </button>
+            </div>
+          </form>
+        </div>
 
-      <!-- Quick Category Pills -->
-      <div class="mt-6 flex flex-wrap justify-center items-center gap-2 text-xs">
-        <span class="text-slate-400 font-medium mr-1">Popular:</span>
-        <a href="index.php" class="px-3 py-1.5 rounded-full <?php echo ($category_id === 0) ? 'bg-white/30 text-white font-bold' : 'bg-white/10 text-slate-200'; ?> hover:bg-white/20 transition-colors border border-white/15">
-          All Gear
-        </a>
-        <?php foreach ($categories as $cat): ?>
-          <?php $cid = $cat['category_id'] ?? $cat['id']; ?>
-          <a href="index.php?category_id=<?php echo $cid; ?>" class="px-3 py-1.5 rounded-full <?php echo ($category_id == $cid) ? 'bg-white/30 text-white font-bold' : 'bg-white/10 text-slate-200'; ?> hover:bg-white/20 transition-colors border border-white/15">
-            <?php echo htmlspecialchars($cat['category_name'] ?? $cat['name'] ?? ''); ?>
+        <!-- Glassmorphic Category Filter Pills (Tightly Aligned) -->
+        <div class="ab-fade ab-fade-d5 mt-5 flex flex-wrap justify-center items-center gap-2 text-xs">
+          <span class="text-blue-300 font-mono font-bold mr-1">// DISCIPLINES:</span>
+          <a href="index.php" class="quantum-pill <?php echo ($category_id === 0) ? 'quantum-pill-active' : ''; ?>">
+            All Equipment
           </a>
-        <?php endforeach; ?>
+          <?php foreach ($categories as $cat): ?>
+            <?php $cid = $cat['category_id'] ?? $cat['id']; ?>
+            <a href="index.php?category_id=<?php echo $cid; ?>" class="quantum-pill <?php echo ($category_id == $cid) ? 'quantum-pill-active' : ''; ?>">
+              <?php echo htmlspecialchars($cat['category_name'] ?? $cat['name'] ?? ''); ?>
+            </a>
+          <?php endforeach; ?>
+        </div>
+
       </div>
+    </section>
 
-    </div>
-  </section>
-
-  <!-- Live Stats Strip -->
-  <section class="bg-white border-b border-slate-200 py-3 shadow-inner">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center divide-x divide-slate-100">
-        <div>
-          <span class="block text-xl font-extrabold text-navy-900"><?php echo $count_students; ?>+</span>
-          <span class="text-xs text-slate-500 font-medium">Verified Members</span>
-        </div>
-        <div>
-          <span class="block text-xl font-extrabold text-primary-600"><?php echo $count_avail; ?>+</span>
-          <span class="text-xs text-slate-500 font-medium">Available Instruments</span>
-        </div>
-        <div>
-          <span class="block text-xl font-extrabold text-emerald-600">৳0 Fee</span>
-          <span class="text-xs text-slate-500 font-medium">Cash-Only, No Platform Fees</span>
-        </div>
-        <div>
-          <span class="block text-xl font-extrabold text-amber-600">3 Pickup Zones</span>
-          <span class="text-xs text-slate-500 font-medium">Official Handover Spots</span>
+    <!-- ═══════════════════════════════════════════════════════════════
+         02 DEEP NAVY TELEMETRY RIBBON (#0A0F1D) — Live Counters
+    ════════════════════════════════════════════════════════════════ -->
+    <section class="relative text-white py-4 border-b border-blue-900/40 overflow-hidden" style="background: #0A0F1D;">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center divide-x divide-slate-800">
+          <div class="reactor-metric-pod">
+            <div class="reactor-metric-val text-white">
+              <span class="text-blue-400">#</span><?php echo $count_students; ?>+
+            </div>
+            <span class="text-[11px] text-slate-400 font-mono uppercase tracking-wider font-semibold">Verified Scholars</span>
+          </div>
+          <div class="reactor-metric-pod">
+            <div class="reactor-metric-val text-cyan-300">
+              <span class="text-emerald-400">&bull;</span><?php echo $count_avail; ?>+
+            </div>
+            <span class="text-[11px] text-slate-400 font-mono uppercase tracking-wider font-semibold">Available Assets</span>
+          </div>
+          <div class="reactor-metric-pod">
+            <div class="reactor-metric-val text-emerald-400">
+              <span>৳0</span>
+            </div>
+            <span class="text-[11px] text-slate-400 font-mono uppercase tracking-wider font-semibold">Institutional Fee</span>
+          </div>
+          <div class="reactor-metric-pod">
+            <div class="reactor-metric-val text-amber-400">
+              <span>3</span>
+            </div>
+            <span class="text-[11px] text-slate-400 font-mono uppercase tracking-wider font-semibold">Campus Handover Zones</span>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Main Content Area: Equipment Catalog Grid -->
-  <main class="flex-1 bg-slate-50 py-10 sm:py-12 w-full">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-      <!-- Section Header & Filter Controls -->
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-        <div>
-          <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Available Campus Equipment</h2>
-          <p class="text-sm text-slate-500 font-medium mt-1">Showing <?php echo $total_items; ?> verified equipment items in database</p>
+    <!-- ═══════════════════════════════════════════════════════════════
+         03 ZERO-GRAVITY EQUIPMENT MATRIX & REFINED CARD EQUILIBRIUM (#F4F8FF)
+         (Exact Color Gradient and Surface DNA from About Page Section 02)
+    ════════════════════════════════════════════════════════════════ -->
+    <main class="flex-1 zero-g-catalog-container py-14 sm:py-20 w-full border-b border-blue-100/60" style="background: #F4F8FF;">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Catalog Header & Sorter with About Page Styling -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="inline-block text-xs font-bold uppercase tracking-widest text-primary-600 bg-blue-100/80 px-3.5 py-1 rounded-full font-semibold">
+                Verified Campus Registry
+              </span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-navy-900 tracking-tight">Institutional Equipment Registry</h2>
+            <p class="mt-1 text-xs sm:text-sm text-slate-600 font-mono">
+              Fluid quantum equilibrium &bull; <?php echo $total_items; ?> verified assets registered across campus sectors
+            </p>
+          </div>
+
+          <!-- Sort Selector -->
+          <form action="index.php" method="GET" class="flex items-center gap-3 w-full sm:w-auto">
+            <?php if (!empty($query)): ?><input type="hidden" name="query" value="<?php echo htmlspecialchars($query); ?>"><?php endif; ?>
+            <?php if ($category_id > 0): ?><input type="hidden" name="category_id" value="<?php echo $category_id; ?>"><?php endif; ?>
+            <?php if (!empty($pickup_spot)): ?><input type="hidden" name="pickup_spot" value="<?php echo htmlspecialchars($pickup_spot); ?>"><?php endif; ?>
+            
+            <label for="sort" class="text-xs font-mono font-bold text-slate-500 whitespace-nowrap">// ORDER:</label>
+            <select id="sort" name="sort" onchange="this.form.submit()" class="bg-white border border-[#D1DFEE] text-navy-900 rounded-xl text-xs py-2 px-3 shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 font-medium">
+              <option value="newest" <?php if ($sort === 'newest') echo 'selected'; ?>>Newest Registry Ingress</option>
+              <option value="price_asc" <?php if ($sort === 'price_asc') echo 'selected'; ?>>Daily Rate: Low to High</option>
+              <option value="price_desc" <?php if ($sort === 'price_desc') echo 'selected'; ?>>Daily Rate: High to Low</option>
+              <option value="deposit_asc" <?php if ($sort === 'deposit_asc') echo 'selected'; ?>>Deposit: Low to High</option>
+            </select>
+          </form>
         </div>
 
-        <!-- Sort Form -->
-        <form action="index.php" method="GET" class="flex items-center gap-3 w-full sm:w-auto">
-          <?php if (!empty($query)): ?><input type="hidden" name="query" value="<?php echo htmlspecialchars($query); ?>"><?php endif; ?>
-          <?php if ($category_id > 0): ?><input type="hidden" name="category_id" value="<?php echo $category_id; ?>"><?php endif; ?>
-          <?php if (!empty($pickup_spot)): ?><input type="hidden" name="pickup_spot" value="<?php echo htmlspecialchars($pickup_spot); ?>"><?php endif; ?>
-          
-          <label for="sort" class="text-xs font-semibold text-slate-500 whitespace-nowrap">Sort By:</label>
-          <select id="sort" name="sort" onchange="this.form.submit()" class="bg-white border border-slate-200 text-slate-700 rounded-lg px-3 py-1.5 shadow-sm text-sm focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 font-medium">
-            <option value="newest" <?php if ($sort === 'newest') echo 'selected'; ?>>Newest First</option>
-            <option value="price_asc" <?php if ($sort === 'price_asc') echo 'selected'; ?>>Rental Rate: Low to High</option>
-            <option value="price_desc" <?php if ($sort === 'price_desc') echo 'selected'; ?>>Rental Rate: High to Low</option>
-            <option value="deposit_asc" <?php if ($sort === 'deposit_asc') echo 'selected'; ?>>Deposit: Low to High</option>
-          </select>
-        </form>
-      </div>
-
-      <!-- Equipment Container / Card Grid -->
-      <?php if ($total_items > 0): ?>
-        <div class="bg-white border border-slate-200/80 shadow-sm rounded-2xl p-6 sm:p-8 lg:p-10">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <?php foreach ($items as $item): 
-              $cond_class = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+        <!-- 3D Equipment Cards Field Hovering in Perfect Equilibrium -->
+        <?php if ($total_items > 0): ?>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
+            <?php foreach ($items as $index => $item): 
+              $cond_class = 'bg-emerald-50 text-emerald-700 border-emerald-200';
               if (($item['item_condition'] ?? '') === 'Good') {
-                  $cond_class = 'bg-blue-100 text-blue-800 border-blue-200';
+                  $cond_class = 'bg-blue-50 text-blue-700 border-blue-200';
               } elseif (($item['item_condition'] ?? '') === 'Fair') {
-                  $cond_class = 'bg-amber-100 text-amber-800 border-amber-200';
+                  $cond_class = 'bg-amber-50 text-amber-700 border-amber-200';
               }
               $raw_img = $item['image_url'] ?? '';
               if (!empty($raw_img)) {
@@ -254,88 +291,212 @@ require_once(__DIR__ . '/includes/nav.php');
               }
               $itemId = $item['equipment_id'] ?? $item['id'] ?? 1;
             ?>
-              <div class="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 card-hover flex flex-col">
+              <!-- Zero-Gravity 3D Card Parent Wrapper -->
+              <div class="zero-g-card-wrapper" data-item-id="<?php echo $itemId; ?>">
                 
-                <!-- Image Container -->
-                <div class="relative h-48 w-full bg-slate-100 overflow-hidden group">
-                  <img src="<?php echo htmlspecialchars($item_image); ?>" alt="<?php echo htmlspecialchars($item['title'] ?? ''); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                  <div class="absolute top-3 left-3 flex flex-wrap gap-1.5">
-                    <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border <?php echo $cond_class; ?> shadow-sm backdrop-blur-md">
-                      <?php echo htmlspecialchars($item['item_condition'] ?? 'Good'); ?>
-                    </span>
-                    <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-slate-900/80 text-white backdrop-blur-md">
-                      <?php echo htmlspecialchars($item['category_name'] ?? 'Equipment'); ?>
-                    </span>
-                  </div>
-                  <div class="absolute bottom-3 right-3 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-lg text-xs font-bold text-navy-900 shadow">
-                    ৳<?php echo number_format($item['daily_rate'] ?? 0); ?> <span class="text-[10px] text-slate-500 font-normal">/ day</span>
-                  </div>
-                </div>
+                <!-- The Equipment Card Element (About Page Card DNA + Quantum Equilibrium) -->
+                <div class="holo-equipment-card h-full">
+                  
+                  <!-- Dynamic Specular Sheen Layer -->
+                  <div class="holo-sheen-layer"></div>
 
-                <!-- Card Body -->
-                <div class="p-5 flex-1 flex flex-col justify-between">
-                  <div>
-                    <div class="text-[11px] font-semibold text-primary-600 uppercase tracking-wider mb-1">
-                      <?php echo htmlspecialchars($item['category_name'] ?? 'General'); ?>
+                  <!-- Cybernetic Corner HUD Reticles -->
+                  <div class="hud-corner-tl"></div>
+                  <div class="hud-corner-br"></div>
+
+                  <!-- Equipment Holographic Image Container -->
+                  <div class="holo-image-container">
+                    <img src="<?php echo htmlspecialchars($item_image); ?>" alt="<?php echo htmlspecialchars($item['title'] ?? ''); ?>" loading="lazy">
+                    
+                    <!-- Cyan Scanning Laser Line -->
+                    <div class="holo-scanner-beam"></div>
+
+                    <!-- Suspended Badges -->
+                    <div class="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
+                      <span class="holo-badge-3d text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border <?php echo $cond_class; ?> shadow-sm">
+                        <?php echo htmlspecialchars($item['item_condition'] ?? 'Good'); ?>
+                      </span>
+                      <span class="holo-badge-3d text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-white/95 text-slate-700 border border-slate-200 shadow-sm">
+                        <?php echo htmlspecialchars($item['category_name'] ?? 'Equipment'); ?>
+                      </span>
                     </div>
-                    <h3 class="font-bold text-navy-900 text-base leading-snug line-clamp-2 hover:text-primary-600 transition-colors">
-                      <a href="item-details.php?id=<?php echo $itemId; ?>"><?php echo htmlspecialchars($item['title'] ?? 'Equipment'); ?></a>
-                    </h3>
 
-                    <!-- Deposit & Pickup Spot -->
-                    <div class="mt-3 space-y-1.5 text-xs text-slate-500 border-y border-slate-100 py-2.5 my-3">
-                      <div class="flex items-center justify-between">
-                        <span class="text-slate-500">Deposit:</span>
-                        <span class="font-bold text-slate-700">৳<?php echo number_format($item['security_deposit'] ?? 0); ?> <span class="text-[10px] font-normal text-emerald-600">(Refundable)</span></span>
-                      </div>
-                      <div class="flex items-center gap-1.5 text-slate-600 truncate" title="<?php echo htmlspecialchars($item['campus_spot'] ?? 'Campus'); ?>">
-                        <svg class="w-3.5 h-3.5 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
-                        <span class="truncate"><?php echo htmlspecialchars($item['campus_spot'] ?? 'Campus'); ?></span>
-                      </div>
+                    <!-- Daily Rental Rate Capsule -->
+                    <div class="holo-price-capsule">
+                      ৳<?php echo number_format($item['daily_rate'] ?? 0); ?> 
+                      <span class="text-[10px] text-slate-500 font-normal">/ day</span>
                     </div>
                   </div>
 
-                  <!-- Footer: Lender Info & Rent Button -->
-                  <div>
-                    <div class="flex items-center justify-between text-xs text-slate-500 mb-3.5">
-                      <div class="flex items-center gap-2">
-                        <div class="w-6 h-6 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-[10px]">
-                          <?php echo strtoupper(substr($item['owner_name'] ?? 'M', 0, 1)); ?>
+                  <!-- Card Telemetry Body -->
+                  <div class="holo-card-body">
+                    <div>
+                      <div class="text-[10px] font-mono uppercase tracking-widest text-primary-600 font-bold mb-1">
+                        // <?php echo htmlspecialchars($item['category_name'] ?? 'General'); ?>
+                      </div>
+
+                      <h3 class="holo-card-title line-clamp-2">
+                        <a href="item-details.php?id=<?php echo $itemId; ?>" class="hover:text-primary-600 transition-colors">
+                          <?php echo htmlspecialchars($item['title'] ?? 'Equipment'); ?>
+                        </a>
+                      </h3>
+
+                      <!-- Deposit & Campus Coordinate Divider -->
+                      <div class="holo-card-divider text-xs text-slate-600 space-y-1.5">
+                        <div class="flex items-center justify-between">
+                          <span class="text-slate-500 font-mono text-[11px]">Deposit:</span>
+                          <span class="font-bold text-slate-900">
+                            ৳<?php echo number_format($item['security_deposit'] ?? 0); ?> 
+                            <span class="text-[10px] font-semibold text-emerald-600">(Refundable)</span>
+                          </span>
                         </div>
-                        <span class="font-medium text-slate-700 truncate max-w-[120px]"><?php echo htmlspecialchars($item['owner_name'] ?? 'Member'); ?></span>
-                      </div>
-                      <div class="text-[11px] font-semibold text-primary-600">
-                        <?php echo htmlspecialchars($item['owner_student_id'] ?? ''); ?>
+                        <div class="flex items-center gap-1.5 text-slate-600 truncate" title="<?php echo htmlspecialchars($item['campus_spot'] ?? 'Campus'); ?>">
+                          <svg class="w-3.5 h-3.5 text-primary-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
+                          <span class="truncate font-mono text-[11px]"><?php echo htmlspecialchars($item['campus_spot'] ?? 'Campus'); ?></span>
+                        </div>
                       </div>
                     </div>
 
-                    <!-- View & Rent Action Button -->
-                    <a href="item-details.php?id=<?php echo $itemId; ?>" class="w-full py-2.5 px-4 rounded-xl bg-navy-900 hover:bg-primary-600 text-white text-xs font-bold text-center block shadow transition-all hover:shadow-md">
-                      View & Rent Equipment
-                    </a>
+                    <!-- Footer: Lender Node & Action Button -->
+                    <div>
+                      <div class="flex items-center justify-between text-xs mb-3.5 pt-1">
+                        <div class="flex items-center gap-2">
+                          <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-primary-600 to-navy-900 text-white flex items-center justify-center font-bold text-[10px] shadow-sm">
+                            <?php echo strtoupper(substr($item['owner_name'] ?? 'M', 0, 1)); ?>
+                          </div>
+                          <span class="font-medium text-slate-700 truncate max-w-[110px] text-[11px]"><?php echo htmlspecialchars($item['owner_name'] ?? 'Member'); ?></span>
+                        </div>
+                        <div class="text-[10px] font-mono text-primary-700 font-semibold">
+                          <?php echo htmlspecialchars($item['owner_student_id'] ?? ''); ?>
+                        </div>
+                      </div>
+
+                      <!-- Frictionless Terminal Velocity Action Button -->
+                      <a href="item-details.php?id=<?php echo $itemId; ?>" class="holo-action-btn">
+                        <span>Inspect &amp; Rent Instrument &rarr;</span>
+                      </a>
+                    </div>
+
                   </div>
 
                 </div>
-
               </div>
             <?php endforeach; ?>
           </div>
-        </div>
-      <?php else: ?>
-        <!-- Empty State Container -->
-        <div class="bg-white border border-slate-200/80 shadow-sm rounded-2xl p-8 sm:p-12 text-center">
-          <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl p-4 flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <?php else: ?>
+          <!-- Glassmorphic Empty State -->
+          <div class="bg-white border border-[#D1DFEE] shadow-xl rounded-2xl p-10 sm:p-14 text-center max-w-xl mx-auto">
+            <div class="w-16 h-16 bg-blue-50 border border-blue-200 text-primary-600 rounded-2xl p-4 flex items-center justify-center mx-auto mb-5 shadow-sm">
+              <svg class="w-8 h-8 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-navy-900 mb-2">No Instruments Found</h3>
+            <p class="text-sm text-slate-600 font-mono mb-6">No instruments match current filter parameters across this campus sector.</p>
+            <a href="index.php" class="quantum-submit-btn inline-block px-6 py-2.5 text-xs font-bold font-mono">
+              Reset Query Filters
+            </a>
           </div>
-          <h3 class="text-lg font-bold text-slate-900">No equipment found matching criteria</h3>
-          <p class="text-sm text-slate-500 font-medium max-w-md mx-auto mt-2">Try relaxing your category or pickup spot filter, or search with different keywords.</p>
-          <a href="index.php" class="inline-block mt-6 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl text-sm shadow-sm transition">
-            Reset All Filters
-          </a>
-        </div>
-      <?php endif; ?>
+        <?php endif; ?>
 
-    </div>
-  </main>
+      </div>
+    </main>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         04 CAMPUS CAPABILITY PILLARS (#EBF2FA) — From About Page DNA
+    ════════════════════════════════════════════════════════════════ -->
+    <section class="py-16 sm:py-20 border-b border-blue-100/60" style="background: #EBF2FA;">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center mb-12 ab-fade">
+          <span class="inline-block text-xs font-bold uppercase tracking-widest text-primary-600 mb-2 bg-blue-100/80 px-3.5 py-1 rounded-full font-semibold">Campus Operations</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-navy-900 tracking-tight">How Rentora Empowers Campus Life</h2>
+          <p class="mt-2 text-sm text-slate-600 max-w-xl mx-auto">Verified student identity, zero platform fee, and safe designated campus handover zones.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="ab-why-card ab-fade ab-fade-d1">
+            <div class="bg-blue-100 text-blue-700 w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-5 shadow-sm">
+              ⚡
+            </div>
+            <h3 class="font-bold text-navy-900 text-lg mb-2">Easy to Rent</h3>
+            <p class="text-sm text-slate-600 leading-relaxed">Find equipment listed by fellow students without unnecessary market hassle.</p>
+          </div>
+
+          <div class="ab-why-card ab-fade ab-fade-d2">
+            <div class="bg-emerald-100 text-emerald-700 w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-5 shadow-sm">
+              💰
+            </div>
+            <h3 class="font-bold text-navy-900 text-lg mb-2">Affordable</h3>
+            <p class="text-sm text-slate-600 leading-relaxed">Access specialized project gear at student rates without buying outright.</p>
+          </div>
+
+          <div class="ab-why-card ab-fade ab-fade-d3">
+            <div class="bg-indigo-100 text-indigo-700 w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-5 shadow-sm">
+              🎓
+            </div>
+            <h3 class="font-bold text-navy-900 text-lg mb-2">Campus Focused</h3>
+            <p class="text-sm text-slate-600 leading-relaxed">Built around Premier University life with safe campus handover spots.</p>
+          </div>
+
+          <div class="ab-why-card ab-fade ab-fade-d4">
+            <div class="bg-amber-100 text-amber-700 w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-5 shadow-sm">
+              🔄
+            </div>
+            <h3 class="font-bold text-navy-900 text-lg mb-2">Share &amp; Exchange</h3>
+            <p class="text-sm text-slate-600 leading-relaxed">Give unused equipment a second life by exchanging directly with peers.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         05 MADE FOR CAMPUS LIFE — Rich Soft Blue Gradient Banner
+         (Exact Visual DNA from About Page Section 07)
+    ════════════════════════════════════════════════════════════════ -->
+    <section class="py-16 text-white relative overflow-hidden" style="background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);">
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div class="text-center mb-10 ab-fade">
+          <span class="inline-block text-xs font-bold uppercase tracking-widest text-blue-200 mb-2 bg-white/10 px-3.5 py-1 rounded-full backdrop-blur-md">Campus Ecosystem</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Made for Campus Life</h2>
+          <p class="mt-2 text-blue-100 max-w-xl mx-auto text-base font-medium">
+            Useful equipment should be accessible when you need it across all university departments.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <?php
+          $campus_tiles = [
+            ['💻', 'Laptops & Computing', 'Workstations for coding & CAD'],
+            ['🧮', 'Scientific Calculators', 'Standard & graphic calculators'],
+            ['📷', 'Cameras & Video', 'DSLRs & gear for media projects'],
+            ['🔬', 'Lab Equipment', 'Microscopes & test instruments'],
+          ];
+          foreach ($campus_tiles as $i => [$ico, $name, $sub]): ?>
+            <div class="ab-gear-tile ab-fade ab-fade-d<?php echo ($i%4)+1; ?>">
+              <div class="text-2xl mb-1.5"><?php echo $ico; ?></div>
+              <h4 class="font-bold text-white text-sm mb-0.5"><?php echo htmlspecialchars($name); ?></h4>
+              <p class="text-xs text-blue-100/80 leading-snug"><?php echo htmlspecialchars($sub); ?></p>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /.antimatter-viewport -->
+
+  <!-- Scroll-triggered Fade-up Animation Script from About Page -->
+  <script>
+  (function(){
+    'use strict';
+    if(!window.IntersectionObserver) return;
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }
+      });
+    },{threshold:0.08});
+    document.querySelectorAll('.ab-fade').forEach(function(el){ io.observe(el); });
+  })();
+  </script>
 
 <?php require_once(__DIR__ . '/includes/footer.php'); ?>

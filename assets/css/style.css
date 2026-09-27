@@ -152,10 +152,10 @@ body {
   font-weight: 600;
 }
 
-/* ── Inactive link hover — subtle tint so the bar feels alive ── */
+/* ── Frictionless Zero-Latency Light-Fade Hover (Zero Chromatic Residue) ── */
 .nav-link:not(.nav-link-active):hover {
-  color: #2563eb;                     /* blue-600 */
-  background-color: rgba(239,246,255,0.70); /* blue-50 @ 70% */
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.10);
 }
 
 /* ==========================================================================

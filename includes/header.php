@@ -6,7 +6,7 @@ $base_path = $base_path ?? '.';
 $page_title = $page_title ?? 'Rentora - Campus Equipment Exchange & Rental Hub';
 ?>
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-50">
+<html lang="en" class="h-full bg-slate-50 theme-crystalline">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,11 +23,14 @@ $page_title = $page_title ?? 'Rentora - Campus Equipment Exchange & Rental Hub';
             navy: {
               800: '#1e293b',
               900: '#0f172a',
-              950: '#0a0f1d',
+              950: '#020617',
             },
             primary: {
               50: '#eff6ff',
               100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
               500: '#3b82f6',
               600: '#2563eb',
               700: '#1d4ed8',
@@ -39,6 +42,7 @@ $page_title = $page_title ?? 'Rentora - Campus Equipment Exchange & Rental Hub';
           },
           fontFamily: {
             sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['Space Grotesk', 'ui-monospace', 'monospace'],
           }
         }
       }
@@ -46,7 +50,10 @@ $page_title = $page_title ?? 'Rentora - Campus Equipment Exchange & Rental Hub';
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="<?php echo $base_path; ?>/assets/css/style.css">
+  <link rel="stylesheet" href="<?php echo $base_path; ?>/assets/css/quantum-matrix.css">
+  <link rel="stylesheet" href="<?php echo $base_path; ?>/assets/css/dark-matter-sectors.css?v=<?php echo file_exists(__DIR__ . '/../assets/css/dark-matter-sectors.css') ? filemtime(__DIR__ . '/../assets/css/dark-matter-sectors.css') : time(); ?>">
+
 </head>
-<body class="flex flex-col min-h-screen text-slate-800 antialiased selection:bg-blue-600 selection:text-white">
+<body class="flex flex-col min-h-screen bg-slate-50 text-slate-800 antialiased selection:bg-blue-600 selection:text-white" <?php if (!empty($dark_sector)) echo 'data-sector="monolith"'; ?>>

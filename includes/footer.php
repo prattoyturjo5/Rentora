@@ -72,5 +72,6 @@ $base_path = $base_path ?? '.';
   </footer>
 
   <script src="<?php echo $base_path; ?>/assets/js/app.js"></script>
+  <script src="<?php echo $base_path; ?>/assets/js/quantum-physics.js"></script>
 </body>
 </html>
