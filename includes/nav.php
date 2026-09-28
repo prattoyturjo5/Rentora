@@ -462,7 +462,7 @@ $nav_inactive_class = 'nav-link px-3 py-1.5 text-xs font-semibold rounded-xl shr
 
         <a href="<?php echo $base_path; ?>/join.php"
           class="<?php echo $is_join_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="join" <?php if ($is_join_active): ?>aria-current="page" <?php endif; ?>>
-          <span class="text-white dark:text-sky-400 font-bold">Join Team</span>
+          <span>Join Team</span>
         </a>
 
         <a href="<?php echo $base_path; ?>/terms.php"
