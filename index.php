@@ -196,13 +196,13 @@ require_once(__DIR__ . '/includes/nav.php');
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center divide-x divide-border-subtle">
           <div class="reactor-metric-pod">
             <div class="reactor-metric-val text-primary font-black">
-              <span class="text-accent">#</span><?php echo $count_students; ?>+
+              <?php echo $count_students; ?>+
             </div>
             <span class="text-[11px] text-slate-700 dark:text-muted font-mono uppercase tracking-wider font-bold">Registered Scholars</span>
           </div>
           <div class="reactor-metric-pod">
             <div class="reactor-metric-val text-primary font-black">
-              <span class="text-emerald-500">&bull;</span><?php echo $count_avail; ?>+
+              <?php echo $count_avail; ?>+
             </div>
             <span class="text-[11px] text-slate-700 dark:text-muted font-mono uppercase tracking-wider font-bold">Available Assets</span>
           </div>
