@@ -16,6 +16,7 @@ try {
         SELECT c.category_id, c.category_name, COUNT(e.equipment_id) as item_count 
         FROM category c 
         LEFT JOIN equipment e ON c.category_id = e.category_id AND e.availability_status = 'Available'
+        WHERE c.category_name != 'Furniture'
         GROUP BY c.category_id, c.category_name
         ORDER BY c.category_name ASC
     ");

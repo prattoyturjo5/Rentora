@@ -284,9 +284,7 @@ require_once(__DIR__ . '/includes/nav.php');
           <!-- Header & Badge -->
           <div class="flex items-start justify-between gap-3 mb-4">
             <div class="relative shrink-0">
-              <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-rose-600 to-sky-600 border-2 border-rose-400/40 flex items-center justify-center text-white font-extrabold text-xl shadow-sm ring-2 ring-rose-500/20">
-                SC
-              </div>
+              <img src="<?php echo $base_path; ?>/assets/images/founders/shreya_chakraborty.jpg" alt="Shreya Chakraborty" class="w-16 h-16 rounded-2xl object-cover object-top border-2 border-rose-400/40 shadow-sm ring-2 ring-rose-500/20">
               <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-surface" title="Verified Founder"></span>
             </div>
             <span class="px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-[10px] font-mono font-extrabold tracking-wide">
@@ -324,9 +322,7 @@ require_once(__DIR__ . '/includes/nav.php');
           <!-- Header & Badge -->
           <div class="flex items-start justify-between gap-3 mb-4">
             <div class="relative shrink-0">
-              <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-700 border-2 border-emerald-400/40 flex items-center justify-center text-white font-extrabold text-xl shadow-sm ring-2 ring-emerald-500/20">
-                SA
-              </div>
+              <img src="<?php echo $base_path; ?>/assets/images/founders/samia_akter.png" alt="Samia Akter" class="w-16 h-16 rounded-2xl object-cover object-top border-2 border-emerald-400/40 shadow-sm ring-2 ring-emerald-500/20">
               <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-surface" title="Verified Founder"></span>
             </div>
             <span class="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-mono font-extrabold tracking-wide">

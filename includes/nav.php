@@ -104,8 +104,7 @@ $nav_inactive_class = 'nav-link px-3 py-1.5 text-xs font-semibold rounded-xl shr
         <span
           class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 dark:bg-white/5 border border-white/20 dark:border-white/10 text-[11px] font-mono text-white dark:text-slate-300">
           <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
-          <span class="hidden sm:inline font-semibold text-white dark:text-slate-100">Premier University</span>
-          <span class="hidden md:inline text-white/80 dark:text-slate-400">&bull; CSE Hub</span>
+          <span class="font-semibold text-white dark:text-slate-100">Premier University</span>
         </span>
       </div>
 
