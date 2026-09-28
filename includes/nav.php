@@ -109,8 +109,7 @@ $nav_inactive_class = 'nav-link px-2.5 py-1.5 text-[13px] font-semibold text-sla
       <div class="flex-1 flex items-center justify-start min-w-0">
         <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-[11px] font-mono text-slate-300">
           <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
-          <span class="hidden sm:inline font-semibold">Premier University</span>
-          <span class="text-slate-400 hidden md:inline">&bull; CSE Hub</span>
+          <span class="font-semibold">Premier University</span>
         </span>
       </div>
 
@@ -382,7 +381,7 @@ $nav_inactive_class = 'nav-link px-2.5 py-1.5 text-[13px] font-semibold text-sla
         </a>
 
         <a href="<?php echo $base_path; ?>/join.php" class="<?php echo $is_join_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="join" <?php if ($is_join_active): ?>aria-current="page"<?php endif; ?>>
-          <span class="text-sky-300 font-bold">Join Team</span>
+          <span>Join Team</span>
         </a>
 
         <a href="<?php echo $base_path; ?>/terms.php" class="<?php echo $is_terms_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="terms" <?php if ($is_terms_active): ?>aria-current="page"<?php endif; ?>>
