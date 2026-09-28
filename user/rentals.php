@@ -128,7 +128,7 @@ require_once(__DIR__ . '/../includes/nav.php');
     <div class="bg-navy-900 text-white rounded-2xl p-6 mb-8 shadow-lg border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6">
       <div class="space-y-1">
         <div class="flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
           <h3 class="text-base font-bold text-white">Physical Handover Verification</h3>
         </div>
         <p class="text-xs text-slate-300">Are you handing over gear to a student on campus? Enter their 8-character token to confirm handover and activate the rental.</p>

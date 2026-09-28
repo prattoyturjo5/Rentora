@@ -86,8 +86,8 @@ body.theme-crystalline {
 
 /* Dark-Matter Vacuum Header Containment (#0A0F1D) */
 .quantum-header {
-  position: sticky;
-  top: 0;
+  position: static !important;
+  top: auto !important;
   z-index: 50;
   background: rgba(10, 15, 29, 0.94) !important;
   backdrop-filter: blur(24px) saturate(190%) !important;
@@ -115,8 +115,7 @@ body.theme-crystalline {
 }
 
 /* THE FRICTIONLESS WAVE OF ENERGY (#nav-pill)
-   Gliding effortlessly across the dark-matter vacuum with infinite acceleration
-   and cubic-bezier continuity. */
+   Zero-latency binary positioning, transitions purged. */
 #nav-pill {
   position: absolute;
   top: 0;
@@ -127,7 +126,7 @@ body.theme-crystalline {
   pointer-events: none;
   z-index: 0;
   opacity: 0;
-  will-change: left, width, top, height, opacity, transform;
+  will-change: none;
 
   /* Zero-latency calculated illumination inside dark-matter vacuum */
   background: rgba(255, 255, 255, 0.10) !important;
@@ -136,13 +135,8 @@ body.theme-crystalline {
     0 4px 20px -2px rgba(0, 0, 0, 0.6),
     inset 0 1px 0 rgba(255, 255, 255, 0.20) !important;
 
-  /* Frictionless cubic-bezier wave acceleration */
-  transition: 
-    left 240ms cubic-bezier(0.16, 1, 0.3, 1),
-    width 240ms cubic-bezier(0.16, 1, 0.3, 1),
-    top 240ms cubic-bezier(0.16, 1, 0.3, 1),
-    height 240ms cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 150ms ease !important;
+  /* Kinetic Purge: Zero transition delays, zero hover inertia */
+  transition: none !important;
 }
 
 /* Refractive Blue Slipstream Filament at bottom edge of pill */
@@ -169,6 +163,11 @@ body.theme-crystalline {
    Subtle calculated illumination (rgba(255, 255, 255, 0.1)) snaps into reality
    microsecond cursor crosses threshold with zero chromatic residue or layout shift.
    ========================================================================== */
+/* ==========================================================================
+   DIRECTIVE 2 & 3: PURE UX EQUILIBRIUM & NAVIGATIONAL MATRIX STABILIZATION
+   Proportional padding (0.625rem 1rem / px-4 py-2.5), shrink-0 profile core,
+   and instant binary hover states with zero latency.
+   ========================================================================== */
 .nav-link,
 .nav-orbit-link {
   color: #94a3b8 !important;
@@ -177,109 +176,99 @@ body.theme-crystalline {
   letter-spacing: 0.01em;
   position: relative;
   z-index: 10;
-  padding: 0.45rem 0.85rem;
-  border-radius: 0.65rem;
+  padding: 0.625rem 1rem !important; /* Proportional padding (px-4 py-2.5) */
+  border-radius: 0.75rem !important;
   border: 1px solid transparent !important;
   background: transparent !important;
   box-sizing: border-box;
   text-decoration: none;
-  /* Microsecond Zero-latency snap transition */
-  transition: 
-    background-color 75ms cubic-bezier(0.16, 1, 0.3, 1), 
-    color 75ms cubic-bezier(0.16, 1, 0.3, 1), 
-    border-color 75ms cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 75ms cubic-bezier(0.16, 1, 0.3, 1) !important;
-  will-change: background-color, color, border-color;
+  flex-shrink: 0 !important;
+  transition: none !important; /* Zero visual drag / instantaneous binary state */
 }
 
 .nav-link:hover,
 .nav-orbit-link:hover {
   color: #ffffff !important;
-  background-color: rgba(255, 255, 255, 0.10) !important;
-  border-color: rgba(255, 255, 255, 0.14) !important;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  background-color: #151B54 !important; /* Locked in Night Blue */
+  border-color: rgba(255, 255, 255, 0.20) !important;
+  box-shadow: none !important;
+  transition: none !important;
 }
 
 .nav-link-active,
 .nav-orbit-active {
   color: #ffffff !important;
-  background-color: rgba(255, 255, 255, 0.14) !important;
-  border-color: rgba(255, 255, 255, 0.22) !important;
-  font-weight: 600 !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 2px 8px rgba(0, 0, 0, 0.3);
+  background-color: #151B54 !important; /* Locked in Night Blue */
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
 }
 
 /* Outer Orbital Rim Nodes */
 .orbital-rim {
   position: relative;
   z-index: 20;
+  flex-shrink: 0 !important;
 }
 
 /* ==========================================================================
-   PHASE 3: THE PROFILE SINGULARITY & LOCALIZED DIMENSIONAL POCKET
-   Buttery-smooth cubic-bezier precision dropdown matrix.
+   PROFILE SINGULARITY CORE & EQUILIBRIUM POCKET
    ========================================================================== */
-
 .profile-singularity {
   position: relative;
   z-index: 45;
+  flex-shrink: 0 !important;
 }
 
 .profile-singularity-trigger {
   cursor: pointer;
   outline: none;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  transition: 
-    background-color 100ms cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 100ms cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 100ms cubic-bezier(0.16, 1, 0.3, 1);
+  background: #151B54 !important; /* Night Blue Core */
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  padding: 0.625rem 1rem !important; /* Proportional padding (px-4 py-2.5) */
+  border-radius: 0.75rem !important;
+  flex-shrink: 0 !important;
+  transition: none !important; /* Zero visual drag */
 }
 
 .profile-singularity-trigger:hover,
 .profile-singularity:focus-within .profile-singularity-trigger {
-  background: rgba(255, 255, 255, 0.10);
-  border-color: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 0 14px rgba(255, 255, 255, 0.08);
+  background: #1E2570 !important;
+  border-color: rgba(255, 255, 255, 0.32) !important;
+  box-shadow: none !important;
+  transition: none !important;
 }
 
-/* Localized Dimensional Pocket Menu */
+/* Localized Dimensional Pocket Menu - Proportional bounding without rigid distortion */
 .profile-singularity-menu {
   position: absolute;
   right: 0;
   top: calc(100% + 0.5rem);
-  width: 20.5rem;
-  background: rgba(10, 15, 29, 0.96) !important;
-  backdrop-filter: blur(28px) saturate(200%) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  border-radius: 1.25rem !important;
-  box-shadow: 
-    0 25px 60px -10px rgba(0, 0, 0, 0.85),
-    0 0 35px rgba(37, 99, 235, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
-  padding: 0.875rem !important;
+  width: max-content !important;
+  min-width: 18rem !important;
+  max-width: 22rem !important;
+  background: #0A0F1D !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 20px 45px -8px rgba(0, 0, 0, 0.85) !important;
+  padding: 1rem !important;
   z-index: 100;
   pointer-events: none;
   opacity: 0;
-  transform: translateY(-8px) scale(0.96);
-  transform-origin: top right;
-  transition: 
-    opacity 220ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
-    visibility 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  transform: none !important; /* Vaporize warping transform */
+  transition: none !important; /* Vaporize visual drag / animations */
   visibility: hidden;
 }
 
-/* Seamless Dilation on Cursor Proximity, Hover or Active Focus */
+/* Instantaneous Binary Reveal with Zero Latency */
 .profile-singularity:hover .profile-singularity-menu,
 .profile-singularity:focus-within .profile-singularity-menu,
 .profile-singularity.dilated .profile-singularity-menu,
 .profile-singularity-menu:hover {
   opacity: 1 !important;
-  transform: translateY(0) scale(1) !important;
   pointer-events: auto !important;
   visibility: visible !important;
+  transform: none !important;
 }
 
 /* Singularity Pocket Links */

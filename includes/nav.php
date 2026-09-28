@@ -90,14 +90,14 @@ if (isset($active_nav)) {
     $is_exchanges_active = ($active_nav === 'exchanges');
 }
 
-$nav_active_class   = 'nav-link nav-link-active px-3.5 py-2 text-sm font-semibold text-white rounded-lg relative z-10';
-$nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-400 hover:text-white rounded-lg relative z-10';
+$nav_active_class   = 'nav-link nav-link-active px-4 py-2.5 text-sm font-semibold text-white bg-[#151B54] rounded-xl relative z-10 shrink-0';
+$nav_inactive_class = 'nav-link px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-[#151B54] rounded-xl relative z-10 shrink-0';
 ?>
 <!-- Top Campus Notice Bar (Dark-Matter Vacuum Horizon) -->
 <div class="bg-[#060A14] text-slate-300 text-xs py-2 px-4 border-b border-white/5 relative z-50">
   <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
     <div class="flex items-center gap-2">
-      <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+      <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
       <span class="font-medium text-slate-200">Premier University Marketplace —</span> 
       <span class="text-slate-400">Exchange &amp; rent academic gear with verified PU students. Zero platform fee.</span>
     </div>
@@ -124,14 +124,14 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-400 h
 </div>
 
 <!-- Global Header Navigation with Absolute Dark-Matter Vacuum Matrix (#0A0F1D) -->
-<header class="quantum-header sticky top-0 z-40 bg-[#0A0F1D]/95 backdrop-blur-2xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+<header class="quantum-header static z-40 bg-[#0A0F1D]/95 backdrop-blur-2xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
   <div class="laser-guide-conduit"></div>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center h-16">
+    <div class="flex justify-between items-center h-16 gap-4">
       
-      <!-- Brand Logo -->
-      <a href="<?php echo $base_path; ?>/index.php" class="flex items-center gap-3 group">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-navy-950 border border-blue-400/30 flex items-center justify-center text-white font-extrabold shadow-md shadow-blue-500/25 group-hover:scale-105 transition-transform">
+      <!-- Brand Logo (shrink-0) -->
+      <a href="<?php echo $base_path; ?>/index.php" class="flex items-center gap-3 group shrink-0">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-navy-950 border border-blue-400/30 flex items-center justify-center text-white font-extrabold shadow-md shadow-blue-500/25 transition-none shrink-0">
           <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
         </div>
         <div>
@@ -144,7 +144,7 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-400 h
       </a>
 
       <!-- Primary Core Marketplace Cluster (Frictionless Wave of Energy) -->
-      <nav id="main-nav" class="hidden md:flex items-center space-x-1 lg:space-x-2 relative py-1">
+      <nav id="main-nav" class="hidden md:flex items-center space-x-1 lg:space-x-1.5 relative py-1 shrink-0">
         <!-- Sliding active pill indicator -->
         <div id="nav-pill" aria-hidden="true"></div>
 
@@ -167,7 +167,7 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-400 h
           <a href="<?php echo $base_path; ?>/user/exchanges.php" class="<?php echo ($is_exchanges_active ? $nav_active_class : $nav_inactive_class); ?> flex items-center gap-1.5" data-nav-key="exchanges" <?php if ($is_exchanges_active): ?>aria-current="page"<?php endif; ?>>
             <span>Exchanges</span>
             <?php if ($incoming_swaps_count > 0): ?>
-              <span class="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-extrabold bg-purple-600 text-white rounded-full animate-pulse shadow-sm min-w-[18px]">
+              <span class="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-extrabold bg-purple-600 text-white rounded-full shadow-sm min-w-[18px]">
                 <?php echo $incoming_swaps_count; ?>
               </span>
             <?php else: ?>
@@ -175,21 +175,21 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-400 h
             <?php endif; ?>
           </a>
         <?php elseif ($current_role === 'admin'): ?>
-          <a href="<?php echo $base_path; ?>/admin/dashboard.php" class="px-3.5 py-2 text-sm font-semibold text-emerald-300 bg-emerald-950/60 border border-emerald-500/30 rounded-lg transition-colors" <?php if ($is_admin_active): ?>aria-current="page"<?php endif; ?>>
+          <a href="<?php echo $base_path; ?>/admin/dashboard.php" class="px-4 py-2.5 text-sm font-semibold text-emerald-300 bg-[#151B54] border border-emerald-500/30 rounded-xl transition-none shrink-0" <?php if ($is_admin_active): ?>aria-current="page"<?php endif; ?>>
             Operations Console
           </a>
         <?php endif; ?>
       </nav>
 
-      <!-- Outer Orbital Rim & User Singularity Controls -->
-      <div class="hidden sm:flex items-center gap-3">
+      <!-- Outer Orbital Rim & User Singularity Controls (shrink-0) -->
+      <div class="hidden sm:flex items-center gap-3 shrink-0">
         
-        <!-- Phase 1: Outer Orbital Rim Anchors (About & Terms Extracted from Center) -->
-        <div class="orbital-rim flex items-center gap-1 border-r border-white/10 pr-3 mr-1">
-          <a href="<?php echo $base_path; ?>/about.php" class="nav-orbit-link <?php echo $is_about_active ? 'nav-orbit-active' : ''; ?>" data-nav-key="about" <?php if ($is_about_active): ?>aria-current="page"<?php endif; ?>>
+        <!-- Phase 1: Outer Orbital Rim Anchors (proportional padding px-4 py-2.5, shrink-0) -->
+        <div class="orbital-rim flex items-center gap-1 border-r border-white/10 pr-3 mr-1 shrink-0">
+          <a href="<?php echo $base_path; ?>/about.php" class="nav-orbit-link px-4 py-2.5 text-sm font-medium rounded-xl text-slate-300 hover:text-white hover:bg-[#151B54] shrink-0 <?php echo $is_about_active ? 'nav-orbit-active text-white font-semibold bg-[#151B54]' : ''; ?>" data-nav-key="about" <?php if ($is_about_active): ?>aria-current="page"<?php endif; ?>>
             About
           </a>
-          <a href="<?php echo $base_path; ?>/terms.php" class="nav-orbit-link <?php echo $is_terms_active ? 'nav-orbit-active' : ''; ?>" data-nav-key="terms" <?php if ($is_terms_active): ?>aria-current="page"<?php endif; ?>>
+          <a href="<?php echo $base_path; ?>/terms.php" class="nav-orbit-link px-4 py-2.5 text-sm font-medium rounded-xl text-slate-300 hover:text-white hover:bg-[#151B54] shrink-0 <?php echo $is_terms_active ? 'nav-orbit-active text-white font-semibold bg-[#151B54]' : ''; ?>" data-nav-key="terms" <?php if ($is_terms_active): ?>aria-current="page"<?php endif; ?>>
             Terms
           </a>
         </div>
@@ -206,22 +206,22 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-400 h
             $nav_user_has_avatar = !empty($_SESSION['avatar']) && file_exists(__DIR__ . '/../' . $_SESSION['avatar']);
             $nav_user_avatar_url = $nav_user_has_avatar ? ($base_path . '/' . $_SESSION['avatar'] . '?v=' . ($_SESSION['avatar_v'] ?? '1')) : null;
           ?>
-          <!-- Phase 3: The Profile Singularity (Interactive Dilating Pocket) -->
-          <div id="profile-singularity" class="profile-singularity group/singularity relative" tabindex="0">
-            <!-- Singularity Interactive Trigger -->
-            <button type="button" class="profile-singularity-trigger flex items-center gap-2.5 px-3 py-1.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-150 text-left focus:outline-none focus:ring-2 focus:ring-blue-400/40" id="singularity-trigger" aria-haspopup="true" aria-expanded="false">
-              <!-- Dynamic Gravitational Avatar Orb -->
-              <div class="relative">
+          <!-- Phase 3: The Profile Singularity (Interactive Dilating Pocket with shrink-0) -->
+          <div id="profile-singularity" class="profile-singularity group/singularity relative shrink-0" tabindex="0">
+            <!-- Singularity Interactive Trigger (proportional padding px-4 py-2.5, shrink-0) -->
+            <button type="button" class="profile-singularity-trigger flex items-center gap-3 px-4 py-2.5 rounded-xl border border-white/15 bg-[#151B54] hover:bg-[#1E2570] text-left focus:outline-none shrink-0" id="singularity-trigger" aria-haspopup="true" aria-expanded="false">
+              <!-- Dynamic Gravitational Avatar Orb (shrink-0 to prevent thinning) -->
+              <div class="relative shrink-0">
                 <?php if ($nav_user_has_avatar): ?>
-                  <img src="<?php echo htmlspecialchars($nav_user_avatar_url); ?>" alt="Avatar" class="w-8 h-8 rounded-full object-cover shadow-md ring-1 ring-white/30">
+                  <img src="<?php echo htmlspecialchars($nav_user_avatar_url); ?>" alt="Avatar" class="w-8 h-8 rounded-full object-cover shadow-md ring-1 ring-white/30 shrink-0">
                 <?php else: ?>
-                  <div class="w-8 h-8 rounded-full bg-[#151B54] text-white flex items-center justify-center font-bold text-xs shadow-md border border-white/20 ring-1 ring-white/30">
+                  <div class="w-8 h-8 rounded-full bg-[#151B54] text-white flex items-center justify-center font-bold text-xs shadow-md border border-white/20 ring-1 ring-white/30 shrink-0">
                     <?php echo strtoupper(substr($current_name, 0, 1)); ?>
                   </div>
                 <?php endif; ?>
                 <!-- Status Beacon -->
                 <?php if ($current_member_status === 'Verified'): ?>
-                  <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#0A0F1D] animate-pulse" title="Verified Member"></span>
+                  <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#0A0F1D]" title="Verified Member"></span>
                 <?php elseif ($current_member_status === 'Rejected'): ?>
                   <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-[#0A0F1D]" title="Account Rejected"></span>
                 <?php else: ?>
@@ -229,12 +229,12 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-400 h
                 <?php endif; ?>
               </div>
 
-              <!-- The Interactive User Name Singularity -->
-              <div class="text-left leading-tight hidden lg:block pr-1">
-                <div class="text-xs font-bold text-white group-hover/singularity:text-sky-300 transition-colors flex items-center gap-1.5">
+              <!-- The Interactive User Name Singularity (shrink-0 & whitespace-nowrap) -->
+              <div class="text-left leading-tight hidden lg:block shrink-0">
+                <div class="text-xs font-bold text-white flex items-center gap-1.5 whitespace-nowrap">
                   <span><?php echo htmlspecialchars($current_name); ?></span>
                 </div>
-                <div class="text-[10px] font-mono text-slate-400 flex items-center gap-1">
+                <div class="text-[10px] font-mono text-slate-300 flex items-center gap-1">
                   <?php if ($current_member_status === 'Verified'): ?>
                     <span class="text-emerald-400 font-semibold">Verified</span>
                   <?php elseif ($current_member_status === 'Rejected'): ?>
@@ -245,14 +245,14 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-400 h
                 </div>
               </div>
 
-              <!-- Dilation Chevron with Smooth Rotation -->
-              <svg class="singularity-chevron w-3.5 h-3.5 text-slate-400 group-hover/singularity:text-white transition-transform duration-200 group-hover/singularity:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <!-- Dilation Chevron with shrink-0 -->
+              <svg class="singularity-chevron w-3.5 h-3.5 text-slate-400 group-hover/singularity:text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
               </svg>
             </button>
 
-            <!-- Localized Dimensional Pocket (Profile Management Menu) -->
-            <div class="profile-singularity-menu absolute right-0 top-full mt-2 w-80 rounded-2xl bg-[#0A0F1D]/95 backdrop-blur-2xl border border-white/15 shadow-[0_25px_60px_rgba(0,0,0,0.85)] p-3.5 z-50 pointer-events-none opacity-0 -translate-y-2 scale-95 transition-all duration-200" id="singularity-menu">
+            <!-- Localized Dimensional Pocket (Profile Management Menu) - Proportional without rigid pixel constraints or visual drag -->
+            <div class="profile-singularity-menu absolute right-0 top-full mt-2 min-w-[18rem] max-w-sm rounded-2xl bg-[#0A0F1D]/98 backdrop-blur-2xl border border-white/15 shadow-2xl p-4 z-50 pointer-events-none opacity-0" id="singularity-menu">
               <!-- Singularity Core User Identity Header -->
               <div class="flex items-center gap-3 pb-3 border-b border-white/10 mb-2.5 px-1">
                 <?php if ($nav_user_has_avatar): ?>
@@ -264,7 +264,6 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-400 h
                 <?php endif; ?>
                 <div class="flex-1 min-w-0">
                   <p class="text-sm font-bold text-white truncate"><?php echo htmlspecialchars($current_name); ?></p>
-                  <p class="text-[11px] text-slate-400 font-mono truncate">@<?php echo htmlspecialchars($_SESSION['username'] ?? 'member'); ?></p>
                   <p class="text-[11px] text-slate-400 font-mono truncate">@<?php echo htmlspecialchars($_SESSION['username'] ?? 'member'); ?></p>
                   <div class="mt-1 flex items-center gap-2">
                     <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold <?php echo $current_member_status === 'Verified' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : ($current_member_status === 'Rejected' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'); ?>">
@@ -281,8 +280,8 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-400 h
               <!-- Immediate Singularity Pathways -->
               <div class="space-y-1">
                 <!-- Pathway 1: Name Modifications -->
-                <a href="<?php echo $base_path; ?>/user/profile.php" class="singularity-pocket-link group/item flex items-center gap-3 px-2.5 py-2 rounded-xl hover:bg-white/10 transition-colors">
-                  <div class="w-8 h-8 rounded-lg bg-blue-500/15 border border-blue-400/30 flex items-center justify-center text-blue-400 group-hover/item:text-white group-hover/item:bg-blue-600 transition-all">
+                <a href="<?php echo $base_path; ?>/user/profile.php" class="singularity-pocket-link group/item flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 transition-none">
+                  <div class="w-8 h-8 rounded-lg bg-blue-500/15 border border-blue-400/30 flex items-center justify-center text-blue-400 group-hover/item:text-white group-hover/item:bg-blue-600 transition-none shrink-0">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                   </div>
                   <div class="flex-1">
@@ -295,22 +294,22 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-400 h
                 </a>
 
                 <!-- Pathway 2: Avatar Uploads -->
-                <a href="<?php echo $base_path; ?>/user/profile.php#avatar" class="singularity-pocket-link group/item flex items-center gap-3 px-2.5 py-2 rounded-xl hover:bg-white/10 transition-colors">
-                  <div class="w-8 h-8 rounded-lg bg-purple-500/15 border border-purple-400/30 flex items-center justify-center text-purple-400 group-hover/item:text-white group-hover/item:bg-purple-600 transition-all">
+                <a href="<?php echo $base_path; ?>/user/profile.php#avatar" class="singularity-pocket-link group/item flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 transition-none">
+                  <div class="w-8 h-8 rounded-lg bg-purple-500/15 border border-purple-400/30 flex items-center justify-center text-purple-400 group-hover/item:text-white group-hover/item:bg-purple-600 transition-none shrink-0">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                   </div>
                   <div class="flex-1">
                     <div class="text-xs font-semibold text-slate-200 group-hover/item:text-white flex items-center justify-between">
-                      <span>Avatar Uploads</span>
+                      <span>Avatar Hologram Studio</span>
                       <span class="text-[10px] font-mono text-slate-500 group-hover/item:text-purple-300">Upload &rarr;</span>
                     </div>
-                    <p class="text-[10px] text-slate-400">Upload persona image or custom avatar</p>
+                    <p class="text-[10px] text-slate-400">Upload image or compile casual SVG preset</p>
                   </div>
                 </a>
 
                 <!-- Pathway 3: Account & Security Settings -->
-                <a href="<?php echo $base_path; ?>/auth/change_password.php" class="singularity-pocket-link group/item flex items-center gap-3 px-2.5 py-2 rounded-xl hover:bg-white/10 transition-colors">
-                  <div class="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center text-emerald-400 group-hover/item:text-white group-hover/item:bg-emerald-600 transition-all">
+                <a href="<?php echo $base_path; ?>/auth/change_password.php" class="singularity-pocket-link group/item flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 transition-none">
+                  <div class="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center text-emerald-400 group-hover/item:text-white group-hover/item:bg-emerald-600 transition-none shrink-0">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                   </div>
                   <div class="flex-1">
@@ -325,15 +324,15 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-400 h
 
               <!-- Secondary Quick Pathways -->
               <div class="pt-2 mt-2 border-t border-white/10 grid grid-cols-3 gap-1 text-center">
-                <a href="<?php echo $base_path; ?>/user/equipment.php" class="p-1.5 rounded-lg hover:bg-white/5 transition-colors">
+                <a href="<?php echo $base_path; ?>/user/equipment.php" class="p-1.5 rounded-lg hover:bg-white/5 transition-none">
                   <div class="text-[10px] font-semibold text-slate-300">Gear</div>
                   <div class="text-[9px] text-slate-500 font-mono">Listings</div>
                 </a>
-                <a href="<?php echo $base_path; ?>/user/rentals.php" class="p-1.5 rounded-lg hover:bg-white/5 transition-colors">
+                <a href="<?php echo $base_path; ?>/user/rentals.php" class="p-1.5 rounded-lg hover:bg-white/5 transition-none">
                   <div class="text-[10px] font-semibold text-slate-300">Rentals</div>
                   <div class="text-[9px] text-slate-500 font-mono">Active</div>
                 </a>
-                <a href="<?php echo $base_path; ?>/user/exchanges.php" class="p-1.5 rounded-lg hover:bg-white/5 transition-colors">
+                <a href="<?php echo $base_path; ?>/user/exchanges.php" class="p-1.5 rounded-lg hover:bg-white/5 transition-none">
                   <div class="text-[10px] font-semibold text-slate-300">Swaps</div>
                   <div class="text-[9px] text-slate-500 font-mono">Status</div>
                 </a>
@@ -341,41 +340,41 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-400 h
 
               <!-- Terminate Session Action -->
               <div class="pt-2 mt-2 border-t border-white/10">
-                <a href="<?php echo $base_path; ?>/auth/logout.php" class="flex items-center justify-center gap-2 w-full py-1.5 px-3 rounded-lg text-rose-400 hover:text-white hover:bg-rose-600/20 text-xs font-medium transition-colors">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                <a href="<?php echo $base_path; ?>/auth/logout.php" class="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-xl text-rose-400 hover:text-white hover:bg-rose-600/20 text-xs font-medium transition-none">
+                  <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                   <span>Sign Out</span>
                 </a>
               </div>
             </div>
           </div>
 
-          <!-- + List Equipment CTA -->
-          <a href="<?php echo $base_path; ?>/user/equipment.php" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-lg shadow-blue-600/25 border border-blue-400/30 transition-all hover:scale-[1.02]">
-            <svg class="w-3.5 h-3.5 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          <!-- + List Equipment CTA (proportional padding px-4 py-2.5, shrink-0) -->
+          <a href="<?php echo $base_path; ?>/user/equipment.php" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-lg shadow-blue-600/25 border border-blue-400/30 transition-none shrink-0">
+            <svg class="w-3.5 h-3.5 text-blue-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
             <span>+ List Equipment</span>
           </a>
 
         <?php elseif ($current_role === 'admin'): ?>
-          <!-- Admin Singularity Matrix -->
-          <div id="profile-singularity" class="profile-singularity group/singularity relative" tabindex="0">
-            <button type="button" class="profile-singularity-trigger flex items-center gap-2.5 px-3 py-1.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-150 text-left focus:outline-none focus:ring-2 focus:ring-emerald-400/40" id="singularity-trigger" aria-haspopup="true" aria-expanded="false">
-              <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-md ring-1 ring-emerald-400/40">
+          <!-- Admin Singularity Matrix (proportional padding px-4 py-2.5, shrink-0) -->
+          <div id="profile-singularity" class="profile-singularity group/singularity relative shrink-0" tabindex="0">
+            <button type="button" class="profile-singularity-trigger flex items-center gap-3 px-4 py-2.5 rounded-xl border border-white/15 bg-[#151B54] hover:bg-[#1E2570] text-left focus:outline-none shrink-0" id="singularity-trigger" aria-haspopup="true" aria-expanded="false">
+              <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-md ring-1 ring-emerald-400/40 shrink-0">
                 A
               </div>
-              <div class="text-left leading-tight hidden lg:block pr-1">
-                <div class="text-xs font-bold text-white group-hover/singularity:text-emerald-300 transition-colors"><?php echo htmlspecialchars($current_name); ?></div>
+              <div class="text-left leading-tight hidden lg:block shrink-0">
+                <div class="text-xs font-bold text-white whitespace-nowrap"><?php echo htmlspecialchars($current_name); ?></div>
                 <div class="text-[10px] font-mono text-emerald-400 flex items-center gap-1">
                   <span>Administrator</span>
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                 </div>
               </div>
-              <svg class="singularity-chevron w-3.5 h-3.5 text-slate-400 group-hover/singularity:text-white transition-transform duration-200 group-hover/singularity:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="singularity-chevron w-3.5 h-3.5 text-slate-400 group-hover/singularity:text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
               </svg>
             </button>
 
             <!-- Admin Dimensional Pocket -->
-            <div class="profile-singularity-menu absolute right-0 top-full mt-2 w-72 rounded-2xl bg-[#0A0F1D]/95 backdrop-blur-2xl border border-white/15 shadow-[0_25px_60px_rgba(0,0,0,0.85)] p-3.5 z-50 pointer-events-none opacity-0 -translate-y-2 scale-95 transition-all duration-200" id="singularity-menu">
+            <div class="profile-singularity-menu absolute right-0 top-full mt-2 min-w-[17rem] max-w-sm rounded-2xl bg-[#0A0F1D]/98 backdrop-blur-2xl border border-white/15 shadow-2xl p-4 z-50 pointer-events-none opacity-0" id="singularity-menu">
               <div class="flex items-center gap-3 pb-3 border-b border-white/10 mb-2 px-1">
                 <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm ring-2 ring-emerald-400/40">A</div>
                 <div class="flex-1 min-w-0">
@@ -398,8 +397,8 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-400 h
                 </a>
               </div>
               <div class="pt-2 mt-2 border-t border-white/10">
-                <a href="<?php echo $base_path; ?>/auth/logout.php" class="flex items-center justify-center gap-2 w-full py-1.5 px-3 rounded-lg text-rose-400 hover:text-white hover:bg-rose-600/20 text-xs font-medium transition-colors">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                <a href="<?php echo $base_path; ?>/auth/logout.php" class="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-xl text-rose-400 hover:text-white hover:bg-rose-600/20 text-xs font-medium transition-none">
+                  <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                   <span>Sign Out</span>
                 </a>
               </div>
@@ -407,11 +406,11 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-400 h
           </div>
 
         <?php else: ?>
-          <!-- Guest Links -->
-          <a href="<?php echo $base_path; ?>/auth/login.php" class="px-3.5 py-1.5 text-xs font-bold text-slate-300 hover:text-white rounded-lg hover:bg-white/10 transition-colors">
+          <!-- Guest Links (proportional padding px-4 py-2.5, shrink-0) -->
+          <a href="<?php echo $base_path; ?>/auth/login.php" class="px-4 py-2.5 text-xs font-bold text-slate-300 hover:text-white hover:bg-[#151B54] rounded-xl transition-none shrink-0">
             Sign In
           </a>
-          <a href="<?php echo $base_path; ?>/auth/register.php" class="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md shadow-blue-600/25 border border-blue-400/30 transition-all hover:scale-[1.02]">
+          <a href="<?php echo $base_path; ?>/auth/register.php" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md shadow-blue-600/25 border border-blue-400/30 transition-none shrink-0">
             Register Member
           </a>
         <?php endif; ?>

@@ -333,7 +333,7 @@ require_once(__DIR__ . '/../includes/nav.php');
                               💰 You Demand: +৳<?php echo number_format($diff, 2); ?>
                             </span>
                           <?php else: ?>
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-200 animate-pulse">
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
                               ⚠️ Partner Demands: ৳<?php echo number_format($diff, 2); ?>
                             </span>
                           <?php endif; ?>

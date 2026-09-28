@@ -103,7 +103,7 @@ require_once(__DIR__ . '/includes/nav.php');
       <!-- Left Hero Text Column -->
       <div class="lg:col-span-7 text-center lg:text-left">
         <div class="ab-fade ab-fade-d1 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-blue-200 mb-6 backdrop-blur-md">
-          <span class="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
           Rentora Platform Guidelines
         </div>
 

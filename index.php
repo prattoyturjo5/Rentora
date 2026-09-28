@@ -111,7 +111,7 @@ require_once(__DIR__ . '/includes/nav.php');
         
         <!-- Glassmorphic Verified Protocol Badge -->
         <div class="ab-fade ab-fade-d1 inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-blue-200 mb-4 backdrop-blur-md shadow-md">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
           <span>Premier University Equipment Protocol &bull; Verified Academic Registry</span>
         </div>
 
@@ -387,7 +387,7 @@ require_once(__DIR__ . '/includes/nav.php');
           <!-- Glassmorphic Empty State -->
           <div class="bg-white border border-[#D1DFEE] shadow-xl rounded-2xl p-10 sm:p-14 text-center max-w-xl mx-auto">
             <div class="w-16 h-16 bg-blue-50 border border-blue-200 text-primary-600 rounded-2xl p-4 flex items-center justify-center mx-auto mb-5 shadow-sm">
-              <svg class="w-8 h-8 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
             <h3 class="text-xl font-bold text-navy-900 mb-2">No Instruments Found</h3>
             <p class="text-sm text-slate-600 font-mono mb-6">No instruments match current filter parameters across this campus sector.</p>

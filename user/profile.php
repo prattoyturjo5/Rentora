@@ -205,7 +205,7 @@ require_once(__DIR__ . '/../includes/nav.php');
           </div>
           <?php if ($status === 'Verified'): ?>
             <span class="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full bg-emerald-500 text-white font-bold text-[10px] ring-2 ring-[#151B54] shadow-sm flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+              <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
               Verified
             </span>
           <?php elseif ($status === 'Rejected'): ?>
@@ -239,10 +239,10 @@ require_once(__DIR__ . '/../includes/nav.php');
 
       <!-- Quick Balance & Nav Singularity Shortcuts -->
       <div class="flex items-center gap-3">
-        <a href="<?php echo $base_path; ?>/user/dashboard.php" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/15 transition-all">
+        <a href="<?php echo $base_path; ?>/user/dashboard.php" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/15 transition-none">
           &larr; Return to Dashboard
         </a>
-        <a href="<?php echo $base_path; ?>/auth/change_password.php" class="px-4 py-2 rounded-xl bg-[#151B54] hover:bg-[#1E2570] text-white text-xs font-semibold border border-white/30 shadow-lg shadow-[#151B54]/40 transition-all">
+        <a href="<?php echo $base_path; ?>/auth/change_password.php" class="px-4 py-2 rounded-xl bg-[#151B54] hover:bg-[#1E2570] text-white text-xs font-semibold border border-white/30 shadow-lg shadow-[#151B54]/40 transition-none">
           Security Settings &rarr;
         </a>
       </div>
@@ -253,7 +253,7 @@ require_once(__DIR__ . '/../includes/nav.php');
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
     <?php if (!empty($success_msg)): ?>
       <div class="p-4 rounded-xl bg-[#151B54] border border-emerald-400/40 text-emerald-300 text-sm font-medium flex items-center gap-3 shadow-lg mb-6">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
         <span><?php echo $success_msg; ?></span>
       </div>
     <?php endif; ?>
@@ -345,7 +345,7 @@ require_once(__DIR__ . '/../includes/nav.php');
               </div>
             </div>
             <span class="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-white/10 text-white border border-white/20 flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
               Hardwired Pipeline
             </span>
           </div>
@@ -373,11 +373,11 @@ require_once(__DIR__ . '/../includes/nav.php');
                 </div>
 
                 <!-- Hardwired Dropzone Pipeline -->
-                <div id="avatar-dropzone" class="flex-1 w-full border-2 border-dashed border-white/30 hover:border-white/80 bg-[#0A0E2E]/60 hover:bg-[#0A0E2E]/90 rounded-2xl p-5 text-center transition-all cursor-pointer group">
+                <div id="avatar-dropzone" class="flex-1 w-full border-2 border-dashed border-white/30 hover:border-white/80 bg-[#0A0E2E]/60 hover:bg-[#0A0E2E]/90 rounded-2xl p-5 text-center transition-none cursor-pointer group">
                   <input type="file" id="avatar-file-input" name="avatar_file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" class="sr-only">
                   
                   <div class="flex flex-col items-center justify-center space-y-1.5 pointer-events-none">
-                    <div class="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div class="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center transition-none">
                       <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                     </div>
                     <p class="text-xs font-bold text-white">
@@ -391,7 +391,7 @@ require_once(__DIR__ . '/../includes/nav.php');
               <!-- Stream Live Feedback Bar -->
               <div id="stream-status-bar" class="p-3 rounded-xl bg-[#0A0E2E]/80 border border-white/15 text-xs font-mono flex items-center justify-between text-white">
                 <div class="flex items-center gap-2">
-                  <span id="stream-pulse" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span id="stream-pulse" class="w-2 h-2 rounded-full bg-emerald-400"></span>
                   <span id="stream-status-text" class="text-slate-200">Hardwired pipeline ready: /Rentora/uploads/avatars/</span>
                 </div>
                 <span id="stream-meta" class="text-[11px] text-[#EFF3FF] font-bold">Direct I/O Mode</span>
@@ -411,7 +411,7 @@ require_once(__DIR__ . '/../includes/nav.php');
                   <p class="text-[11px] text-slate-300 font-mono mt-0.5">Selecting an archetype triggers the SVG Binary Transmuter to compile a physical vector file.</p>
                 </div>
                 <span class="self-start sm:self-auto text-[10px] font-mono text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full font-bold flex items-center gap-1.5 shadow-sm">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                   Physical SVG Engine
                 </span>
               </div>
@@ -468,7 +468,7 @@ require_once(__DIR__ . '/../includes/nav.php');
             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">Academic Beacon</span>
             <?php if ($status === 'Verified'): ?>
               <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                 Active Member
               </span>
             <?php elseif ($status === 'Rejected'): ?>
@@ -477,7 +477,7 @@ require_once(__DIR__ . '/../includes/nav.php');
               </span>
             <?php else: ?>
               <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                 Pending Approval
               </span>
             <?php endif; ?>
@@ -605,7 +605,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update status indicators
     if (statusText) statusText.innerHTML = '<span class="text-emerald-300 font-bold">⚡ Binary injection initiated — transmitting to PHP core...</span>';
-    if (statusPulse) statusPulse.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
+    if (statusPulse) statusPulse.className = 'w-2 h-2 rounded-full bg-emerald-400';
     if (metaText) metaText.textContent = 'Hardwiring Stream...';
 
     // If file was dropped, inject into fileInput for native POST
@@ -644,7 +644,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (bannerFallback) bannerFallback.classList.add('hidden');
 
         if (statusText) statusText.innerHTML = '<span class="text-emerald-300 font-bold">⚡ SVG Binary Transmuter active — compiling ' + presetName + ' to disk...</span>';
-        if (statusPulse) statusPulse.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
+        if (statusPulse) statusPulse.className = 'w-2 h-2 rounded-full bg-emerald-400';
         if (metaText) metaText.textContent = 'Transmuting SVG...';
       }
     });

@@ -442,3 +442,129 @@ body[data-sector="monolith"] ::-webkit-scrollbar-thumb:hover,
 body[data-sector="dark"] ::-webkit-scrollbar-thumb:hover {
   background: #64748B;
 }
+
+/* ─── 12. NAVIGATIONAL MATRIX STABILIZATION & PURE UX EQUILIBRIUM ─── */
+body[data-sector="monolith"] .nav-link,
+body[data-sector="monolith"] .nav-orbit-link,
+body[data-sector="dark"] .nav-link,
+body[data-sector="dark"] .nav-orbit-link {
+  padding: 0.625rem 1rem !important; /* Proportional padding (px-4 py-2.5) */
+  flex-shrink: 0 !important;
+  transition: none !important; /* Zero visual drag / instantaneous binary state */
+}
+
+body[data-sector="monolith"] .nav-link:hover,
+body[data-sector="monolith"] .nav-orbit-link:hover,
+body[data-sector="dark"] .nav-link:hover,
+body[data-sector="dark"] .nav-orbit-link:hover {
+  background-color: #151B54 !important; /* Locked in Night Blue */
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  transition: none !important;
+}
+
+body[data-sector="monolith"] .nav-link-active,
+body[data-sector="monolith"] .nav-orbit-active,
+body[data-sector="dark"] .nav-link-active,
+body[data-sector="dark"] .nav-orbit-active {
+  background-color: #151B54 !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.30) !important;
+  font-weight: 700 !important;
+}
+
+body[data-sector="monolith"] .profile-singularity,
+body[data-sector="dark"] .profile-singularity {
+  flex-shrink: 0 !important;
+}
+
+body[data-sector="monolith"] .profile-singularity-trigger,
+body[data-sector="dark"] .profile-singularity-trigger {
+  padding: 0.625rem 1rem !important; /* Proportional padding (px-4 py-2.5) */
+  flex-shrink: 0 !important;
+  background-color: #151B54 !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  transition: none !important;
+}
+
+body[data-sector="monolith"] .profile-singularity-trigger:hover,
+body[data-sector="dark"] .profile-singularity-trigger:hover {
+  background-color: #1E2570 !important;
+  border-color: rgba(255, 255, 255, 0.32) !important;
+  transition: none !important;
+}
+
+body[data-sector="monolith"] .profile-singularity-menu,
+body[data-sector="dark"] .profile-singularity-menu {
+  width: max-content !important;
+  min-width: 18rem !important;
+  max-width: 22rem !important;
+  transform: none !important; /* Vaporize warping transform */
+  transition: none !important; /* Vaporize visual drag / animations */
+}
+
+/* ==========================================================================
+   SECTION 13: ABSOLUTE STATIC FIELD PROTOCOL & KINETIC PURGE
+   Directive 1: Gravitational Anchor Deployed (position: static)
+   Directive 2: Kinetic Purge (Instantaneous binary states, zero hover inertia)
+   ========================================================================== */
+
+/* Directive 1: Gravitational Anchor Deployed */
+header,
+.quantum-header,
+body[data-sector="monolith"] header,
+body[data-sector="monolith"] .quantum-header,
+body[data-sector="dark"] header,
+body[data-sector="dark"] .quantum-header {
+  position: static !important;
+  top: auto !important;
+  transform: none !important;
+}
+
+/* Directive 2: Kinetic Purge - Vaporize all animate-ping and animate-pulse beacons */
+.animate-ping,
+.animate-pulse,
+[class*="animate-ping"],
+[class*="animate-pulse"],
+body[data-sector="monolith"] .animate-ping,
+body[data-sector="monolith"] .animate-pulse,
+body[data-sector="dark"] .animate-ping,
+body[data-sector="dark"] .animate-pulse {
+  animation: none !important;
+  -webkit-animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Instantaneous Binary State Changes: Zero latency, zero transition delays, zero hover inertia */
+body[data-sector="monolith"] *,
+body[data-sector="monolith"] *::before,
+body[data-sector="monolith"] *::after,
+body[data-sector="dark"] *,
+body[data-sector="dark"] *::before,
+body[data-sector="dark"] *::after,
+.quantum-header,
+.quantum-header *,
+.quantum-header *::before,
+.quantum-header *::after {
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+  transition-timing-function: step-start !important;
+  transition: none !important;
+}
+
+/* Unyielding Equilibrium Hover & Focus States - Instantaneous Binary Transitions */
+body[data-sector="monolith"] a:hover,
+body[data-sector="monolith"] button:hover,
+body[data-sector="monolith"] input:focus,
+body[data-sector="monolith"] select:focus,
+body[data-sector="monolith"] textarea:focus,
+body[data-sector="dark"] a:hover,
+body[data-sector="dark"] button:hover,
+body[data-sector="dark"] input:focus,
+body[data-sector="dark"] select:focus,
+body[data-sector="dark"] textarea:focus {
+  transition: none !important;
+  transform: none !important;
+}
+

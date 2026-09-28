@@ -380,7 +380,7 @@ require_once(__DIR__ . '/../includes/nav.php');
       <div class="bg-gradient-to-br from-navy-900 via-navy-950 to-slate-900 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-slate-800 mb-8">
         <div class="flex flex-wrap justify-between items-start gap-2 mb-4">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
             <span>Handover Token Ready</span>
           </div>
           <span class="text-xs text-slate-400 font-medium">Pickup Spot: <?php echo htmlspecialchars($latest_token_rental['pickup_spot'] ?? 'Hazari Lane'); ?></span>
