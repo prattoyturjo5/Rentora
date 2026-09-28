@@ -175,7 +175,7 @@ require_once(__DIR__ . '/includes/nav.php');
             <div class="flex items-end">
               <button type="submit" class="quantum-submit-btn w-full py-2 px-4 text-sm flex items-center justify-center gap-2">
                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                <span>Execute Query</span>
+                <span>Search Equipment</span>
               </button>
             </div>
           </form>
