@@ -284,9 +284,7 @@ require_once(__DIR__ . '/includes/nav.php');
           <!-- Header & Badge -->
           <div class="flex items-start justify-between gap-3 mb-4">
             <div class="relative shrink-0">
-              <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-rose-600 via-pink-700 to-[#151B54] border-2 border-rose-400/40 flex items-center justify-center text-white font-extrabold text-xl shadow-md ring-2 ring-rose-500/20">
-                SC
-              </div>
+              <img src="<?php echo $base_path; ?>/assets/images/founders/shreya_chakraborty.jpg" alt="Shreya Chakraborty" class="w-16 h-16 rounded-2xl object-cover object-top border-2 border-rose-400/40 shadow-md ring-2 ring-rose-500/20">
               <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-white" title="Verified Founder"></span>
             </div>
             <span class="px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 border border-rose-300 text-[10px] font-mono font-extrabold tracking-wide">
@@ -324,9 +322,7 @@ require_once(__DIR__ . '/includes/nav.php');
           <!-- Header & Badge -->
           <div class="flex items-start justify-between gap-3 mb-4">
             <div class="relative shrink-0">
-              <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-700 to-[#151B54] border-2 border-emerald-400/40 flex items-center justify-center text-white font-extrabold text-xl shadow-md ring-2 ring-emerald-500/20">
-                SA
-              </div>
+              <img src="<?php echo $base_path; ?>/assets/images/founders/samia_akter.png" alt="Samia Akter" class="w-16 h-16 rounded-2xl object-cover object-top border-2 border-emerald-400/40 shadow-md ring-2 ring-emerald-500/20">
               <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-white" title="Verified Founder"></span>
             </div>
             <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-mono font-extrabold tracking-wide">

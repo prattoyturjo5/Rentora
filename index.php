@@ -16,6 +16,7 @@ try {
         SELECT c.category_id, c.category_name, COUNT(e.equipment_id) as item_count 
         FROM category c 
         LEFT JOIN equipment e ON c.category_id = e.category_id AND e.availability_status = 'Available'
+        WHERE c.category_name != 'Furniture'
         GROUP BY c.category_id, c.category_name
         ORDER BY c.category_name ASC
     ");
@@ -117,9 +118,9 @@ require_once(__DIR__ . '/includes/nav.php');
 
         <!-- Radiant Gradient Headline -->
         <h1 class="ab-fade ab-fade-d2 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight max-w-3xl mx-auto">
-          Precision Campus Lab Equipment <br class="hidden sm:inline">
+          Your Campus Hub for <br class="hidden sm:inline">
           <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-emerald-300 to-teal-300">
-            Institutional Exchange Monolith
+            Equipment &amp; Essentials
           </span>
         </h1>
         
