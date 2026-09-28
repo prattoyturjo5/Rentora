@@ -273,11 +273,13 @@ require_once(__DIR__ . '/includes/nav.php');
         <?php if ($total_items > 0): ?>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
             <?php foreach ($items as $index => $item): 
-              $cond_class = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+              $cond_class = 'bg-white text-emerald-700 border-emerald-200';
               if (($item['item_condition'] ?? '') === 'Good') {
-                  $cond_class = 'bg-blue-50 text-blue-700 border-blue-200';
+                  $cond_class = 'bg-white text-blue-700 border-blue-200';
               } elseif (($item['item_condition'] ?? '') === 'Fair') {
-                  $cond_class = 'bg-amber-50 text-amber-700 border-amber-200';
+                  $cond_class = 'bg-white text-amber-700 border-amber-200';
+              } elseif (($item['item_condition'] ?? '') === 'Poor') {
+                  $cond_class = 'bg-white text-rose-700 border-rose-200';
               }
               $raw_img = $item['image_url'] ?? '';
               if (!empty($raw_img)) {
