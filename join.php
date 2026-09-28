@@ -120,7 +120,7 @@ require_once(__DIR__ . '/includes/nav.php');
         <div class="lg:col-span-8">
           <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-primary leading-tight">
             Join the Rentora <br class="hidden sm:inline">
-            <span class="text-accent underline decoration-accent/40 underline-offset-8">Development Monolith</span>
+            <span class="text-accent underline decoration-accent/40 underline-offset-8">Development Team</span>
           </h1>
           <p class="mt-5 text-base sm:text-lg text-muted max-w-3xl leading-relaxed">
             Rentora Hub is engineered by Premier University BSc in Computer Science &amp; Engineering students to eradicate equipment scarcity across campus. We are opening our development pipeline to passionate campus engineers, architects, designers, and systems builders.

@@ -167,7 +167,7 @@ require_once(__DIR__ . '/../includes/nav.php');
 
       <a href="#add-item-modal" class="btn-accent text-xs">
         <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-        <span>+ Add New Equipment</span>
+        <span>Add New Equipment</span>
       </a>
     </div>
 

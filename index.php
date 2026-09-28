@@ -111,8 +111,8 @@ require_once(__DIR__ . '/includes/nav.php');
 
         <!-- Headline -->
         <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight max-w-3xl mx-auto text-slate-950 dark:text-primary">
-          Precision Campus Lab Equipment <br class="hidden sm:inline">
-          <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-blue-800 to-indigo-900 dark:from-sky-400 dark:via-cyan-400 dark:to-teal-300">Institutional Exchange Hub</span>
+          Your Campus Hub for <br class="hidden sm:inline">
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-blue-800 to-indigo-900 dark:from-sky-400 dark:via-cyan-400 dark:to-teal-300">Equipment &amp; Essentials</span>
         </h1>
         
         <p class="mt-3 text-sm sm:text-base text-slate-800 dark:text-muted max-w-2xl mx-auto leading-relaxed font-normal">
