@@ -260,9 +260,16 @@ require_once(__DIR__ . '/includes/nav.php');
         <?php if ($total_items > 0): ?>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <?php foreach ($items as $index => $item): 
-              $cond_badge = 'badge-verified';
-              if (($item['item_condition'] ?? '') === 'Fair') {
-                  $cond_badge = 'badge-pending';
+              $cond_raw = trim($item['item_condition'] ?? 'Good');
+              $cond_lower = strtolower($cond_raw);
+              if ($cond_lower === 'poor') {
+                  $cond_badge = 'badge-condition-poor';
+              } elseif ($cond_lower === 'fair') {
+                  $cond_badge = 'badge-condition-fair';
+              } elseif ($cond_lower === 'new' || $cond_lower === 'like new') {
+                  $cond_badge = 'badge-condition-new';
+              } else {
+                  $cond_badge = 'badge-condition-good';
               }
               $raw_img = $item['image_url'] ?? '';
               if (!empty($raw_img)) {
@@ -288,7 +295,7 @@ require_once(__DIR__ . '/includes/nav.php');
                       <span class="badge-subtle text-[10px] <?php echo $cond_badge; ?>">
                         <?php echo htmlspecialchars($item['item_condition'] ?? 'Good'); ?>
                       </span>
-                      <span class="badge-subtle text-[10px]">
+                      <span class="badge-subtle text-[10px] badge-category-glass">
                         <?php echo htmlspecialchars($item['category_name'] ?? 'Equipment'); ?>
                       </span>
                     </div>

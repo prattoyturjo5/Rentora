@@ -244,11 +244,24 @@ require_once(__DIR__ . '/includes/nav.php');
         <div class="bg-surface rounded-2xl border border-subtle overflow-hidden shadow-float">
           <div class="h-96 w-full bg-surface-subtle relative">
             <img src="<?php echo htmlspecialchars($image_url); ?>" alt="<?php echo htmlspecialchars($item['title'] ?? ''); ?>" class="w-full h-full object-cover">
+            <?php
+              $cond_raw_d = trim($item['item_condition'] ?? 'Good');
+              $cond_lower_d = strtolower($cond_raw_d);
+              if ($cond_lower_d === 'poor') {
+                  $detail_cond_badge = 'badge-condition-poor';
+              } elseif ($cond_lower_d === 'fair') {
+                  $detail_cond_badge = 'badge-condition-fair';
+              } elseif ($cond_lower_d === 'new' || $cond_lower_d === 'like new') {
+                  $detail_cond_badge = 'badge-condition-new';
+              } else {
+                  $detail_cond_badge = 'badge-condition-good';
+              }
+            ?>
             <div class="absolute top-4 left-4 flex gap-2">
-              <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500 text-white shadow-md">
+              <span class="px-3 py-1 rounded-full text-xs font-extrabold <?php echo $detail_cond_badge; ?> shadow-md">
                 <?php echo htmlspecialchars($item['item_condition'] ?? 'Good'); ?>
               </span>
-              <span class="px-3 py-1 rounded-full text-xs font-bold bg-surface-elevated/90 text-primary border border-subtle backdrop-blur-md">
+              <span class="px-3 py-1 rounded-full text-xs font-bold badge-category-glass">
                 <?php echo htmlspecialchars($item['category_name'] ?? 'General'); ?>
               </span>
             </div>
