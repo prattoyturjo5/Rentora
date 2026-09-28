@@ -94,84 +94,84 @@ require_once(__DIR__ . '/includes/header.php');
 require_once(__DIR__ . '/includes/nav.php');
 ?>
 
-<main class="flex-1 flex flex-col w-full bg-[#F8FAFC]">
+<main class="flex-1 flex flex-col w-full bg-canvas">
 
   <!-- ═══════════════════════════════════════════════════════════════
-       1. HERO VACUUM — Dense Night Blue (#151B54) Monolith
+       1. HERO VACUUM — Semantic Surface Elevated Monolith
   ════════════════════════════════════════════════════════════════ -->
-  <section class="join-hero-vacuum bg-[#151B54] text-white pt-14 pb-16 sm:pt-20 sm:pb-24 border-b border-white/10 relative overflow-hidden">
+  <section class="join-hero-vacuum bg-surface-elevated text-primary pt-14 pb-16 sm:pt-20 sm:pb-24 border-b border-subtle relative overflow-hidden">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
       
       <div class="flex flex-wrap items-center gap-3 mb-5">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-mono font-semibold">
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-mono font-semibold">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
           RECRUITMENT MATRIX ACTIVE
         </span>
-        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/10 text-sky-200 border border-white/15 text-xs font-mono">
-          <span>Schema Sector:</span>
-          <span class="font-bold text-white">rentora_db.team_applications</span>
+        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface-subtle text-primary border border-subtle text-xs font-mono">
+          <span class="text-muted">Sector:</span>
+          <span class="font-bold">team_applications</span>
         </span>
-        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-mono">
+        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-accent/10 text-accent border border-accent/20 text-xs font-mono">
           <span>Premier University CSE</span>
         </span>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         <div class="lg:col-span-8">
-          <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
+          <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-primary leading-tight">
             Join the Rentora <br class="hidden sm:inline">
-            <span class="text-sky-300 underline decoration-sky-400/40 underline-offset-8">Development Monolith</span>
+            <span class="text-accent underline decoration-accent/40 underline-offset-8">Development Monolith</span>
           </h1>
-          <p class="mt-5 text-base sm:text-lg text-slate-300 max-w-3xl leading-relaxed">
+          <p class="mt-5 text-base sm:text-lg text-muted max-w-3xl leading-relaxed">
             Rentora Hub is engineered by Premier University BSc in Computer Science &amp; Engineering students to eradicate equipment scarcity across campus. We are opening our development pipeline to passionate campus engineers, architects, designers, and systems builders.
           </p>
-          <div class="mt-8 flex flex-wrap gap-4 text-xs font-mono text-slate-300">
-            <div class="flex items-center gap-2 bg-white/5 border border-white/10 px-3.5 py-2 rounded-xl">
-              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <div class="mt-8 flex flex-wrap gap-4 text-xs font-mono text-muted">
+            <div class="flex items-center gap-2 bg-surface-subtle border border-subtle px-3.5 py-2 rounded-xl">
+              <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
               <span>4 Founding Architects</span>
             </div>
-            <div class="flex items-center gap-2 bg-white/5 border border-white/10 px-3.5 py-2 rounded-xl">
-              <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+            <div class="flex items-center gap-2 bg-surface-subtle border border-subtle px-3.5 py-2 rounded-xl">
+              <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
               <span>Direct MySQL Schema Storage</span>
             </div>
-            <div class="flex items-center gap-2 bg-white/5 border border-white/10 px-3.5 py-2 rounded-xl">
-              <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            <div class="flex items-center gap-2 bg-surface-subtle border border-subtle px-3.5 py-2 rounded-xl">
+              <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
               <span>Zero Platform Fee Infrastructure</span>
             </div>
           </div>
         </div>
 
         <div class="lg:col-span-4 flex justify-center lg:justify-end">
-          <div class="w-full max-w-sm bg-[#0E133C] border border-white/15 rounded-2xl p-6 shadow-2xl">
-            <div class="flex items-center gap-3 pb-4 border-b border-white/10">
-              <div class="w-10 h-10 rounded-xl bg-blue-600/30 border border-blue-400/40 flex items-center justify-center text-sky-300 font-bold font-mono">
+          <div class="w-full max-w-sm bg-surface border border-subtle rounded-2xl p-6 shadow-float">
+            <div class="flex items-center gap-3 pb-4 border-b border-subtle">
+              <div class="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent font-bold font-mono">
                 &lt;/&gt;
               </div>
               <div>
-                <h3 class="text-sm font-bold text-white">Engineering Cohort</h3>
-                <p class="text-xs text-slate-400 font-mono">Hazari Lane &amp; GEC Hub</p>
+                <h3 class="text-sm font-bold text-primary">Engineering Cohort</h3>
+                <p class="text-xs text-muted font-mono">Hazari Lane &amp; GEC Hub</p>
               </div>
             </div>
             <div class="mt-4 space-y-2.5 text-xs">
-              <div class="flex justify-between text-slate-300">
-                <span class="text-slate-400">Current Status:</span>
-                <span class="text-emerald-400 font-bold">Applications Open</span>
+              <div class="flex justify-between text-muted">
+                <span>Current Status:</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Applications Open</span>
               </div>
-              <div class="flex justify-between text-slate-300">
-                <span class="text-slate-400">Core Stack:</span>
-                <span class="font-mono text-white">PHP 8.2 &bull; MySQL &bull; Tailwind</span>
+              <div class="flex justify-between text-muted">
+                <span>Core Stack:</span>
+                <span class="font-mono text-primary">PHP 8.2 &bull; MySQL &bull; Tailwind</span>
               </div>
-              <div class="flex justify-between text-slate-300">
-                <span class="text-slate-400">Target Cohort:</span>
-                <span class="text-sky-300 font-semibold">PU Students / CSE Dept</span>
+              <div class="flex justify-between text-muted">
+                <span>Target Cohort:</span>
+                <span class="text-accent font-semibold">PU Students / CSE Dept</span>
               </div>
-              <div class="flex justify-between text-slate-300">
-                <span class="text-slate-400">Review Cycle:</span>
-                <span class="text-white">Continuous Telemetry</span>
+              <div class="flex justify-between text-muted">
+                <span>Review Cycle:</span>
+                <span class="text-primary">Continuous Telemetry</span>
               </div>
             </div>
-            <div class="mt-6 pt-4 border-t border-white/10">
-              <a href="#apply-terminal" class="block w-full py-2.5 px-4 text-center rounded-xl bg-sky-500 hover:bg-sky-400 text-[#151B54] font-bold text-xs shadow-md transition-none">
+            <div class="mt-6 pt-4 border-t border-subtle">
+              <a href="#apply-terminal" class="btn-accent block w-full py-2.5 px-4 text-center rounded-xl text-white font-bold text-xs shadow-float">
                 Jump to Application Terminal &darr;
               </a>
             </div>
@@ -188,13 +188,13 @@ require_once(__DIR__ . '/includes/nav.php');
   <section class="py-16 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
     
     <div class="text-center max-w-3xl mx-auto mb-12">
-      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#151B54]/10 text-[#151B54] text-xs font-mono font-bold uppercase tracking-wider mb-3">
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-mono font-bold uppercase tracking-wider mb-3 border border-accent/20">
         Core Engineering Nexus
       </div>
-      <h2 class="text-2xl sm:text-4xl font-extrabold text-[#151B54] tracking-tight">
+      <h2 class="text-2xl sm:text-4xl font-extrabold text-primary tracking-tight">
         The Founding Development Nodes
       </h2>
-      <p class="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+      <p class="mt-3 text-sm sm:text-base text-muted leading-relaxed">
         Meet the four founding Premier University CSE engineers who built the Rentora core transactional matrix, verified handover protocol, and anti-gravity design system.
       </p>
     </div>
@@ -203,157 +203,157 @@ require_once(__DIR__ . '/includes/nav.php');
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
       <!-- Node 1: Aiman Hussain -->
-      <div class="join-founder-card rounded-2xl p-6 border border-slate-200 bg-white shadow-sm flex flex-col justify-between">
+      <div class="join-founder-card rounded-2xl p-6 border border-subtle bg-surface shadow-float flex flex-col justify-between">
         <div>
           <!-- Header & Badge -->
           <div class="flex items-start justify-between gap-3 mb-4">
             <div class="relative shrink-0">
-              <img src="<?php echo $base_path; ?>/assets/images/founders/aiman_hussain.jpg" alt="Aiman Hussain" class="w-16 h-16 rounded-2xl object-cover object-center border-2 border-blue-400/40 shadow-md ring-2 ring-blue-500/20">
-              <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-white" title="Verified Founder"></span>
+              <img src="<?php echo $base_path; ?>/assets/images/founders/aiman_hussain.jpg" alt="Aiman Hussain" class="w-16 h-16 rounded-2xl object-cover object-center border-2 border-accent/40 shadow-sm ring-2 ring-accent/20">
+              <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-surface" title="Verified Founder"></span>
             </div>
-            <span class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-300 text-[10px] font-mono font-extrabold tracking-wide">
+            <span class="px-2.5 py-1 rounded-full bg-accent/10 text-accent border border-accent/20 text-[10px] font-mono font-extrabold tracking-wide">
               LEAD ARCHITECT
             </span>
           </div>
 
-          <h3 class="text-lg font-extrabold text-[#151B54] tracking-tight">Aiman Hussain</h3>
-          <p class="text-xs font-semibold text-sky-600 mb-2">Systems Architect &amp; Core Engine Lead</p>
-          <div class="inline-flex items-center gap-1 text-[11px] font-mono text-slate-500 mb-4 bg-slate-100 px-2 py-0.5 rounded">
+          <h3 class="text-lg font-extrabold text-primary tracking-tight">Aiman Hussain</h3>
+          <p class="text-xs font-semibold text-accent mb-2">Systems Architect &amp; Core Engine Lead</p>
+          <div class="inline-flex items-center gap-1 text-[11px] font-mono text-muted mb-4 bg-surface-subtle px-2 py-0.5 rounded border border-subtle">
             <span>ID:</span>
-            <span class="font-bold text-slate-700">0222420005101197</span>
+            <span class="font-bold text-primary">0222420005101197</span>
           </div>
 
-          <p class="text-xs text-slate-600 leading-relaxed mb-4">
+          <p class="text-xs text-muted leading-relaxed mb-4">
             Forged the zero-gravity architectural pipeline, high-throughput PDO engine, and binary SVG hologram studio. Designed the mathematical centering matrices and state machines.
           </p>
         </div>
 
-        <div class="pt-4 border-t border-slate-100 space-y-2">
-          <div class="text-[11px] font-mono text-slate-500">
-            <span class="text-slate-400">Discipline:</span> BSc in CSE, Premier University
+        <div class="pt-4 border-t border-subtle space-y-2">
+          <div class="text-[11px] font-mono text-muted">
+            <span>Discipline:</span> BSc in CSE, Premier University
           </div>
           <div class="flex flex-wrap gap-1 text-[10px] font-mono font-semibold">
-            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">PHP Core</span>
-            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">MySQL ACID</span>
-            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Architectural DOM</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">PHP Core</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">MySQL ACID</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Architectural DOM</span>
           </div>
         </div>
       </div>
 
       <!-- Node 2: Prattoy Barua Turja -->
-      <div class="join-founder-card rounded-2xl p-6 border border-slate-200 bg-white shadow-sm flex flex-col justify-between">
+      <div class="join-founder-card rounded-2xl p-6 border border-subtle bg-surface shadow-float flex flex-col justify-between">
         <div>
           <!-- Header & Badge -->
           <div class="flex items-start justify-between gap-3 mb-4">
             <div class="relative shrink-0">
-              <img src="<?php echo $base_path; ?>/assets/images/founders/prattoy_turja.jpg" alt="Prattoy Barua Turja" class="w-16 h-16 rounded-2xl object-cover object-top border-2 border-purple-400/40 shadow-md ring-2 ring-purple-500/20">
-              <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-white" title="Verified Founder"></span>
+              <img src="<?php echo $base_path; ?>/assets/images/founders/prattoy_turja.jpg" alt="Prattoy Barua Turja" class="w-16 h-16 rounded-2xl object-cover object-top border-2 border-accent/40 shadow-sm ring-2 ring-accent/20">
+              <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-surface" title="Verified Founder"></span>
             </div>
-            <span class="px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-300 text-[10px] font-mono font-extrabold tracking-wide">
+            <span class="px-2.5 py-1 rounded-full bg-accent/10 text-accent border border-accent/20 text-[10px] font-mono font-extrabold tracking-wide">
               FULL-STACK
             </span>
           </div>
 
-          <h3 class="text-lg font-extrabold text-[#151B54] tracking-tight">Prattoy Barua Turja</h3>
-          <p class="text-xs font-semibold text-purple-600 mb-2">Full-Stack Engineer &amp; Database Strategist</p>
-          <div class="inline-flex items-center gap-1 text-[11px] font-mono text-slate-500 mb-4 bg-slate-100 px-2 py-0.5 rounded">
+          <h3 class="text-lg font-extrabold text-primary tracking-tight">Prattoy Barua Turja</h3>
+          <p class="text-xs font-semibold text-accent mb-2">Full-Stack Engineer &amp; Database Strategist</p>
+          <div class="inline-flex items-center gap-1 text-[11px] font-mono text-muted mb-4 bg-surface-subtle px-2 py-0.5 rounded border border-subtle">
             <span>ID:</span>
-            <span class="font-bold text-slate-700">0222420005101171</span>
+            <span class="font-bold text-primary">0222420005101171</span>
           </div>
 
-          <p class="text-xs text-slate-600 leading-relaxed mb-4">
+          <p class="text-xs text-muted leading-relaxed mb-4">
             Engineered the relational exchange agreement schemas, multi-table joins, equipment category indexes, and transactional token verification backend.
           </p>
         </div>
 
-        <div class="pt-4 border-t border-slate-100 space-y-2">
-          <div class="text-[11px] font-mono text-slate-500">
-            <span class="text-slate-400">Discipline:</span> BSc in CSE, Premier University
+        <div class="pt-4 border-t border-subtle space-y-2">
+          <div class="text-[11px] font-mono text-muted">
+            <span>Discipline:</span> BSc in CSE, Premier University
           </div>
           <div class="flex flex-wrap gap-1 text-[10px] font-mono font-semibold">
-            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Relational SQL</span>
-            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Auth Vectors</span>
-            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Backend API</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Relational SQL</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Auth Vectors</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Backend API</span>
           </div>
         </div>
       </div>
 
       <!-- Node 3: Shreya Chakraborty -->
-      <div class="join-founder-card rounded-2xl p-6 border border-slate-200 bg-white shadow-sm flex flex-col justify-between">
+      <div class="join-founder-card rounded-2xl p-6 border border-subtle bg-surface shadow-float flex flex-col justify-between">
         <div>
           <!-- Header & Badge -->
           <div class="flex items-start justify-between gap-3 mb-4">
             <div class="relative shrink-0">
-              <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-rose-600 via-pink-700 to-[#151B54] border-2 border-rose-400/40 flex items-center justify-center text-white font-extrabold text-xl shadow-md ring-2 ring-rose-500/20">
+              <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-rose-600 to-sky-600 border-2 border-rose-400/40 flex items-center justify-center text-white font-extrabold text-xl shadow-sm ring-2 ring-rose-500/20">
                 SC
               </div>
-              <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-white" title="Verified Founder"></span>
+              <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-surface" title="Verified Founder"></span>
             </div>
-            <span class="px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 border border-rose-300 text-[10px] font-mono font-extrabold tracking-wide">
+            <span class="px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-[10px] font-mono font-extrabold tracking-wide">
               UI/UX STRATEGIST
             </span>
           </div>
 
-          <h3 class="text-lg font-extrabold text-[#151B54] tracking-tight">Shreya Chakraborty</h3>
-          <p class="text-xs font-semibold text-rose-600 mb-2">UI/UX Strategist &amp; Frontend Systems</p>
-          <div class="inline-flex items-center gap-1 text-[11px] font-mono text-slate-500 mb-4 bg-slate-100 px-2 py-0.5 rounded">
+          <h3 class="text-lg font-extrabold text-primary tracking-tight">Shreya Chakraborty</h3>
+          <p class="text-xs font-semibold text-rose-500 mb-2">UI/UX Strategist &amp; Frontend Systems</p>
+          <div class="inline-flex items-center gap-1 text-[11px] font-mono text-muted mb-4 bg-surface-subtle px-2 py-0.5 rounded border border-subtle">
             <span>ID:</span>
-            <span class="font-bold text-slate-700">0222420005101183</span>
+            <span class="font-bold text-primary">0222420005101183</span>
           </div>
 
-          <p class="text-xs text-slate-600 leading-relaxed mb-4">
+          <p class="text-xs text-muted leading-relaxed mb-4">
             Architected the Trinary chromatic stratification (#151B54, #EFF3FF, #FFFFFF), interaction density heuristics, profile singularity pocket, and accessible form UX.
           </p>
         </div>
 
-        <div class="pt-4 border-t border-slate-100 space-y-2">
-          <div class="text-[11px] font-mono text-slate-500">
-            <span class="text-slate-400">Discipline:</span> BSc in CSE, Premier University
+        <div class="pt-4 border-t border-subtle space-y-2">
+          <div class="text-[11px] font-mono text-muted">
+            <span>Discipline:</span> BSc in CSE, Premier University
           </div>
           <div class="flex flex-wrap gap-1 text-[10px] font-mono font-semibold">
-            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">UI Stratification</span>
-            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Figma Design</span>
-            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Tailwind CSS</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">UI Stratification</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Figma Design</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Tailwind CSS</span>
           </div>
         </div>
       </div>
 
       <!-- Node 4: Samia Akter -->
-      <div class="join-founder-card rounded-2xl p-6 border border-slate-200 bg-white shadow-sm flex flex-col justify-between">
+      <div class="join-founder-card rounded-2xl p-6 border border-subtle bg-surface shadow-float flex flex-col justify-between">
         <div>
           <!-- Header & Badge -->
           <div class="flex items-start justify-between gap-3 mb-4">
             <div class="relative shrink-0">
-              <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-700 to-[#151B54] border-2 border-emerald-400/40 flex items-center justify-center text-white font-extrabold text-xl shadow-md ring-2 ring-emerald-500/20">
+              <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-700 border-2 border-emerald-400/40 flex items-center justify-center text-white font-extrabold text-xl shadow-sm ring-2 ring-emerald-500/20">
                 SA
               </div>
-              <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-white" title="Verified Founder"></span>
+              <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-surface" title="Verified Founder"></span>
             </div>
-            <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-mono font-extrabold tracking-wide">
+            <span class="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-mono font-extrabold tracking-wide">
               OPERATIONS &amp; QA
             </span>
           </div>
 
-          <h3 class="text-lg font-extrabold text-[#151B54] tracking-tight">Samia Akter</h3>
-          <p class="text-xs font-semibold text-emerald-600 mb-2">Platform Operations &amp; Quality Lead</p>
-          <div class="inline-flex items-center gap-1 text-[11px] font-mono text-slate-500 mb-4 bg-slate-100 px-2 py-0.5 rounded">
+          <h3 class="text-lg font-extrabold text-primary tracking-tight">Samia Akter</h3>
+          <p class="text-xs font-semibold text-emerald-500 mb-2">Platform Operations &amp; Quality Lead</p>
+          <div class="inline-flex items-center gap-1 text-[11px] font-mono text-muted mb-4 bg-surface-subtle px-2 py-0.5 rounded border border-subtle">
             <span>ID:</span>
-            <span class="font-bold text-slate-700">0222420005101172</span>
+            <span class="font-bold text-primary">0222420005101172</span>
           </div>
 
-          <p class="text-xs text-slate-600 leading-relaxed mb-4">
+          <p class="text-xs text-muted leading-relaxed mb-4">
             Formulated the physical campus handover guidelines, student verification guardrails, deposit refund checks, and end-to-end platform regression testing.
           </p>
         </div>
 
-        <div class="pt-4 border-t border-slate-100 space-y-2">
-          <div class="text-[11px] font-mono text-slate-500">
-            <span class="text-slate-400">Discipline:</span> BSc in CSE, Premier University
+        <div class="pt-4 border-t border-subtle space-y-2">
+          <div class="text-[11px] font-mono text-muted">
+            <span>Discipline:</span> BSc in CSE, Premier University
           </div>
           <div class="flex flex-wrap gap-1 text-[10px] font-mono font-semibold">
-            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Security Protocols</span>
-            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">QA Regression</span>
-            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Campus Ops</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Security Protocols</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">QA Regression</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Campus Ops</span>
           </div>
         </div>
       </div>
@@ -364,48 +364,48 @@ require_once(__DIR__ . '/includes/nav.php');
   <!-- ═══════════════════════════════════════════════════════════════
        3. RECRUITMENT VECTORS — Open Engineering Specializations
   ════════════════════════════════════════════════════════════════ -->
-  <section class="py-12 bg-white border-y border-slate-200">
+  <section class="py-12 bg-surface-subtle border-y border-subtle">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
-          <span class="text-xs font-mono font-bold text-sky-600 uppercase tracking-widest">Active Specializations</span>
-          <h2 class="text-2xl sm:text-3xl font-extrabold text-[#151B54] tracking-tight mt-1">
+          <span class="text-xs font-mono font-bold text-accent uppercase tracking-widest">Active Specializations</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-primary tracking-tight mt-1">
             Where Can You Inject Your Capabilities?
           </h2>
         </div>
-        <p class="text-xs sm:text-sm text-slate-500 max-w-md">
+        <p class="text-xs sm:text-sm text-muted max-w-md">
           Every role interfaces directly with live campus infrastructure. We value clean code, strong architectural intuition, and team-first execution.
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-slate-700">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-primary">
         
-        <div class="p-5 rounded-2xl bg-[#EFF3FF] border border-[#CBD5E1]">
-          <div class="w-8 h-8 rounded-lg bg-[#151B54] text-white flex items-center justify-center font-mono font-bold text-sm mb-3">01</div>
-          <h3 class="text-base font-bold text-[#151B54]">Systems &amp; Backend Engineering</h3>
-          <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+        <div class="p-5 rounded-2xl bg-surface border border-subtle shadow-float">
+          <div class="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 text-accent flex items-center justify-center font-mono font-bold text-sm mb-3">01</div>
+          <h3 class="text-base font-bold text-primary">Systems &amp; Backend Engineering</h3>
+          <p class="text-xs text-muted mt-2 leading-relaxed">
             Expand relational MySQL pipelines, PDO connection pooling, role-based authorization vectors, and automated token invalidation timers.
           </p>
-          <div class="mt-3 text-[11px] font-mono text-[#151B54] font-semibold">Stack: PHP 8.2, MySQL, Apache, Git</div>
+          <div class="mt-3 text-[11px] font-mono text-accent font-semibold">Stack: PHP 8.2, MySQL, Apache, Git</div>
         </div>
 
-        <div class="p-5 rounded-2xl bg-[#EFF3FF] border border-[#CBD5E1]">
-          <div class="w-8 h-8 rounded-lg bg-[#151B54] text-white flex items-center justify-center font-mono font-bold text-sm mb-3">02</div>
-          <h3 class="text-base font-bold text-[#151B54]">Frontend UI/UX Systems</h3>
-          <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+        <div class="p-5 rounded-2xl bg-surface border border-subtle shadow-float">
+          <div class="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 text-accent flex items-center justify-center font-mono font-bold text-sm mb-3">02</div>
+          <h3 class="text-base font-bold text-primary">Frontend UI/UX Systems</h3>
+          <p class="text-xs text-muted mt-2 leading-relaxed">
             Maintain the trinary dark-matter aesthetic, zero-latency state machines, responsive typography, and frictionless SVG visual pipelines.
           </p>
-          <div class="mt-3 text-[11px] font-mono text-[#151B54] font-semibold">Stack: Vanilla CSS, Tailwind, JS DOM, SVG</div>
+          <div class="mt-3 text-[11px] font-mono text-accent font-semibold">Stack: Vanilla CSS, Tailwind, JS DOM, SVG</div>
         </div>
 
-        <div class="p-5 rounded-2xl bg-[#EFF3FF] border border-[#CBD5E1]">
-          <div class="w-8 h-8 rounded-lg bg-[#151B54] text-white flex items-center justify-center font-mono font-bold text-sm mb-3">03</div>
-          <h3 class="text-base font-bold text-[#151B54]">Security, QA &amp; Campus Logistics</h3>
-          <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+        <div class="p-5 rounded-2xl bg-surface border border-subtle shadow-float">
+          <div class="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 text-accent flex items-center justify-center font-mono font-bold text-sm mb-3">03</div>
+          <h3 class="text-base font-bold text-primary">Security, QA &amp; Campus Logistics</h3>
+          <p class="text-xs text-muted mt-2 leading-relaxed">
             Execute manual and automated test matrices, verify deposit reconciliation logic, and coordinate physical handover points at campus landmarks.
           </p>
-          <div class="mt-3 text-[11px] font-mono text-[#151B54] font-semibold">Stack: DBMS Auditing, Manual QA, Operations</div>
+          <div class="mt-3 text-[11px] font-mono text-accent font-semibold">Stack: DBMS Auditing, Manual QA, Operations</div>
         </div>
 
       </div>
@@ -414,33 +414,33 @@ require_once(__DIR__ . '/includes/nav.php');
   </section>
 
   <!-- ═══════════════════════════════════════════════════════════════
-       4. APPLICATION TERMINAL — Photonic Ice (#EFF3FF) & Night Blue Form
+       4. APPLICATION TERMINAL — Semantic Form Container
   ════════════════════════════════════════════════════════════════ -->
   <section id="apply-terminal" class="py-16 sm:py-24 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
     
-    <div class="join-terminal-container rounded-3xl p-6 sm:p-10 bg-[#EFF3FF] border border-[#CBD5E1] shadow-xl">
+    <div class="join-terminal-container rounded-3xl p-6 sm:p-10 bg-surface border border-subtle shadow-elevated">
       
       <!-- Terminal Header -->
-      <div class="border-b border-[#CBD5E1] pb-6 mb-8 flex flex-wrap items-center justify-between gap-4">
+      <div class="border-b border-subtle pb-6 mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#151B54] text-white text-xs font-mono font-bold tracking-wider">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/10 text-accent border border-accent/20 text-xs font-mono font-bold tracking-wider">
             TERMINAL INPUT NODE
           </span>
-          <h2 class="text-2xl sm:text-3xl font-extrabold text-[#151B54] tracking-tight mt-2">
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-primary tracking-tight mt-2">
             Submit Your Engineering Telemetry
           </h2>
-          <p class="text-xs sm:text-sm text-slate-600 mt-1">
-            Data is written directly to the <code class="font-mono bg-white px-1.5 py-0.5 rounded border border-slate-300 font-bold text-[#151B54]">team_applications</code> table in MySQL.
+          <p class="text-xs sm:text-sm text-muted mt-1">
+            Data is written directly to the <code class="font-mono bg-surface-subtle px-1.5 py-0.5 rounded border border-subtle font-bold text-primary">team_applications</code> table in MySQL.
           </p>
         </div>
 
         <?php if ($is_logged_in_member): ?>
-          <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-medium">
-            <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-medium">
+            <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
             <span>Linked to Student Account #<?php echo (int)$_SESSION['user_id']; ?></span>
           </div>
         <?php else: ?>
-          <div class="text-xs font-mono text-slate-500 bg-white/70 px-3 py-1.5 rounded-xl border border-slate-300">
+          <div class="text-xs font-mono text-muted bg-surface-subtle px-3 py-1.5 rounded-xl border border-subtle">
             Guest Protocol (Open Submission)
           </div>
         <?php endif; ?>
@@ -448,41 +448,41 @@ require_once(__DIR__ . '/includes/nav.php');
 
       <!-- Success Notification Monolith -->
       <?php if ($success_data): ?>
-        <div class="mb-8 p-6 rounded-2xl bg-emerald-950 text-white border border-emerald-500/40 shadow-xl">
+        <div class="mb-8 p-6 rounded-2xl bg-emerald-500/10 text-primary border border-emerald-500/30 shadow-float">
           <div class="flex items-start gap-4">
-            <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-[#151B54] font-extrabold text-xl shrink-0">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white font-extrabold text-xl shrink-0">
               &check;
             </div>
             <div class="flex-1">
-              <h3 class="text-base font-bold text-emerald-300">Application Telemetry Locked Into MySQL Reactor!</h3>
-              <p class="text-xs text-slate-300 mt-1 leading-relaxed">
-                Your credentials have been securely stored in the <code class="text-emerald-400 font-mono font-bold">team_applications</code> sector of <code class="text-emerald-400 font-mono font-bold">rentora_db</code>. The founding architects have received your transmission.
+              <h3 class="text-base font-bold text-emerald-600 dark:text-emerald-400">Application Telemetry Locked Into MySQL Reactor!</h3>
+              <p class="text-xs text-muted mt-1 leading-relaxed">
+                Your credentials have been securely stored in the <code class="text-emerald-600 dark:text-emerald-400 font-mono font-bold">team_applications</code> sector of <code class="text-emerald-600 dark:text-emerald-400 font-mono font-bold">rentora_db</code>. The founding architects have received your transmission.
               </p>
               
-              <div class="mt-4 p-4 rounded-xl bg-black/40 border border-white/10 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+              <div class="mt-4 p-4 rounded-xl bg-surface-subtle border border-subtle grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
                 <div>
-                  <span class="text-slate-400 block text-[10px]">APPLICATION REFERENCE</span>
-                  <span class="text-white font-bold text-sm text-sky-400"><?php echo htmlspecialchars($success_data['ref_code']); ?></span>
+                  <span class="text-muted block text-[10px]">APPLICATION REFERENCE</span>
+                  <span class="text-accent font-bold text-sm"><?php echo htmlspecialchars($success_data['ref_code']); ?></span>
                 </div>
                 <div>
-                  <span class="text-slate-400 block text-[10px]">RECORD ID</span>
-                  <span class="text-white font-bold text-sm">#<?php echo htmlspecialchars((string)$success_data['id']); ?></span>
+                  <span class="text-muted block text-[10px]">RECORD ID</span>
+                  <span class="text-primary font-bold text-sm">#<?php echo htmlspecialchars((string)$success_data['id']); ?></span>
                 </div>
                 <div>
-                  <span class="text-slate-400 block text-[10px]">APPLICANT</span>
-                  <span class="text-slate-200"><?php echo htmlspecialchars($success_data['name']); ?></span>
+                  <span class="text-muted block text-[10px]">APPLICANT</span>
+                  <span class="text-primary"><?php echo htmlspecialchars($success_data['name']); ?></span>
                 </div>
                 <div>
-                  <span class="text-slate-400 block text-[10px]">TARGET ROLE</span>
-                  <span class="text-emerald-400 font-bold"><?php echo htmlspecialchars($success_data['role']); ?></span>
+                  <span class="text-muted block text-[10px]">TARGET ROLE</span>
+                  <span class="text-emerald-600 dark:text-emerald-400 font-bold"><?php echo htmlspecialchars($success_data['role']); ?></span>
                 </div>
               </div>
 
               <div class="mt-4 flex gap-3">
-                <a href="<?php echo $base_path; ?>/join.php" class="px-3.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-none">
+                <a href="<?php echo $base_path; ?>/join.php" class="btn-secondary px-3.5 py-1.5 rounded-lg text-xs font-semibold">
                   Submit Another Telemetry Node
                 </a>
-                <a href="<?php echo $base_path; ?>/about.php" class="px-3.5 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-[#151B54] text-xs font-bold transition-none">
+                <a href="<?php echo $base_path; ?>/about.php" class="btn-accent px-3.5 py-1.5 rounded-lg text-white text-xs font-bold">
                   Return to About Rentora &rarr;
                 </a>
               </div>
@@ -493,8 +493,8 @@ require_once(__DIR__ . '/includes/nav.php');
 
       <!-- Error Notification Monolith -->
       <?php if (!empty($error_msg)): ?>
-        <div class="mb-8 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-3">
-          <svg class="w-5 h-5 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <div class="mb-8 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs flex items-center gap-3">
+          <svg class="w-5 h-5 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           <div class="font-medium"><?php echo htmlspecialchars($error_msg); ?></div>
         </div>
       <?php endif; ?>
@@ -507,41 +507,41 @@ require_once(__DIR__ . '/includes/nav.php');
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
           
           <div>
-            <label for="applicant_name" class="block text-xs font-bold text-[#151B54] uppercase tracking-wider mb-1.5">
+            <label for="applicant_name" class="block text-xs font-bold text-primary uppercase tracking-wider mb-1.5">
               Full Legal / Campus Name <span class="text-rose-500">*</span>
             </label>
             <input type="text" id="applicant_name" name="applicant_name" required
               value="<?php echo htmlspecialchars($_POST['applicant_name'] ?? $prefill['applicant_name']); ?>"
               placeholder="e.g. Shakib Al Hasan"
-              class="join-input-field w-full px-3.5 py-2.5 rounded-xl text-sm border border-[#CBD5E1] bg-white focus:outline-none focus:ring-2 focus:ring-[#151B54] focus:border-[#151B54] transition-none">
+              class="input-subtle w-full px-3.5 py-2.5 rounded-xl text-sm font-medium">
           </div>
 
           <div>
-            <label for="university_email" class="block text-xs font-bold text-[#151B54] uppercase tracking-wider mb-1.5">
+            <label for="university_email" class="block text-xs font-bold text-primary uppercase tracking-wider mb-1.5">
               University / Personal Email <span class="text-rose-500">*</span>
             </label>
             <input type="email" id="university_email" name="university_email" required
               value="<?php echo htmlspecialchars($_POST['university_email'] ?? $prefill['university_email']); ?>"
               placeholder="e.g. student_46000@bscse.puc.ac.bd"
-              class="join-input-field w-full px-3.5 py-2.5 rounded-xl text-sm border border-[#CBD5E1] bg-white focus:outline-none focus:ring-2 focus:ring-[#151B54] focus:border-[#151B54] transition-none">
+              class="input-subtle w-full px-3.5 py-2.5 rounded-xl text-sm font-medium">
           </div>
 
           <div>
-            <label for="student_id" class="block text-xs font-bold text-[#151B54] uppercase tracking-wider mb-1.5">
+            <label for="student_id" class="block text-xs font-bold text-primary uppercase tracking-wider mb-1.5">
               Premier University Student ID <span class="text-rose-500">*</span>
             </label>
             <input type="text" id="student_id" name="student_id" required
               value="<?php echo htmlspecialchars($_POST['student_id'] ?? $prefill['student_id']); ?>"
               placeholder="e.g. 0222420005101000"
-              class="join-input-field w-full px-3.5 py-2.5 rounded-xl text-sm font-mono border border-[#CBD5E1] bg-white focus:outline-none focus:ring-2 focus:ring-[#151B54] focus:border-[#151B54] transition-none">
+              class="input-subtle w-full px-3.5 py-2.5 rounded-xl text-sm font-mono font-medium">
           </div>
 
           <div>
-            <label for="department" class="block text-xs font-bold text-[#151B54] uppercase tracking-wider mb-1.5">
+            <label for="department" class="block text-xs font-bold text-primary uppercase tracking-wider mb-1.5">
               Academic Department <span class="text-rose-500">*</span>
             </label>
             <select id="department" name="department" required
-              class="join-input-field w-full px-3.5 py-2.5 rounded-xl text-sm border border-[#CBD5E1] bg-white focus:outline-none focus:ring-2 focus:ring-[#151B54] focus:border-[#151B54] transition-none">
+              class="input-subtle w-full px-3.5 py-2.5 rounded-xl text-sm font-medium">
               <?php
                 $depts = [
                     'Computer Science & Engineering',
@@ -567,11 +567,11 @@ require_once(__DIR__ . '/includes/nav.php');
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
           
           <div>
-            <label for="role_applied" class="block text-xs font-bold text-[#151B54] uppercase tracking-wider mb-1.5">
+            <label for="role_applied" class="block text-xs font-bold text-primary uppercase tracking-wider mb-1.5">
               Target Specialization Vector <span class="text-rose-500">*</span>
             </label>
             <select id="role_applied" name="role_applied" required
-              class="join-input-field w-full px-3.5 py-2.5 rounded-xl text-sm border border-[#CBD5E1] bg-white focus:outline-none focus:ring-2 focus:ring-[#151B54] focus:border-[#151B54] transition-none">
+              class="input-subtle w-full px-3.5 py-2.5 rounded-xl text-sm font-medium">
               <option value="" disabled <?php echo empty($_POST['role_applied']) ? 'selected' : ''; ?>>Select target role...</option>
               <option value="Systems &amp; Backend Engineer" <?php echo (($_POST['role_applied'] ?? '') === 'Systems &amp; Backend Engineer') ? 'selected' : ''; ?>>
                 Systems &amp; Backend Engineer (PHP / MySQL)
@@ -592,13 +592,13 @@ require_once(__DIR__ . '/includes/nav.php');
           </div>
 
           <div>
-            <label for="phone_number" class="block text-xs font-bold text-[#151B54] uppercase tracking-wider mb-1.5">
+            <label for="phone_number" class="block text-xs font-bold text-primary uppercase tracking-wider mb-1.5">
               Mobile Contact Number <span class="text-rose-500">*</span>
             </label>
             <input type="tel" id="phone_number" name="phone_number" required
               value="<?php echo htmlspecialchars($_POST['phone_number'] ?? $prefill['phone_number']); ?>"
               placeholder="e.g. 01700000000"
-              class="join-input-field w-full px-3.5 py-2.5 rounded-xl text-sm font-mono border border-[#CBD5E1] bg-white focus:outline-none focus:ring-2 focus:ring-[#151B54] focus:border-[#151B54] transition-none">
+              class="input-subtle w-full px-3.5 py-2.5 rounded-xl text-sm font-mono font-medium">
           </div>
 
         </div>
@@ -607,45 +607,45 @@ require_once(__DIR__ . '/includes/nav.php');
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
           
           <div>
-            <label for="portfolio_link" class="block text-xs font-bold text-[#151B54] uppercase tracking-wider mb-1.5">
+            <label for="portfolio_link" class="block text-xs font-bold text-primary uppercase tracking-wider mb-1.5">
               Portfolio / GitHub / LinkedIn / Drive Link
             </label>
             <input type="url" id="portfolio_link" name="portfolio_link"
               value="<?php echo htmlspecialchars($_POST['portfolio_link'] ?? ''); ?>"
               placeholder="https://github.com/username"
-              class="join-input-field w-full px-3.5 py-2.5 rounded-xl text-sm border border-[#CBD5E1] bg-white focus:outline-none focus:ring-2 focus:ring-[#151B54] focus:border-[#151B54] transition-none">
+              class="input-subtle w-full px-3.5 py-2.5 rounded-xl text-sm font-medium">
           </div>
 
           <div>
-            <label for="technical_skills" class="block text-xs font-bold text-[#151B54] uppercase tracking-wider mb-1.5">
+            <label for="technical_skills" class="block text-xs font-bold text-primary uppercase tracking-wider mb-1.5">
               Technical Stack &amp; Skills
             </label>
             <input type="text" id="technical_skills" name="technical_skills"
               value="<?php echo htmlspecialchars($_POST['technical_skills'] ?? ''); ?>"
               placeholder="e.g. PHP, MySQL, JavaScript, Git, Figma, Python"
-              class="join-input-field w-full px-3.5 py-2.5 rounded-xl text-sm font-mono border border-[#CBD5E1] bg-white focus:outline-none focus:ring-2 focus:ring-[#151B54] focus:border-[#151B54] transition-none">
+              class="input-subtle w-full px-3.5 py-2.5 rounded-xl text-sm font-mono font-medium">
           </div>
 
         </div>
 
         <!-- Statement of Purpose -->
         <div>
-          <label for="statement_of_purpose" class="block text-xs font-bold text-[#151B54] uppercase tracking-wider mb-1.5">
+          <label for="statement_of_purpose" class="block text-xs font-bold text-primary uppercase tracking-wider mb-1.5">
             Mission Alignment &amp; Statement of Purpose <span class="text-rose-500">*</span>
           </label>
           <textarea id="statement_of_purpose" name="statement_of_purpose" rows="4" required
             placeholder="Explain why you want to join the Rentora Development Monolith and what campus problems you want to solve..."
-            class="join-input-field w-full px-3.5 py-2.5 rounded-xl text-sm border border-[#CBD5E1] bg-white focus:outline-none focus:ring-2 focus:ring-[#151B54] focus:border-[#151B54] transition-none"><?php echo htmlspecialchars($_POST['statement_of_purpose'] ?? ''); ?></textarea>
+            class="input-subtle w-full px-3.5 py-2.5 rounded-xl text-sm font-medium"><?php echo htmlspecialchars($_POST['statement_of_purpose'] ?? ''); ?></textarea>
         </div>
 
         <!-- Terminal Submission Action -->
         <div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p class="text-xs text-slate-500">
+          <p class="text-xs text-muted">
             By submitting, your telemetry is permanently recorded in the university database for evaluation by the founding team.
           </p>
           <button type="submit"
-            class="join-submit-btn w-full sm:w-auto px-8 py-3 rounded-xl bg-[#151B54] hover:bg-[#1E2570] text-white font-extrabold text-sm shadow-md transition-none shrink-0 flex items-center justify-center gap-2">
-            <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            class="btn-accent w-full sm:w-auto px-8 py-3 rounded-xl text-white font-extrabold text-sm shadow-float shrink-0 flex items-center justify-center gap-2">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
             <span>Lock Telemetry to Schema</span>
           </button>
         </div>
