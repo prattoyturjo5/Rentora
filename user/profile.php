@@ -8,6 +8,7 @@ if (($_SESSION['role'] ?? '') !== 'member') {
 }
 require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/../includes/auth_guard.php');
+require_once(__DIR__ . '/../includes/avatar_presets.php');
 
 $user_id = (int)($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
 $success_msg = "";
@@ -44,10 +45,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $file_ext   = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
             if ($file_ext === 'jpeg') $file_ext = 'jpg';
 
-            $allowed_exts = ['jpg', 'png', 'webp', 'gif'];
+            $allowed_exts = ['jpg', 'png', 'webp', 'gif', 'svg'];
 
             if (!in_array($file_ext, $allowed_exts)) {
-                $error_msg = "Invalid image format. Allowed: PNG, JPG, WEBP, GIF.";
+                $error_msg = "Invalid image format. Allowed: PNG, JPG, WEBP, GIF, SVG.";
             } elseif ($file_size > 5 * 1024 * 1024) {
                 $error_msg = "Image exceeds 5MB limit.";
             } else {
@@ -76,6 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $cache_token = time();
                     $_SESSION['avatar']   = 'uploads/avatars/' . $target_filename;
                     $_SESSION['avatar_v'] = $cache_token;
+                    unset($_SESSION['avatar_preset']);
                     $success_msg = "Avatar binary hardwired directly to uploads/avatars/" . $target_filename . " with zero SQL mutations.";
                 } else {
                     $error_msg = "Filesystem write failed on path: " . $target_path;
@@ -92,10 +94,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 UPLOAD_ERR_EXTENSION  => 'File upload stopped by PHP extension.'
             ];
             $error_msg = $upload_errors[$err_code] ?? ('Upload failed with error code ' . $err_code);
-        } elseif (isset($_POST['avatar_preset'])) {
-            $preset = trim($_POST['avatar_preset']);
-            $_SESSION['avatar_preset'] = $preset;
-            $success_msg = "Quantum avatar persona updated to " . htmlspecialchars($preset) . ".";
+        }
+    }
+
+    // Directive 3: SVG Binary Transmuter Execution
+    if ($action === 'transmute_preset' || isset($_POST['preset_archetype'])) {
+        $preset_key = trim($_POST['preset_archetype'] ?? $_POST['preset_key'] ?? '');
+        $res = transmute_svg_preset($preset_key, $user_id, $avatar_dir);
+        if ($res['success']) {
+            $cache_token = time();
+            $_SESSION['avatar']        = $res['rel_path'];
+            $_SESSION['avatar_v']      = $cache_token;
+            $_SESSION['avatar_preset'] = $res['name'];
+            $success_msg = "SVG Binary Transmuter compiled physical archetype [" . htmlspecialchars($res['name']) . "] directly to " . $res['rel_path'] . " with zero schema mutations.";
+        } else {
+            $error_msg = $res['error'] ?? "Failed to compile SVG preset archetype.";
         }
     }
 
@@ -337,11 +350,11 @@ require_once(__DIR__ . '/../includes/nav.php');
             </span>
           </div>
 
-          <form id="avatar-form" action="" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
-            <input type="hidden" name="action" value="update_avatar">
+          <div class="p-6 space-y-6">
+            <!-- Direct Stream File Upload Dropzone -->
+            <form id="avatar-form" action="" method="POST" enctype="multipart/form-data" class="space-y-4">
+              <input type="hidden" name="action" value="update_avatar">
 
-            <!-- Studio Interface: Preview + Direct Stream Dropzone -->
-            <div class="space-y-4">
               <label class="block text-xs font-bold text-white uppercase tracking-wider">Holographic Projection &amp; Binary Stream Portal</label>
               
               <div class="flex flex-col sm:flex-row items-center gap-5">
@@ -361,7 +374,7 @@ require_once(__DIR__ . '/../includes/nav.php');
 
                 <!-- Hardwired Dropzone Pipeline -->
                 <div id="avatar-dropzone" class="flex-1 w-full border-2 border-dashed border-white/30 hover:border-white/80 bg-[#0A0E2E]/60 hover:bg-[#0A0E2E]/90 rounded-2xl p-5 text-center transition-all cursor-pointer group">
-                  <input type="file" id="avatar-file-input" name="avatar_file" accept="image/png,image/jpeg,image/webp,image/gif" class="sr-only">
+                  <input type="file" id="avatar-file-input" name="avatar_file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" class="sr-only">
                   
                   <div class="flex flex-col items-center justify-center space-y-1.5 pointer-events-none">
                     <div class="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -370,7 +383,7 @@ require_once(__DIR__ . '/../includes/nav.php');
                     <p class="text-xs font-bold text-white">
                       <span class="text-[#EFF3FF] underline underline-offset-2">Click to transmit binary</span> or drag &amp; drop image stream
                     </p>
-                    <p class="text-[11px] text-slate-300 font-mono">Accepts PNG, JPG, WEBP &bull; Max 5MB &bull; Latency: 0ms</p>
+                    <p class="text-[11px] text-slate-300 font-mono">Accepts PNG, JPG, WEBP, SVG &bull; Max 5MB &bull; Latency: 0ms</p>
                   </div>
                 </div>
               </div>
@@ -383,38 +396,65 @@ require_once(__DIR__ . '/../includes/nav.php');
                 </div>
                 <span id="stream-meta" class="text-[11px] text-[#EFF3FF] font-bold">Direct I/O Mode</span>
               </div>
-            </div>
+            </form>
 
-            <!-- Quantum Persona Presets -->
-            <div>
-              <label class="block text-xs font-bold text-white uppercase tracking-wider mb-3">Or Select a Quantum Academic Persona</label>
+            <!-- Standardized Preset Avatar Module (Directive 2 & 3) -->
+            <form id="preset-transmute-form" action="" method="POST" class="space-y-4 pt-4 border-t border-white/10">
+              <input type="hidden" name="action" value="transmute_preset">
+              
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <span>Standardized Preset Avatar Archetypes</span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-sky-500/20 text-sky-300 border border-sky-400/30">Casual Grid</span>
+                  </h3>
+                  <p class="text-[11px] text-slate-300 font-mono mt-0.5">Selecting an archetype triggers the SVG Binary Transmuter to compile a physical vector file.</p>
+                </div>
+                <span class="self-start sm:self-auto text-[10px] font-mono text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full font-bold flex items-center gap-1.5 shadow-sm">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  Physical SVG Engine
+                </span>
+              </div>
+
+              <!-- High-Velocity Responsive Grid of Classic Archetypes -->
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <?php
-                $personas = [
-                    ['name' => 'Quantum Engineer', 'icon' => '⚛️'],
-                    ['name' => 'Bio-Tech Scholar', 'icon' => '🧬'],
-                    ['name' => 'Cyber Architect', 'icon' => '🛰️'],
-                    ['name' => 'Campus Pioneer', 'icon' => '🎓']
-                ];
-                foreach ($personas as $p):
+                $presets = get_casual_avatar_presets();
+                $current_preset_name = $_SESSION['avatar_preset'] ?? '';
+                foreach ($presets as $pkey => $p):
+                  $is_active_preset = ($current_preset_name === $p['name']);
                 ?>
-                  <label class="flex flex-col items-center p-3 rounded-xl border border-white/15 bg-[#0A0E2E]/70 hover:bg-[#0A0E2E] hover:border-white/40 cursor-pointer hover:scale-105 transition-all text-center group">
-                    <input type="radio" name="avatar_preset" value="<?php echo $p['name']; ?>" class="sr-only">
-                    <span class="text-2xl mb-1 group-hover:scale-110 transition-transform"><?php echo $p['icon']; ?></span>
-                    <span class="text-xs font-bold text-white"><?php echo $p['name']; ?></span>
-                  </label>
+                  <button type="submit"
+                          name="preset_archetype"
+                          value="<?php echo htmlspecialchars($pkey); ?>"
+                          data-preset-key="<?php echo htmlspecialchars($pkey); ?>"
+                          data-preset-name="<?php echo htmlspecialchars($p['name']); ?>"
+                          class="preset-archetype-btn flex flex-col items-center p-3.5 rounded-xl border <?php echo $is_active_preset ? 'border-sky-400 bg-[#12184A] ring-2 ring-sky-400/50' : 'border-white/15 bg-[#0A0E2E]/80 hover:bg-[#0A0E2E] hover:border-white/50'; ?> cursor-pointer hover:scale-105 active:scale-95 transition-all text-center group relative overflow-hidden focus:outline-none focus:ring-2 focus:ring-sky-400">
+                    
+                    <?php if ($is_active_preset): ?>
+                      <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-sky-400 ring-2 ring-[#0A0E2E]" title="Active Archetype"></span>
+                    <?php endif; ?>
+
+                    <div class="w-14 h-14 rounded-full overflow-hidden p-0.5 bg-white/5 border border-white/20 mb-2 shadow-inner group-hover:border-white/60 group-hover:scale-110 transition-all flex items-center justify-center">
+                      <?php echo $p['svg']; ?>
+                    </div>
+                    
+                    <span class="text-xs font-bold text-white tracking-wide"><?php echo htmlspecialchars($p['name']); ?></span>
+                    <span class="text-[10px] text-slate-300 font-mono mt-0.5"><?php echo htmlspecialchars($p['tagline']); ?></span>
+                    
+                    <span class="mt-2.5 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-white/10 text-sky-300 border border-white/15 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                      Transmute SVG
+                    </span>
+                  </button>
                 <?php endforeach; ?>
               </div>
-            </div>
+            </form>
 
-            <div class="pt-2 flex items-center justify-between">
-              <span class="text-xs text-slate-300 italic">Bypasses virtual memory buffers via direct binary hardwire.</span>
-              <button type="submit" id="save-avatar-btn" class="px-5 py-2.5 rounded-xl bg-[#151B54] hover:bg-[#1E2570] text-white font-bold text-xs border border-white/30 shadow-lg shadow-[#151B54]/40 transition-all hover:scale-[1.02] flex items-center gap-1.5">
-                <span>Commit Hologram Stream</span>
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-              </button>
+            <div class="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-300">
+              <span class="italic">Direct local I/O write &bull; Writes physical vector directly to uploads/avatars/</span>
+              <span class="font-mono text-emerald-400 font-bold">Zero Database Schema Mutation</span>
             </div>
-          </form>
+          </div>
         </section>
 
       </div>
@@ -579,6 +619,36 @@ document.addEventListener('DOMContentLoaded', function() {
     // natively submit the HTML form directly to PHP core reactor:
     avatarForm.submit();
   }
+
+  // Directive 3: Preset Archetype Selection & SVG Transmutation Handler
+  const presetButtons = document.querySelectorAll('.preset-archetype-btn');
+  presetButtons.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      const presetName = this.getAttribute('data-preset-name');
+      const svgElement = this.querySelector('svg');
+
+      if (svgElement) {
+        // Instant 0ms local vector preview before transmission
+        const svgXml = new XMLSerializer().serializeToString(svgElement);
+        const svgDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgXml);
+
+        if (studioImg) {
+          studioImg.src = svgDataUrl;
+          studioImg.classList.remove('hidden');
+        }
+        if (studioFallback) studioFallback.classList.add('hidden');
+        if (bannerImg) {
+          bannerImg.src = svgDataUrl;
+          bannerImg.classList.remove('hidden');
+        }
+        if (bannerFallback) bannerFallback.classList.add('hidden');
+
+        if (statusText) statusText.innerHTML = '<span class="text-emerald-300 font-bold">⚡ SVG Binary Transmuter active — compiling ' + presetName + ' to disk...</span>';
+        if (statusPulse) statusPulse.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
+        if (metaText) metaText.textContent = 'Transmuting SVG...';
+      }
+    });
+  });
 });
 </script>
 

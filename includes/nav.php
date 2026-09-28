@@ -196,6 +196,13 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-400 h
 
         <?php if ($current_role === 'member'): ?>
           <?php
+            if (empty($_SESSION['avatar']) && $current_user_id > 0) {
+                $av_matches = glob(__DIR__ . '/../uploads/avatars/avatar_' . $current_user_id . '.*');
+                if (!empty($av_matches)) {
+                    $_SESSION['avatar'] = 'uploads/avatars/' . basename($av_matches[0]);
+                    $_SESSION['avatar_v'] = filemtime($av_matches[0]);
+                }
+            }
             $nav_user_has_avatar = !empty($_SESSION['avatar']) && file_exists(__DIR__ . '/../' . $_SESSION['avatar']);
             $nav_user_avatar_url = $nav_user_has_avatar ? ($base_path . '/' . $_SESSION['avatar'] . '?v=' . ($_SESSION['avatar_v'] ?? '1')) : null;
           ?>

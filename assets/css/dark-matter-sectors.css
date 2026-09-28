@@ -383,6 +383,19 @@ body[data-sector="dark"] .h-44.bg-slate-100 {
   background-color: #0A0E2E !important;
 }
 
+/* Standardized Preset Archetype Buttons */
+body[data-sector="monolith"] .preset-archetype-btn,
+body[data-sector="dark"] .preset-archetype-btn {
+  background-color: #0A0E2E !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+body[data-sector="monolith"] .preset-archetype-btn:hover,
+body[data-sector="dark"] .preset-archetype-btn:hover {
+  background-color: #12184A !important;
+  border-color: rgba(255, 255, 255, 0.60) !important;
+}
+
 /* ─── 9. MODALS — Night Blue shell ─── */
 body[data-sector="monolith"] .fixed.inset-0,
 body[data-sector="dark"] .fixed.inset-0 {

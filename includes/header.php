@@ -56,4 +56,4 @@ $page_title = $page_title ?? 'Rentora - Campus Equipment Exchange & Rental Hub';
   <link rel="stylesheet" href="<?php echo $base_path; ?>/assets/css/dark-matter-sectors.css?v=<?php echo file_exists(__DIR__ . '/../assets/css/dark-matter-sectors.css') ? filemtime(__DIR__ . '/../assets/css/dark-matter-sectors.css') : time(); ?>">
 
 </head>
-<body class="flex flex-col min-h-screen bg-slate-50 text-slate-800 antialiased selection:bg-blue-600 selection:text-white" <?php if (!empty($dark_sector)) echo 'data-sector="monolith"'; ?>>
+<body class="flex flex-col min-h-screen bg-slate-50 text-slate-800 antialiased selection:bg-blue-600 selection:text-white" data-sector="monolith">
