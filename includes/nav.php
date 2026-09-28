@@ -78,11 +78,13 @@ $is_profile_active = ($current_page === 'profile.php');
 $is_browse_active = (!$is_dashboard_active && !$is_equipment_active && !$is_rentals_active && !$is_exchanges_active && !$is_about_active && !$is_terms_active && !$is_profile_active) &&
                     ($current_page === 'index.php' || $current_page === 'item-details.php' || $current_page === '' || substr($request_uri, -1) === '/' || substr($request_uri, -8) === '/rentora');
 $is_admin_active = ($current_page === 'dashboard.php' && strpos($current_script, '/admin/') !== false);
+$is_join_active  = ($current_page === 'join.php');
 
 // Support optional manual override via $active_nav variable if set by caller
 if (isset($active_nav)) {
     $is_browse_active = ($active_nav === 'browse');
     $is_about_active = ($active_nav === 'about');
+    $is_join_active = ($active_nav === 'join');
     $is_terms_active = ($active_nav === 'terms');
     $is_dashboard_active = ($active_nav === 'dashboard');
     $is_equipment_active = ($active_nav === 'equipment');
@@ -90,57 +92,51 @@ if (isset($active_nav)) {
     $is_exchanges_active = ($active_nav === 'exchanges');
 }
 
-$nav_active_class   = 'nav-link nav-link-active px-2.5 py-2 text-[13px] font-semibold text-white bg-[#151B54] rounded-xl relative z-10 shrink-0';
-$nav_inactive_class = 'nav-link px-2.5 py-2 text-[13px] font-medium text-slate-300 hover:text-white hover:bg-[#151B54] rounded-xl relative z-10 shrink-0';
-$nav_tier2_active   = 'nav-tier2-link nav-tier2-active px-3.5 py-1.5 text-[13px] font-bold text-white bg-[#151B54] rounded-lg shadow-sm shrink-0 flex items-center gap-1.5';
-$nav_tier2_inactive = 'nav-tier2-link px-3.5 py-1.5 text-[13px] font-semibold text-[#151B54] hover:bg-[#151B54]/10 hover:text-[#151B54] rounded-lg transition-none shrink-0 flex items-center gap-1.5';
+$nav_active_class   = 'nav-link nav-link-active px-2.5 py-1.5 text-[13px] font-bold text-white bg-white/15 rounded-xl border border-white/20 shadow-sm shrink-0 whitespace-nowrap flex items-center gap-1.5';
+$nav_inactive_class = 'nav-link px-2.5 py-1.5 text-[13px] font-semibold text-slate-200 hover:text-white hover:bg-white/10 rounded-xl transition-none shrink-0 whitespace-nowrap flex items-center gap-1.5';
 ?>
-<!-- Dual-Tier Architectural Severance Monolith -->
-<header class="quantum-header static z-40 w-full shadow-md">
-
-  <!-- Tier 1: Identity & Profile Vector (Dense Night Blue Vacuum #151B54) -->
-  <div class="tier-1-monolith bg-[#151B54] text-white border-b border-white/10 relative z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between min-w-0">
+<!-- Monolith Header: Logo on Top (Centered) + Horizontal Navigation Bar in One Line Right Below -->
+<header class="quantum-header static z-40 w-full bg-[#151B54] text-white border-b border-white/10 shadow-md">
+  
+  <!-- TIER 1: Top Bar with Logo Centered -->
+  <div class="tier-1-top w-full border-b border-white/10 bg-[#151B54]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
       
-      <!-- Tier 1 Left Flank: Equal Relative Mass (flex-1) — Notice & Admin Links Flush Left -->
-      <div class="tier-1-flank-left flex-1 flex items-center justify-start gap-2.5 sm:gap-4 min-w-0">
-        <div class="flex items-center gap-2 text-xs text-slate-300 font-medium truncate">
-          <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
-          <span class="font-semibold text-white truncate">Premier University</span>
-          <span class="text-slate-400 hidden xl:inline font-mono">Marketplace</span>
-        </div>
-        <span class="hidden sm:inline-block w-px h-4 bg-white/15"></span>
-        <?php if ($current_role === 'admin'): ?>
-          <a href="<?php echo $base_path; ?>/admin/dashboard.php" class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-emerald-300 hover:text-white bg-emerald-950/50 border border-emerald-500/30 rounded-lg shrink-0 transition-none">
-            <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-            <span class="hidden sm:inline">Admin Console</span>
-          </a>
-        <?php else: ?>
-          <a href="<?php echo $base_path; ?>/admin/login.php" class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg shrink-0 transition-none">
-            <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-            <span class="hidden sm:inline">Admin Portal</span>
-          </a>
-        <?php endif; ?>
+      <!-- Tier 1 Left: Campus Identifier / Status (flex-1) -->
+      <div class="flex-1 flex items-center justify-start min-w-0">
+        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-[11px] font-mono text-slate-300">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+          <span class="hidden sm:inline font-semibold">Premier University</span>
+          <span class="text-slate-400 hidden md:inline">&bull; CSE Hub</span>
+        </span>
       </div>
 
-      <!-- Tier 1 Center Anchor: Rentora Logo Anchored in Exact Mathematical Center -->
-      <div class="tier-1-center-anchor flex-shrink-0 flex items-center justify-center px-2 sm:px-4">
-        <a href="<?php echo $base_path; ?>/index.php" class="flex items-center gap-3 group shrink-0">
+      <!-- Tier 1 Center: Brand Logo on Top (Centered) (shrink-0) -->
+      <div class="shrink-0 flex items-center justify-center">
+        <a href="<?php echo $base_path; ?>/index.php" class="flex items-center gap-2.5 sm:gap-3 group">
           <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-navy-950 border border-blue-400/30 flex items-center justify-center text-white font-extrabold shadow-md shadow-blue-500/25 transition-none shrink-0">
             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
           </div>
           <div class="text-left">
             <div class="flex items-center gap-1.5">
-              <span class="text-xl font-extrabold tracking-tight text-white">Rentora</span>
-              <span class="text-xl font-bold text-sky-400">Hub</span>
+              <span class="text-xl sm:text-2xl font-black tracking-tight text-white">Rentora</span>
+              <span class="text-xl sm:text-2xl font-extrabold text-sky-400">Hub</span>
             </div>
-            <p class="text-[10px] text-slate-300 uppercase tracking-widest font-semibold font-mono hidden sm:block">Campus Equipment Exchange</p>
+            <p class="text-[9px] text-slate-300 uppercase tracking-widest font-semibold font-mono">Campus Exchange</p>
           </div>
         </a>
       </div>
 
-      <!-- Tier 1 Right Flank: Equal Relative Mass (flex-1) — Profile Singularity Flush Right -->
-      <div class="tier-1-flank-right flex-1 flex items-center justify-end gap-2.5 sm:gap-3 min-w-0">
+      <!-- Tier 1 Right: Profile Node / Auth Actions (flex-1 flex justify-end) -->
+      <div class="flex-1 flex items-center justify-end gap-2 sm:gap-3 shrink-0">
+        
+        <?php if ($current_role === 'admin'): ?>
+          <a href="<?php echo $base_path; ?>/admin/dashboard.php" class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-emerald-300 hover:text-white bg-emerald-950/50 border border-emerald-500/30 rounded-lg shrink-0 transition-none">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <span>Admin</span>
+          </a>
+        <?php endif; ?>
+
         <?php if ($current_role === 'member'): ?>
           <?php
             if (empty($_SESSION['avatar']) && $current_user_id > 0) {
@@ -153,19 +149,17 @@ $nav_tier2_inactive = 'nav-tier2-link px-3.5 py-1.5 text-[13px] font-semibold te
             $nav_user_has_avatar = !empty($_SESSION['avatar']) && file_exists(__DIR__ . '/../' . $_SESSION['avatar']);
             $nav_user_avatar_url = $nav_user_has_avatar ? ($base_path . '/' . $_SESSION['avatar'] . '?v=' . ($_SESSION['avatar_v'] ?? '1')) : null;
           ?>
-          <!-- Profile Singularity (Interactive Dilating Pocket with shrink-0) -->
+          <!-- Profile Singularity -->
           <div id="profile-singularity" class="profile-singularity group/singularity relative shrink-0" tabindex="0">
-            <button type="button" class="profile-singularity-trigger flex items-center gap-2 px-2.5 py-2 rounded-xl border border-white/15 bg-[#151B54] hover:bg-[#1E2570] text-left focus:outline-none shrink-0" id="singularity-trigger" aria-haspopup="true" aria-expanded="false">
-              <!-- Dynamic Gravitational Avatar Orb -->
+            <button type="button" class="profile-singularity-trigger flex items-center gap-2 px-2.5 py-2 rounded-xl border border-white/15 bg-white/10 hover:bg-white/15 text-left focus:outline-none shrink-0" id="singularity-trigger" aria-haspopup="true" aria-expanded="false">
               <div class="relative shrink-0">
                 <?php if ($nav_user_has_avatar): ?>
                   <img src="<?php echo htmlspecialchars($nav_user_avatar_url); ?>" alt="Avatar" class="w-8 h-8 rounded-full object-cover shadow-md ring-1 ring-white/30 shrink-0">
                 <?php else: ?>
-                  <div class="w-8 h-8 rounded-full bg-[#151B54] text-white flex items-center justify-center font-bold text-xs shadow-md border border-white/20 ring-1 ring-white/30 shrink-0">
+                  <div class="w-8 h-8 rounded-full bg-[#1E2570] text-white flex items-center justify-center font-bold text-xs shadow-md border border-white/20 ring-1 ring-white/30 shrink-0">
                     <?php echo strtoupper(substr($current_name, 0, 1)); ?>
                   </div>
                 <?php endif; ?>
-                <!-- Status Beacon -->
                 <?php if ($current_member_status === 'Verified'): ?>
                   <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#151B54]" title="Verified Member"></span>
                 <?php elseif ($current_member_status === 'Rejected'): ?>
@@ -175,31 +169,26 @@ $nav_tier2_inactive = 'nav-tier2-link px-3.5 py-1.5 text-[13px] font-semibold te
                 <?php endif; ?>
               </div>
 
-              <!-- User Display Name -->
               <div class="text-left leading-tight hidden lg:block shrink-0">
                 <div class="text-xs font-bold text-white flex items-center gap-1.5 whitespace-nowrap">
                   <span><?php echo htmlspecialchars($current_name); ?></span>
                 </div>
-                <div class="text-[10px] font-mono text-slate-300 flex items-center gap-1">
+                <div class="text-[10px] font-mono text-slate-300">
                   <?php if ($current_member_status === 'Verified'): ?>
                     <span class="text-emerald-400 font-semibold">Verified</span>
-                  <?php elseif ($current_member_status === 'Rejected'): ?>
-                    <span class="text-rose-400 font-semibold">Rejected</span>
                   <?php else: ?>
                     <span class="text-amber-400 font-semibold">Pending</span>
                   <?php endif; ?>
                 </div>
               </div>
 
-              <!-- Dilation Chevron -->
               <svg class="singularity-chevron w-3.5 h-3.5 text-slate-400 group-hover/singularity:text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
               </svg>
             </button>
 
-            <!-- Profile Management Dropdown Menu -->
+            <!-- Profile Dropdown Menu -->
             <div class="profile-singularity-menu absolute right-0 top-full mt-2 min-w-[18rem] max-w-sm rounded-2xl bg-[#0A0F1D]/98 backdrop-blur-2xl border border-white/15 shadow-2xl p-4 z-50 pointer-events-none opacity-0" id="singularity-menu">
-              <!-- Singularity Core User Identity Header -->
               <div class="flex items-center gap-3 pb-3 border-b border-white/10 mb-2.5 px-1">
                 <?php if ($nav_user_has_avatar): ?>
                   <img src="<?php echo htmlspecialchars($nav_user_avatar_url); ?>" alt="Avatar" class="w-11 h-11 rounded-full object-cover shadow-md ring-2 ring-white/20">
@@ -212,8 +201,7 @@ $nav_tier2_inactive = 'nav-tier2-link px-3.5 py-1.5 text-[13px] font-semibold te
                   <p class="text-sm font-bold text-white truncate"><?php echo htmlspecialchars($current_name); ?></p>
                   <p class="text-[11px] text-slate-400 font-mono truncate">@<?php echo htmlspecialchars($_SESSION['username'] ?? 'member'); ?></p>
                   <div class="mt-1 flex items-center gap-2">
-                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold <?php echo $current_member_status === 'Verified' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : ($current_member_status === 'Rejected' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'); ?>">
-                      <span class="w-1.5 h-1.5 rounded-full <?php echo $current_member_status === 'Verified' ? 'bg-emerald-400' : ($current_member_status === 'Rejected' ? 'bg-rose-400' : 'bg-amber-400'); ?>"></span>
+                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold <?php echo $current_member_status === 'Verified' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'; ?>">
                       <?php echo htmlspecialchars($current_member_status); ?>
                     </span>
                     <?php if (!empty($_SESSION['student_id'])): ?>
@@ -223,9 +211,7 @@ $nav_tier2_inactive = 'nav-tier2-link px-3.5 py-1.5 text-[13px] font-semibold te
                 </div>
               </div>
 
-              <!-- Immediate Singularity Pathways -->
               <div class="space-y-1">
-                <!-- Pathway 1: Name Modifications -->
                 <a href="<?php echo $base_path; ?>/user/profile.php" class="singularity-pocket-link group/item flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 transition-none">
                   <div class="w-8 h-8 rounded-lg bg-blue-500/15 border border-blue-400/30 flex items-center justify-center text-blue-400 group-hover/item:text-white group-hover/item:bg-blue-600 transition-none shrink-0">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
@@ -235,11 +221,10 @@ $nav_tier2_inactive = 'nav-tier2-link px-3.5 py-1.5 text-[13px] font-semibold te
                       <span>Name &amp; Identity</span>
                       <span class="text-[10px] font-mono text-slate-500 group-hover/item:text-blue-300">Modify &rarr;</span>
                     </div>
-                    <p class="text-[10px] text-slate-400">Update display name, phone &amp; campus address</p>
+                    <p class="text-[10px] text-slate-400">Update display name &amp; address</p>
                   </div>
                 </a>
 
-                <!-- Pathway 2: Avatar Uploads -->
                 <a href="<?php echo $base_path; ?>/user/profile.php#avatar" class="singularity-pocket-link group/item flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 transition-none">
                   <div class="w-8 h-8 rounded-lg bg-purple-500/15 border border-purple-400/30 flex items-center justify-center text-purple-400 group-hover/item:text-white group-hover/item:bg-purple-600 transition-none shrink-0">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
@@ -249,42 +234,24 @@ $nav_tier2_inactive = 'nav-tier2-link px-3.5 py-1.5 text-[13px] font-semibold te
                       <span>Avatar Hologram Studio</span>
                       <span class="text-[10px] font-mono text-slate-500 group-hover/item:text-purple-300">Upload &rarr;</span>
                     </div>
-                    <p class="text-[10px] text-slate-400">Upload image or compile casual SVG preset</p>
+                    <p class="text-[10px] text-slate-400">Casual SVG preset compiler</p>
                   </div>
                 </a>
 
-                <!-- Pathway 3: Account & Security Settings -->
                 <a href="<?php echo $base_path; ?>/auth/change_password.php" class="singularity-pocket-link group/item flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 transition-none">
                   <div class="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center text-emerald-400 group-hover/item:text-white group-hover/item:bg-emerald-600 transition-none shrink-0">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                   </div>
                   <div class="flex-1">
                     <div class="text-xs font-semibold text-slate-200 group-hover/item:text-white flex items-center justify-between">
-                      <span>Account &amp; Security</span>
+                      <span>Account Security</span>
                       <span class="text-[10px] font-mono text-slate-500 group-hover/item:text-emerald-300">Settings &rarr;</span>
                     </div>
-                    <p class="text-[10px] text-slate-400">Change password, credentials &amp; safety</p>
+                    <p class="text-[10px] text-slate-400">Password &amp; safety</p>
                   </div>
                 </a>
               </div>
 
-              <!-- Secondary Quick Pathways -->
-              <div class="pt-2 mt-2 border-t border-white/10 grid grid-cols-3 gap-1 text-center">
-                <a href="<?php echo $base_path; ?>/user/equipment.php" class="p-1.5 rounded-lg hover:bg-white/5 transition-none">
-                  <div class="text-[10px] font-semibold text-slate-300">Gear</div>
-                  <div class="text-[9px] text-slate-500 font-mono">Listings</div>
-                </a>
-                <a href="<?php echo $base_path; ?>/user/rentals.php" class="p-1.5 rounded-lg hover:bg-white/5 transition-none">
-                  <div class="text-[10px] font-semibold text-slate-300">Rentals</div>
-                  <div class="text-[9px] text-slate-500 font-mono">Active</div>
-                </a>
-                <a href="<?php echo $base_path; ?>/user/exchanges.php" class="p-1.5 rounded-lg hover:bg-white/5 transition-none">
-                  <div class="text-[10px] font-semibold text-slate-300">Swaps</div>
-                  <div class="text-[9px] text-slate-500 font-mono">Status</div>
-                </a>
-              </div>
-
-              <!-- Terminate Session Action -->
               <div class="pt-2 mt-2 border-t border-white/10">
                 <a href="<?php echo $base_path; ?>/auth/logout.php" class="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-xl text-rose-400 hover:text-white hover:bg-rose-600/20 text-xs font-medium transition-none">
                   <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
@@ -295,25 +262,21 @@ $nav_tier2_inactive = 'nav-tier2-link px-3.5 py-1.5 text-[13px] font-semibold te
           </div>
 
         <?php elseif ($current_role === 'admin'): ?>
-          <!-- Admin Singularity Matrix -->
+          <!-- Admin Singularity -->
           <div id="profile-singularity" class="profile-singularity group/singularity relative shrink-0" tabindex="0">
-            <button type="button" class="profile-singularity-trigger flex items-center gap-2 px-2.5 py-2 rounded-xl border border-white/15 bg-[#151B54] hover:bg-[#1E2570] text-left focus:outline-none shrink-0" id="singularity-trigger" aria-haspopup="true" aria-expanded="false">
+            <button type="button" class="profile-singularity-trigger flex items-center gap-2 px-2.5 py-2 rounded-xl border border-white/15 bg-white/10 hover:bg-white/15 text-left focus:outline-none shrink-0" id="singularity-trigger" aria-haspopup="true" aria-expanded="false">
               <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-md ring-1 ring-emerald-400/40 shrink-0">
                 A
               </div>
               <div class="text-left leading-tight hidden lg:block shrink-0">
                 <div class="text-xs font-bold text-white whitespace-nowrap"><?php echo htmlspecialchars($current_name); ?></div>
-                <div class="text-[10px] font-mono text-emerald-400 flex items-center gap-1">
-                  <span>Administrator</span>
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                </div>
+                <div class="text-[10px] font-mono text-emerald-400">Admin</div>
               </div>
               <svg class="singularity-chevron w-3.5 h-3.5 text-slate-400 group-hover/singularity:text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
               </svg>
             </button>
 
-            <!-- Admin Dimensional Pocket -->
             <div class="profile-singularity-menu absolute right-0 top-full mt-2 min-w-[17rem] max-w-sm rounded-2xl bg-[#0A0F1D]/98 backdrop-blur-2xl border border-white/15 shadow-2xl p-4 z-50 pointer-events-none opacity-0" id="singularity-menu">
               <div class="flex items-center gap-3 pb-3 border-b border-white/10 mb-2 px-1">
                 <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm ring-2 ring-emerald-400/40">A</div>
@@ -331,10 +294,6 @@ $nav_tier2_inactive = 'nav-tier2-link px-3.5 py-1.5 text-[13px] font-semibold te
                   <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                   <span>Member Directory</span>
                 </a>
-                <a href="<?php echo $base_path; ?>/admin/change_password.php" class="singularity-pocket-link flex items-center gap-2.5 px-2.5 py-2 rounded-xl hover:bg-white/10 text-xs font-semibold text-slate-200 hover:text-white">
-                  <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
-                  <span>Change Password</span>
-                </a>
               </div>
               <div class="pt-2 mt-2 border-t border-white/10">
                 <a href="<?php echo $base_path; ?>/auth/logout.php" class="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-xl text-rose-400 hover:text-white hover:bg-rose-600/20 text-xs font-medium transition-none">
@@ -347,81 +306,89 @@ $nav_tier2_inactive = 'nav-tier2-link px-3.5 py-1.5 text-[13px] font-semibold te
 
         <?php else: ?>
           <!-- Guest Auth Actions -->
-          <a href="<?php echo $base_path; ?>/auth/login.php" class="px-3.5 py-2 text-xs font-bold text-slate-200 hover:text-white hover:bg-white/10 rounded-xl transition-none shrink-0">
+          <a href="<?php echo $base_path; ?>/auth/login.php" class="px-3 py-2 text-xs font-bold text-slate-200 hover:text-white hover:bg-white/10 rounded-xl transition-none shrink-0 whitespace-nowrap">
             Sign In
           </a>
-          <a href="<?php echo $base_path; ?>/auth/register.php" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md shadow-blue-600/25 border border-blue-400/30 transition-none shrink-0">
-            Register Member
+          <a href="<?php echo $base_path; ?>/auth/register.php" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md shadow-blue-600/25 border border-blue-400/30 transition-none shrink-0 whitespace-nowrap">
+            Register
           </a>
         <?php endif; ?>
+
+        <!-- Mobile Hamburger Menu Button -->
+        <div class="flex md:hidden items-center shrink-0">
+          <a href="<?php echo $current_role === 'member' ? $base_path . '/user/dashboard.php' : $base_path . '/auth/login.php'; ?>" class="p-2 text-slate-300 hover:text-white rounded-lg">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+          </a>
+        </div>
+
       </div>
 
     </div>
   </div>
 
-  <!-- Tier 2: Dedicated Routing Matrix (Photonic Ice #EFF3FF Monolith) -->
-  <nav id="main-nav" class="tier-2-matrix bg-[#EFF3FF] border-b border-[#CBD5E1] shadow-sm relative z-30">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap overflow-x-auto no-scrollbar">
-      
-      <a href="<?php echo $base_path; ?>/index.php" class="<?php echo $is_browse_active ? $nav_tier2_active : $nav_tier2_inactive; ?>" data-nav-key="browse" <?php if ($is_browse_active): ?>aria-current="page"<?php endif; ?>>
-        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-        <span>Browse Equipment</span>
-      </a>
-
-      <?php if ($current_role === 'member'): ?>
-        <a href="<?php echo $base_path; ?>/user/dashboard.php" class="<?php echo $is_dashboard_active ? $nav_tier2_active : $nav_tier2_inactive; ?>" data-nav-key="dashboard" <?php if ($is_dashboard_active): ?>aria-current="page"<?php endif; ?>>
-          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-          <span>Dashboard</span>
+  <!-- TIER 2: Dedicated Horizontal Navigation Bar Right Below In One Line -->
+  <div class="horizontal-nav-bar w-full bg-[#0E133E] border-t border-white/10 border-b border-white/10 shadow-inner">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-12 flex items-center justify-center">
+      <nav id="main-nav" class="flex items-center justify-center space-x-1 sm:space-x-1.5 md:space-x-2 overflow-x-auto no-scrollbar py-1 w-full whitespace-nowrap">
+        
+        <a href="<?php echo $base_path; ?>/index.php" class="<?php echo $is_browse_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="browse" <?php if ($is_browse_active): ?>aria-current="page"<?php endif; ?>>
+          <svg class="w-4 h-4 shrink-0 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          <span>Browse Equipment</span>
         </a>
 
-        <a href="<?php echo $base_path; ?>/user/equipment.php" class="<?php echo $is_equipment_active ? $nav_tier2_active : $nav_tier2_inactive; ?>" data-nav-key="equipment" <?php if ($is_equipment_active): ?>aria-current="page"<?php endif; ?>>
-          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-          <span>My Equipment</span>
-          <span class="<?php echo $is_equipment_active ? 'bg-white/20 text-white' : 'bg-[#151B54]/10 text-[#151B54] border border-[#151B54]/20'; ?> text-[10px] px-1.5 py-0.5 rounded font-bold">Lender</span>
+        <?php if ($current_role === 'member'): ?>
+          <a href="<?php echo $base_path; ?>/user/dashboard.php" class="<?php echo $is_dashboard_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="dashboard" <?php if ($is_dashboard_active): ?>aria-current="page"<?php endif; ?>>
+            <svg class="w-4 h-4 shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            <span>Dashboard</span>
+          </a>
+
+          <a href="<?php echo $base_path; ?>/user/equipment.php" class="<?php echo $is_equipment_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="equipment" <?php if ($is_equipment_active): ?>aria-current="page"<?php endif; ?>>
+            <svg class="w-4 h-4 shrink-0 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+            <span>My Equipment</span>
+          </a>
+
+          <a href="<?php echo $base_path; ?>/user/rentals.php" class="<?php echo $is_rentals_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="rentals" <?php if ($is_rentals_active): ?>aria-current="page"<?php endif; ?>>
+            <svg class="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            <span>Rentals</span>
+          </a>
+
+          <a href="<?php echo $base_path; ?>/user/exchanges.php" class="<?php echo $is_exchanges_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="exchanges" <?php if ($is_exchanges_active): ?>aria-current="page"<?php endif; ?>>
+            <svg class="w-4 h-4 shrink-0 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+            <span>Exchanges</span>
+            <?php if ($incoming_swaps_count > 0): ?>
+              <span class="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-extrabold bg-purple-500 text-white rounded-full min-w-[16px]">
+                <?php echo $incoming_swaps_count; ?>
+              </span>
+            <?php endif; ?>
+          </a>
+        <?php elseif ($current_role === 'admin'): ?>
+          <a href="<?php echo $base_path; ?>/admin/dashboard.php" class="<?php echo $is_admin_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="admin-dashboard" <?php if ($is_admin_active): ?>aria-current="page"<?php endif; ?>>
+            <svg class="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+            <span>Operations</span>
+          </a>
+          <a href="<?php echo $base_path; ?>/admin/members.php" class="<?php echo ($active_nav === 'members') ? $nav_active_class : $nav_inactive_class; ?>">
+            <svg class="w-4 h-4 shrink-0 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            <span>Members</span>
+          </a>
+        <?php endif; ?>
+
+        <span class="inline-block w-px h-4 bg-white/20 mx-1"></span>
+
+        <a href="<?php echo $base_path; ?>/about.php" class="<?php echo $is_about_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="about" <?php if ($is_about_active): ?>aria-current="page"<?php endif; ?>>
+          <span>About</span>
         </a>
 
-        <a href="<?php echo $base_path; ?>/user/rentals.php" class="<?php echo $is_rentals_active ? $nav_tier2_active : $nav_tier2_inactive; ?>" data-nav-key="rentals" <?php if ($is_rentals_active): ?>aria-current="page"<?php endif; ?>>
-          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-          <span>Rentals</span>
-          <span class="<?php echo $is_rentals_active ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-800 border border-emerald-300'; ?> text-[10px] px-1.5 py-0.5 rounded font-bold">Active</span>
+        <a href="<?php echo $base_path; ?>/join.php" class="<?php echo $is_join_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="join" <?php if ($is_join_active): ?>aria-current="page"<?php endif; ?>>
+          <span class="text-sky-300 font-bold">Join Team</span>
         </a>
 
-        <a href="<?php echo $base_path; ?>/user/exchanges.php" class="<?php echo $is_exchanges_active ? $nav_tier2_active : $nav_tier2_inactive; ?>" data-nav-key="exchanges" <?php if ($is_exchanges_active): ?>aria-current="page"<?php endif; ?>>
-          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-          <span>Exchanges</span>
-          <?php if ($incoming_swaps_count > 0): ?>
-            <span class="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-extrabold bg-purple-600 text-white rounded-full shadow-sm min-w-[18px]">
-              <?php echo $incoming_swaps_count; ?>
-            </span>
-          <?php else: ?>
-            <span class="<?php echo $is_exchanges_active ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-800 border border-blue-300'; ?> text-[10px] px-1.5 py-0.5 rounded font-bold">Swap</span>
-          <?php endif; ?>
+        <a href="<?php echo $base_path; ?>/terms.php" class="<?php echo $is_terms_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="terms" <?php if ($is_terms_active): ?>aria-current="page"<?php endif; ?>>
+          <span>Terms</span>
         </a>
-      <?php elseif ($current_role === 'admin'): ?>
-        <a href="<?php echo $base_path; ?>/admin/dashboard.php" class="<?php echo $is_admin_active ? $nav_tier2_active : $nav_tier2_inactive; ?>" data-nav-key="admin-dashboard" <?php if ($is_admin_active): ?>aria-current="page"<?php endif; ?>>
-          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-          <span>Operations Console</span>
-        </a>
-        <a href="<?php echo $base_path; ?>/admin/members.php" class="<?php echo ($active_nav === 'members') ? $nav_tier2_active : $nav_tier2_inactive; ?>" data-nav-key="admin-members">
-          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-          <span>Member Directory</span>
-        </a>
-      <?php endif; ?>
 
-      <span class="hidden sm:inline-block w-px h-4 bg-[#151B54]/20 mx-1"></span>
-
-      <a href="<?php echo $base_path; ?>/about.php" class="<?php echo $is_about_active ? $nav_tier2_active : $nav_tier2_inactive; ?>" data-nav-key="about" <?php if ($is_about_active): ?>aria-current="page"<?php endif; ?>>
-        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        <span>About Rentora</span>
-      </a>
-
-      <a href="<?php echo $base_path; ?>/terms.php" class="<?php echo $is_terms_active ? $nav_tier2_active : $nav_tier2_inactive; ?>" data-nav-key="terms" <?php if ($is_terms_active): ?>aria-current="page"<?php endif; ?>>
-        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-        <span>Platform Terms</span>
-      </a>
-
+      </nav>
     </div>
-  </nav>
+  </div>
 
 </header>
 

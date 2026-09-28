@@ -276,6 +276,50 @@ ALTER TABLE `exchange_agreement`
 ALTER TABLE `rental_agreement`
   ADD CONSTRAINT `fk_rental_equipment` FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`equipment_id`),
   ADD CONSTRAINT `fk_rental_renter` FOREIGN KEY (`renter_id`) REFERENCES `member` (`member_id`);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `team_applications`
+--
+
+CREATE TABLE `team_applications` (
+  `application_id` int(10) UNSIGNED NOT NULL,
+  `applicant_name` varchar(100) NOT NULL,
+  `university_email` varchar(100) NOT NULL,
+  `student_id` varchar(30) NOT NULL,
+  `department` varchar(100) NOT NULL DEFAULT 'Computer Science & Engineering',
+  `phone_number` varchar(25) NOT NULL,
+  `role_applied` varchar(100) NOT NULL,
+  `portfolio_link` varchar(255) DEFAULT NULL,
+  `technical_skills` text DEFAULT NULL,
+  `statement_of_purpose` text NOT NULL,
+  `status` enum('Pending','Under_Review','Shortlisted','Accepted','Archived') NOT NULL DEFAULT 'Pending',
+  `member_id` int(10) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Indexes for table `team_applications`
+--
+ALTER TABLE `team_applications`
+  ADD PRIMARY KEY (`application_id`),
+  ADD KEY `idx_team_app_status` (`status`),
+  ADD KEY `idx_team_app_email` (`university_email`),
+  ADD KEY `fk_team_app_member` (`member_id`);
+
+--
+-- AUTO_INCREMENT for table `team_applications`
+--
+ALTER TABLE `team_applications`
+  MODIFY `application_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints for table `team_applications`
+--
+ALTER TABLE `team_applications`
+  ADD CONSTRAINT `fk_team_app_member` FOREIGN KEY (`member_id`) REFERENCES `member` (`member_id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

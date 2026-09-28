@@ -145,6 +145,31 @@ CREATE TABLE exchange_agreement (
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
+-- TEAM_APPLICATIONS — developer / core team recruitment applications
+-- ---------------------------------------------------------------------
+CREATE TABLE team_applications (
+    application_id       INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    applicant_name       VARCHAR(100) NOT NULL,
+    university_email     VARCHAR(100) NOT NULL,
+    student_id           VARCHAR(30)  NOT NULL,
+    department           VARCHAR(100) NOT NULL DEFAULT 'Computer Science & Engineering',
+    phone_number         VARCHAR(25)  NOT NULL,
+    role_applied         VARCHAR(100) NOT NULL,
+    portfolio_link       VARCHAR(255) NULL,
+    technical_skills     TEXT         NULL,
+    statement_of_purpose TEXT         NOT NULL,
+    status               ENUM('Pending', 'Under_Review', 'Shortlisted', 'Accepted', 'Archived') NOT NULL DEFAULT 'Pending',
+    member_id            INT UNSIGNED NULL,
+    created_at           TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_team_app_member
+        FOREIGN KEY (member_id) REFERENCES member(member_id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+    INDEX idx_team_app_status (status),
+    INDEX idx_team_app_email  (university_email)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
 -- SEED DATA (shared, structural — not personal test/dev data)
 -- ---------------------------------------------------------------------
 

@@ -29,6 +29,7 @@ $base_path = $base_path ?? '.';
           <ul class="space-y-2 text-xs">
             <li><a href="<?php echo $base_path; ?>/index.php" class="hover:text-white transition-colors">Browse All Equipment</a></li>
             <li><a href="<?php echo $base_path; ?>/about.php" class="hover:text-white transition-colors">About Rentora Hub</a></li>
+            <li><a href="<?php echo $base_path; ?>/join.php" class="hover:text-white transition-colors text-sky-400 font-semibold flex items-center gap-1"><span>Join Development Monolith</span> <span class="text-[10px]">&rarr;</span></a></li>
             <li><a href="<?php echo $base_path; ?>/user/equipment.php" class="hover:text-white transition-colors">Equipment Listings</a></li>
             <li><a href="<?php echo $base_path; ?>/user/rentals.php" class="hover:text-white transition-colors">Rental Agreements</a></li>
             <li><a href="<?php echo $base_path; ?>/user/exchanges.php" class="hover:text-white transition-colors">Exchange Hub</a></li>

@@ -66,6 +66,11 @@ $rental_agreements = safe_query($pdo, "
     ORDER BY 1 DESC
 ");
 
+// Team Recruitment Telemetry Applications
+$total_team_apps = safe_scalar($pdo, "SELECT COUNT(*) FROM team_applications");
+$pending_team_apps = safe_scalar($pdo, "SELECT COUNT(*) FROM team_applications WHERE status = 'Pending'");
+$team_applications_list = safe_query($pdo, "SELECT * FROM team_applications ORDER BY application_id DESC");
+
 $base_path = '..';
 $page_title = 'Admin Operations Console - Rentora';
 require_once(__DIR__ . '/../includes/header.php');
@@ -314,6 +319,115 @@ require_once(__DIR__ . '/../includes/header.php');
                     <a href="delete_item.php?id=<?php echo $eqId; ?>" onclick="return confirm('Remove this equipment listing?')" class="text-red-600 hover:text-red-800 font-bold text-[11px]">
                       Delete Listing
                     </a>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Team Recruitment Telemetry Monolith (team_applications Sector) -->
+    <div id="team-applications-section" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-8">
+      <div class="px-6 py-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <h3 class="text-sm font-bold text-navy-900">Developer Recruitment Telemetry</h3>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#151B54] text-white">
+              rentora_db.team_applications
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 mt-0.5">Incoming application vectors submitted via join.php</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-xs font-mono text-slate-500">
+            Total Telemetry: <strong class="text-navy-900"><?php echo count($team_applications_list); ?></strong>
+          </span>
+          <a href="../join.php" target="_blank" class="px-3 py-1.5 rounded-lg bg-sky-50 text-sky-700 hover:bg-sky-100 text-xs font-semibold flex items-center gap-1 transition-none">
+            <span>View Public Terminal</span> &rarr;
+          </a>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-100 text-[11px]">
+            <tr>
+              <th class="py-3 px-4">Ref ID</th>
+              <th class="py-3 px-4">Applicant Telemetry</th>
+              <th class="py-3 px-4">Target Role</th>
+              <th class="py-3 px-4">Department &amp; Skills</th>
+              <th class="py-3 px-4">Portfolio</th>
+              <th class="py-3 px-4">Statement of Purpose</th>
+              <th class="py-3 px-4">Status</th>
+              <th class="py-3 px-4">Timestamp</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <?php if (empty($team_applications_list)): ?>
+              <tr>
+                <td colspan="8" class="py-8 text-center text-slate-400 font-medium">
+                  No recruitment telemetry captured yet. Awaiting transmissions from join.php.
+                </td>
+              </tr>
+            <?php else: ?>
+              <?php foreach ($team_applications_list as $app): ?>
+                <tr class="hover:bg-slate-50/80 transition-colors">
+                  <td class="py-3 px-4 font-mono font-bold text-sky-700 whitespace-nowrap">
+                    #<?php echo htmlspecialchars((string)$app['application_id']); ?>
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="font-bold text-navy-900"><?php echo htmlspecialchars($app['applicant_name']); ?></div>
+                    <div class="text-[11px] font-mono text-slate-500">ID: <?php echo htmlspecialchars($app['student_id']); ?></div>
+                    <div class="text-[11px] text-slate-500"><?php echo htmlspecialchars($app['university_email']); ?></div>
+                    <div class="text-[10px] text-slate-400 font-mono"><?php echo htmlspecialchars($app['phone_number']); ?></div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <span class="inline-block px-2.5 py-1 rounded-md text-[11px] font-bold bg-[#151B54] text-white">
+                      <?php echo htmlspecialchars($app['role_applied']); ?>
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 max-w-xs">
+                    <div class="text-slate-800 font-medium"><?php echo htmlspecialchars($app['department']); ?></div>
+                    <?php if (!empty($app['technical_skills'])): ?>
+                      <div class="text-[10px] font-mono text-slate-500 mt-0.5 truncate">
+                        Skills: <?php echo htmlspecialchars($app['technical_skills']); ?>
+                      </div>
+                    <?php endif; ?>
+                  </td>
+                  <td class="py-3 px-4">
+                    <?php if (!empty($app['portfolio_link'])): ?>
+                      <a href="<?php echo htmlspecialchars($app['portfolio_link']); ?>" target="_blank" rel="noopener" class="text-blue-600 hover:underline font-mono text-[11px] truncate block max-w-[120px]">
+                        Link &rarr;
+                      </a>
+                    <?php else: ?>
+                      <span class="text-slate-400 text-[11px]">N/A</span>
+                    <?php endif; ?>
+                  </td>
+                  <td class="py-3 px-4 max-w-sm">
+                    <div class="text-slate-600 text-xs leading-relaxed line-clamp-2" title="<?php echo htmlspecialchars($app['statement_of_purpose']); ?>">
+                      <?php echo htmlspecialchars($app['statement_of_purpose']); ?>
+                    </div>
+                  </td>
+                  <td class="py-3 px-4 whitespace-nowrap">
+                    <?php
+                      $st = $app['status'] ?? 'Pending';
+                      $st_class = match($st) {
+                        'Accepted'    => 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                        'Shortlisted' => 'bg-blue-100 text-blue-800 border-blue-300',
+                        'Under_Review'=> 'bg-amber-100 text-amber-800 border-amber-300',
+                        'Archived'    => 'bg-slate-100 text-slate-700 border-slate-300',
+                        default       => 'bg-purple-100 text-purple-800 border-purple-300'
+                      };
+                    ?>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border <?php echo $st_class; ?>">
+                      <?php echo htmlspecialchars($st); ?>
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 text-[11px] font-mono text-slate-500 whitespace-nowrap">
+                    <?php echo htmlspecialchars(substr($app['created_at'], 0, 16)); ?>
                   </td>
                 </tr>
               <?php endforeach; ?>

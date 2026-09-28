@@ -570,13 +570,10 @@ body[data-sector="dark"] textarea:focus {
 }
 
 /* ==========================================================================
-   SECTION 14: DUAL-TIER ARCHITECTURAL SEVERANCE & HIGH-CONTRAST STRATIFICATION
-   Directive 1: Dual-Tier Architectural Severance (Decoupled Identity & Routing Vectors)
-   Directive 2: Absolute Centering & Mass Distribution (Equal relative mass flanks flex-1)
-   Directive 3: High-Contrast Stratification (Tier 1 Night Blue #151B54, Tier 2 Photonic Ice #EFF3FF)
+   SECTION 14: TWO-TIER GFG FORMAT (LOGO ON TOP CENTERED + HORIZONTAL NAV BAR IN ONE LINE BELOW)
    ========================================================================== */
 
-/* Quantum Header Reset */
+/* Quantum Header Monolith */
 .quantum-header,
 header.quantum-header,
 body[data-sector="monolith"] .quantum-header,
@@ -584,101 +581,78 @@ body[data-sector="dark"] .quantum-header {
   position: static !important;
   top: auto !important;
   width: 100% !important;
-  background: transparent !important;
-  border-bottom: none !important;
-  box-shadow: none !important;
+  background-color: #151B54 !important;
+  color: #FFFFFF !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25) !important;
   padding: 0 !important;
   margin: 0 !important;
-}
-
-/* Tier 1: Identity & Profile Vector (Dense Night Blue Vacuum #151B54) */
-.tier-1-monolith,
-body[data-sector="monolith"] .tier-1-monolith,
-body[data-sector="dark"] .tier-1-monolith {
-  background-color: #151B54 !important;
-  color: #FFFFFF !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
-  position: relative !important;
   z-index: 40 !important;
+}
+
+/* Tier 1: Top Bar with Centered Logo */
+.tier-1-top,
+body[data-sector="monolith"] .tier-1-top,
+body[data-sector="dark"] .tier-1-top {
+  background-color: #151B54 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
+}
+
+/* Tier 2: Dedicated Horizontal Navigation Bar Right Below In One Line */
+.horizontal-nav-bar,
+body[data-sector="monolith"] .horizontal-nav-bar,
+body[data-sector="dark"] .horizontal-nav-bar {
+  background-color: #0E133E !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
   width: 100% !important;
 }
 
-/* Mass Distribution Mechanics: Equal Relative Mass Flanks */
-.tier-1-flank-left {
-  flex: 1 1 0% !important;
-  min-width: 0 !important;
+.horizontal-nav-bar nav {
   display: flex !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
 }
 
-.tier-1-flank-right {
-  flex: 1 1 0% !important;
-  min-width: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: flex-end !important;
-}
-
-/* Centered Geometric Anchor for Rentora Logo */
-.tier-1-center-anchor {
-  flex-shrink: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-/* Tier 2: Dedicated Routing Matrix (Photonic Ice #EFF3FF Monolith) */
-.tier-2-matrix,
-body[data-sector="monolith"] .tier-2-matrix,
-body[data-sector="dark"] .tier-2-matrix {
-  background-color: #EFF3FF !important;
-  border-bottom: 1px solid #CBD5E1 !important;
-  box-shadow: 0 4px 12px rgba(21, 27, 84, 0.08) !important;
-  position: relative !important;
-  z-index: 30 !important;
-  width: 100% !important;
-}
-
-/* Tier 2 Navigation Routing Links - Night Blue Typography */
-.nav-tier2-link,
-body[data-sector="monolith"] .nav-tier2-link,
-body[data-sector="dark"] .nav-tier2-link {
-  color: #151B54 !important;
+/* Nav links in single unified horizontal line */
+.nav-link,
+body[data-sector="monolith"] .nav-link,
+body[data-sector="dark"] .nav-link {
+  padding: 0.45rem 0.75rem !important;
   font-size: 13px !important;
   font-weight: 600 !important;
-  padding: 0.375rem 0.875rem !important;
-  border-radius: 0.5rem !important;
+  color: #E2E8F0 !important;
+  border-radius: 0.65rem !important;
+  white-space: nowrap !important;
   flex-shrink: 0 !important;
-  transition: none !important;
   display: inline-flex !important;
   align-items: center !important;
-}
-
-.nav-tier2-link:hover,
-body[data-sector="monolith"] .nav-tier2-link:hover,
-body[data-sector="dark"] .nav-tier2-link:hover {
-  background-color: rgba(21, 27, 84, 0.10) !important;
-  color: #151B54 !important;
   transition: none !important;
 }
 
-/* Tier 2 Active Route - Solid Night Blue Monolith with Absolute White Typography */
-.nav-tier2-active,
-body[data-sector="monolith"] .nav-tier2-active,
-body[data-sector="dark"] .nav-tier2-active {
-  background-color: #151B54 !important;
+.nav-link:hover,
+body[data-sector="monolith"] .nav-link:hover,
+body[data-sector="dark"] .nav-link:hover {
   color: #FFFFFF !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  transition: none !important;
+}
+
+.nav-link-active,
+body[data-sector="monolith"] .nav-link-active,
+body[data-sector="dark"] .nav-link-active {
+  color: #FFFFFF !important;
+  background-color: rgba(255, 255, 255, 0.20) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
   font-weight: 700 !important;
-  box-shadow: 0 1px 3px rgba(21, 27, 84, 0.25) !important;
-  transition: none !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
 }
 
-.nav-tier2-active:hover,
-body[data-sector="monolith"] .nav-tier2-active:hover,
-body[data-sector="dark"] .nav-tier2-active:hover {
-  background-color: #1E2570 !important;
-  color: #FFFFFF !important;
+.nav-link-active:hover,
+body[data-sector="monolith"] .nav-link-active:hover,
+body[data-sector="dark"] .nav-link-active:hover {
+  background-color: rgba(255, 255, 255, 0.26) !important;
 }
 
 /* Symmetrical Equilibrium Anchor: Prevent Profile Singularity Node Drift */
@@ -692,5 +666,76 @@ body[data-sector="dark"] .nav-tier2-active:hover {
   background-color: #0A0F1D !important;
   border-color: rgba(255, 255, 255, 0.18) !important;
 }
+
+/* ==========================================================================
+   SECTION 15: TEAM RECRUITMENT MONOLITH (join.php)
+   Directive 4: UI/UX Deployment in Night Blue (#151B54) and Photonic Ice (#EFF3FF)
+   ========================================================================== */
+
+.join-hero-vacuum,
+body[data-sector="monolith"] .join-hero-vacuum,
+body[data-sector="dark"] .join-hero-vacuum {
+  background-color: #151B54 !important;
+  color: #FFFFFF !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.join-founder-card,
+body[data-sector="monolith"] .join-founder-card,
+body[data-sector="dark"] .join-founder-card {
+  background-color: #FFFFFF !important;
+  border: 1px solid #CBD5E1 !important;
+  box-shadow: 0 4px 16px rgba(21, 27, 84, 0.06) !important;
+  transition: none !important;
+}
+
+.join-founder-card:hover,
+body[data-sector="monolith"] .join-founder-card:hover,
+body[data-sector="dark"] .join-founder-card:hover {
+  border-color: #151B54 !important;
+  box-shadow: 0 8px 24px rgba(21, 27, 84, 0.14) !important;
+  transform: none !important;
+}
+
+.join-terminal-container,
+body[data-sector="monolith"] .join-terminal-container,
+body[data-sector="dark"] .join-terminal-container {
+  background-color: #EFF3FF !important;
+  border: 1px solid #CBD5E1 !important;
+}
+
+.join-input-field,
+body[data-sector="monolith"] .join-input-field,
+body[data-sector="dark"] .join-input-field {
+  background-color: #FFFFFF !important;
+  border: 1px solid #CBD5E1 !important;
+  color: #0F172A !important;
+  transition: none !important;
+}
+
+.join-input-field:focus,
+body[data-sector="monolith"] .join-input-field:focus,
+body[data-sector="dark"] .join-input-field:focus {
+  border-color: #151B54 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(21, 27, 84, 0.20) !important;
+}
+
+.join-submit-btn,
+body[data-sector="monolith"] .join-submit-btn,
+body[data-sector="dark"] .join-submit-btn {
+  background-color: #151B54 !important;
+  color: #FFFFFF !important;
+  transition: none !important;
+}
+
+.join-submit-btn:hover,
+body[data-sector="monolith"] .join-submit-btn:hover,
+body[data-sector="dark"] .join-submit-btn:hover {
+  background-color: #1E2570 !important;
+  color: #FFFFFF !important;
+  transform: none !important;
+}
+
 
 
