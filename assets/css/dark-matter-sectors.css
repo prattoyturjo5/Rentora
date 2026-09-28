@@ -24,23 +24,23 @@ body[data-sector="dark"] main {
 }
 
 /* ─── 2. OUTER TITLES & TEXT ON PHOTONIC WHITE BACKGROUND ─── */
-body[data-sector="monolith"] > main > div:first-child h1,
-body[data-sector="monolith"] > main > div > div > h1,
-body[data-sector="monolith"] > main > div > h1,
-body[data-sector="dark"] > main > div:first-child h1,
-body[data-sector="dark"] > main > div > div > h1,
-body[data-sector="dark"] > main > div > h1 {
+body[data-sector="monolith"]>main>div:first-child h1,
+body[data-sector="monolith"]>main>div>div>h1,
+body[data-sector="monolith"]>main>div>h1,
+body[data-sector="dark"]>main>div:first-child h1,
+body[data-sector="dark"]>main>div>div>h1,
+body[data-sector="dark"]>main>div>h1 {
   color: #0F172A !important;
   font-weight: 800 !important;
   text-shadow: none !important;
 }
 
-body[data-sector="monolith"] > main > div:first-child p,
-body[data-sector="monolith"] > main > div > div > p.text-slate-500,
-body[data-sector="monolith"] > main > div > p.text-slate-500,
-body[data-sector="dark"] > main > div:first-child p,
-body[data-sector="dark"] > main > div > div > p.text-slate-500,
-body[data-sector="dark"] > main > div > p.text-slate-500 {
+body[data-sector="monolith"]>main>div:first-child p,
+body[data-sector="monolith"]>main>div>div>p.text-slate-500,
+body[data-sector="monolith"]>main>div>p.text-slate-500,
+body[data-sector="dark"]>main>div:first-child p,
+body[data-sector="dark"]>main>div>div>p.text-slate-500,
+body[data-sector="dark"]>main>div>p.text-slate-500 {
   color: #64748B !important;
 }
 
@@ -63,7 +63,7 @@ body[data-sector="dark"] #avatar {
   background-color: #151B54 !important;
   border: 1px solid rgba(255, 255, 255, 0.11) !important;
   border-radius: 1rem !important;
-  box-shadow: 
+  box-shadow:
     0 20px 25px -5px rgba(21, 27, 84, 0.35),
     0 8px 10px -6px rgba(21, 27, 84, 0.25),
     0 0 0 1px rgba(21, 27, 84, 0.06) !important;
@@ -268,6 +268,7 @@ body[data-sector="dark"] .bg-emerald-100 {
   color: #34D399 !important;
   border: 1px solid rgba(52, 211, 153, 0.3) !important;
 }
+
 body[data-sector="monolith"] .text-emerald-800,
 body[data-sector="monolith"] .text-emerald-700,
 body[data-sector="dark"] .text-emerald-800,
@@ -283,6 +284,7 @@ body[data-sector="dark"] .bg-blue-50 {
   color: #60A5FA !important;
   border: 1px solid rgba(96, 165, 250, 0.3) !important;
 }
+
 body[data-sector="monolith"] .text-blue-800,
 body[data-sector="monolith"] .text-blue-700,
 body[data-sector="dark"] .text-blue-800,
@@ -298,6 +300,7 @@ body[data-sector="dark"] .bg-amber-50 {
   color: #FBBF24 !important;
   border: 1px solid rgba(251, 191, 36, 0.3) !important;
 }
+
 body[data-sector="monolith"] .text-amber-800,
 body[data-sector="monolith"] .text-amber-700,
 body[data-sector="monolith"] .text-amber-900,
@@ -317,6 +320,7 @@ body[data-sector="dark"] .bg-red-50 {
   color: #F87171 !important;
   border: 1px solid rgba(248, 113, 113, 0.3) !important;
 }
+
 body[data-sector="monolith"] .text-red-800,
 body[data-sector="monolith"] .text-red-700,
 body[data-sector="dark"] .text-red-800,
@@ -429,15 +433,18 @@ body[data-sector="dark"] ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
+
 body[data-sector="monolith"] ::-webkit-scrollbar-track,
 body[data-sector="dark"] ::-webkit-scrollbar-track {
   background: #F1F5F9;
 }
+
 body[data-sector="monolith"] ::-webkit-scrollbar-thumb,
 body[data-sector="dark"] ::-webkit-scrollbar-thumb {
   background: #94A3B8;
   border-radius: 4px;
 }
+
 body[data-sector="monolith"] ::-webkit-scrollbar-thumb:hover,
 body[data-sector="dark"] ::-webkit-scrollbar-thumb:hover {
   background: #64748B;
@@ -448,17 +455,21 @@ body[data-sector="monolith"] .nav-link,
 body[data-sector="monolith"] .nav-orbit-link,
 body[data-sector="dark"] .nav-link,
 body[data-sector="dark"] .nav-orbit-link {
-  padding: 0.5rem 0.625rem !important; /* Mathematically reduced (px-2.5 py-2) */
-  font-size: 13px !important;          /* Scaled for perfect density text-[13px] */
+  padding: 0.5rem 0.625rem !important;
+  /* Mathematically reduced (px-2.5 py-2) */
+  font-size: 13px !important;
+  /* Scaled for perfect density text-[13px] */
   flex-shrink: 0 !important;
-  transition: none !important; /* Zero visual drag / instantaneous binary state */
+  transition: none !important;
+  /* Zero visual drag / instantaneous binary state */
 }
 
 body[data-sector="monolith"] .nav-link:hover,
 body[data-sector="monolith"] .nav-orbit-link:hover,
 body[data-sector="dark"] .nav-link:hover,
 body[data-sector="dark"] .nav-orbit-link:hover {
-  background-color: #151B54 !important; /* Locked in Night Blue */
+  background-color: #151B54 !important;
+  /* Locked in Night Blue */
   color: #FFFFFF !important;
   border-color: rgba(255, 255, 255, 0.22) !important;
   transition: none !important;
@@ -481,7 +492,8 @@ body[data-sector="dark"] .profile-singularity {
 
 body[data-sector="monolith"] .profile-singularity-trigger,
 body[data-sector="dark"] .profile-singularity-trigger {
-  padding: 0.5rem 0.625rem !important; /* Dynamic compression (px-2.5 py-2) */
+  padding: 0.5rem 0.625rem !important;
+  /* Dynamic compression (px-2.5 py-2) */
   flex-shrink: 0 !important;
   background-color: #151B54 !important;
   border-color: rgba(255, 255, 255, 0.16) !important;
@@ -500,8 +512,10 @@ body[data-sector="dark"] .profile-singularity-menu {
   width: max-content !important;
   min-width: 18rem !important;
   max-width: 22rem !important;
-  transform: none !important; /* Vaporize warping transform */
-  transition: none !important; /* Vaporize visual drag / animations */
+  transform: none !important;
+  /* Vaporize warping transform */
+  transition: none !important;
+  /* Vaporize visual drag / animations */
 }
 
 /* ==========================================================================
@@ -736,6 +750,3 @@ body[data-sector="dark"] .join-submit-btn:hover {
   color: #FFFFFF !important;
   transform: none !important;
 }
-
-
-
