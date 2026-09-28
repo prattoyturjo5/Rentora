@@ -111,6 +111,10 @@ require_once(__DIR__ . '/../includes/header.php');
         </a>
 
         <div class="flex items-center gap-3">
+          <nav class="hidden md:flex items-center gap-1.5 text-xs font-semibold mr-2">
+            <a href="dashboard.php" class="px-3 py-1.5 rounded-lg bg-navy-900 text-white font-bold">Dashboard</a>
+            <a href="members.php" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-navy-900 hover:bg-slate-100 transition">Member Directory</a>
+          </nav>
           <div class="flex items-center pl-3 border-l border-slate-200 gap-2.5">
             <div class="w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold text-xs">
               A
@@ -201,9 +205,12 @@ require_once(__DIR__ . '/../includes/header.php');
           <h3 class="text-base font-extrabold text-navy-900">Student Verification Queue</h3>
           <p class="text-xs text-slate-500">Moderate new member registrations before they can borrow or list items</p>
         </div>
-        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
-          <?php echo $pending_verif_count; ?> Pending
-        </span>
+        <div class="flex items-center gap-2">
+          <a href="members.php" class="text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1.5 rounded-lg transition">Full Directory &rarr;</a>
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
+            <?php echo $pending_verif_count; ?> Pending
+          </span>
+        </div>
       </div>
 
       <div class="overflow-x-auto">

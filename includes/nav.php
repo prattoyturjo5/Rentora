@@ -78,6 +78,7 @@ $is_profile_active = ($current_page === 'profile.php');
 $is_browse_active = (!$is_dashboard_active && !$is_equipment_active && !$is_rentals_active && !$is_exchanges_active && !$is_about_active && !$is_terms_active && !$is_profile_active) &&
                     ($current_page === 'index.php' || $current_page === 'item-details.php' || $current_page === '' || substr($request_uri, -1) === '/' || substr($request_uri, -8) === '/rentora');
 $is_admin_active = ($current_page === 'dashboard.php' && strpos($current_script, '/admin/') !== false);
+$is_members_active = ($current_page === 'members.php' && strpos($current_script, '/admin/') !== false);
 $is_join_active  = ($current_page === 'join.php');
 
 // Support optional manual override via $active_nav variable if set by caller
@@ -90,6 +91,8 @@ if (isset($active_nav)) {
     $is_equipment_active = ($active_nav === 'equipment');
     $is_rentals_active = ($active_nav === 'rentals');
     $is_exchanges_active = ($active_nav === 'exchanges');
+    $is_admin_active = ($active_nav === 'admin' || $active_nav === 'admin-dashboard');
+    $is_members_active = ($active_nav === 'members' || $active_nav === 'admin-members');
 }
 
 $nav_active_class   = 'nav-link nav-link-active px-2.5 py-1.5 text-[13px] font-bold text-white bg-white/15 rounded-xl border border-white/20 shadow-sm shrink-0 whitespace-nowrap flex items-center gap-1.5';
@@ -366,7 +369,7 @@ $nav_inactive_class = 'nav-link px-2.5 py-1.5 text-[13px] font-semibold text-sla
             <svg class="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
             <span>Operations</span>
           </a>
-          <a href="<?php echo $base_path; ?>/admin/members.php" class="<?php echo ($active_nav === 'members') ? $nav_active_class : $nav_inactive_class; ?>">
+          <a href="<?php echo $base_path; ?>/admin/members.php" class="<?php echo $is_members_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="admin-members" <?php if ($is_members_active): ?>aria-current="page"<?php endif; ?>>
             <svg class="w-4 h-4 shrink-0 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
             <span>Members</span>
           </a>
