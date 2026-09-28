@@ -39,12 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['signin']) || isset($
         $error = "Please provide both username and password.";
     } else {
         try {
-            // SELECT the member by username
             $stmt = $pdo->prepare("SELECT * FROM member WHERE username = :username LIMIT 1");
             $stmt->execute(['username' => $username]);
             $member = $stmt->fetch();
 
-            // Verify the password with password_verify()
             if ($member && password_verify($password, $member['password_hash'])) {
                 $_SESSION['role'] = 'member';
                 $_SESSION['member_id'] = (int)$member['member_id'];
@@ -58,7 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['signin']) || isset($
                 header("Location: ../user/dashboard.php");
                 exit();
             } else {
-                // Generic error without revealing whether username or password was wrong
                 $error = "Invalid username or password.";
             }
         } catch (PDOException $e) {
@@ -67,90 +64,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['signin']) || isset($
     }
 }
 
-
 $base_path = '..';
 $page_title = 'Member Sign In - Rentora';
 require_once(__DIR__ . '/../includes/header.php');
+require_once(__DIR__ . '/../includes/nav.php');
 ?>
 
-  <!-- Top Campus Notice Bar -->
-  <div class="bg-navy-950 text-slate-300 text-xs py-2 px-4 border-b border-slate-800">
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-      <span>🇧🇩 Rentora: Academic DBMS Project - Member Authentication</span>
-      <a href="../index.php" class="text-blue-400 hover:text-white transition-colors">&larr; Return to Marketplace</a>
-    </div>
-  </div>
-
   <!-- Sign In Container -->
-  <div class="max-w-md w-full mx-auto px-4 py-8 flex-1 flex flex-col justify-center">
+  <div class="max-w-md w-full mx-auto px-4 py-12 flex-1 flex flex-col justify-center bg-canvas">
     <div class="text-center mb-8">
-      <a href="../index.php" class="inline-flex items-center gap-2.5">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-navy-900 to-primary-600 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-        </div>
-        <div class="text-left leading-tight">
-          <span class="text-2xl font-extrabold tracking-tight text-navy-900">Rentora</span>
-          <span class="text-2xl font-bold text-primary-600">Hub</span>
-        </div>
-      </a>
-      <h2 class="mt-4 text-xl font-extrabold text-navy-900">Member Sign In</h2>
-      <p class="text-xs text-slate-500 mt-1">Access your campus equipment rentals and listings</p>
+      <div class="w-12 h-12 rounded-2xl bg-accent text-white flex items-center justify-center font-bold text-xl shadow-md shadow-accent/20 mx-auto mb-3">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+      </div>
+      <h2 class="text-2xl font-extrabold text-primary">Member Sign In</h2>
+      <p class="text-xs text-muted mt-1">Access your campus equipment rentals and listings</p>
     </div>
 
     <!-- Notifications -->
     <?php if (!empty($error)): ?>
-      <div class="mb-4 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
-        <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <div class="mb-4 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
+        <svg class="w-4 h-4 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         <span><?php echo htmlspecialchars($error); ?></span>
       </div>
     <?php endif; ?>
 
     <?php if (!empty($success)): ?>
-      <div class="mb-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
-        <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+      <div class="mb-4 p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs flex items-center gap-2">
+        <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
         <span><?php echo htmlspecialchars($success); ?></span>
       </div>
     <?php endif; ?>
 
     <!-- Main Card -->
-    <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-xl">
+    <div class="bg-surface p-6 sm:p-8 rounded-2xl border border-subtle shadow-float transition-colors">
       <form action="login.php" method="POST" class="space-y-4">
         
         <div>
-          <label for="username" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Username</label>
+          <label for="username" class="block text-xs font-bold text-muted uppercase tracking-wider mb-1 font-mono">Username</label>
           <div class="relative">
-            <input type="text" id="username" name="username" required value="<?php echo htmlspecialchars($_POST['username'] ?? $_POST['login'] ?? ''); ?>" placeholder="e.g. tanvir23" class="w-full pl-9 pr-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
-            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            <input type="text" id="username" name="username" required value="<?php echo htmlspecialchars($_POST['username'] ?? $_POST['login'] ?? ''); ?>" placeholder="e.g. tanvir23" class="input-subtle pl-9 text-xs">
+            <svg class="w-4 h-4 text-muted absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
           </div>
         </div>
 
         <div>
           <div class="flex justify-between items-center mb-1">
-            <label for="password" class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Password</label>
-            <span class="text-[11px] text-slate-400">Secured via password_verify()</span>
+            <label for="password" class="block text-xs font-bold text-muted uppercase tracking-wider font-mono">Password</label>
           </div>
           <div class="relative">
-            <input type="password" id="password" name="password" required placeholder="Enter your password" class="w-full pl-9 pr-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium text-slate-800">
-            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            <input type="password" id="password" name="password" required placeholder="Enter your password" class="input-subtle pl-9 text-xs">
+            <svg class="w-4 h-4 text-muted absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
           </div>
         </div>
 
-        <button type="submit" name="signin" class="w-full py-3 px-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-md shadow-blue-600/30 transition-all flex items-center justify-center gap-2">
+        <button type="submit" name="signin" class="btn-accent w-full py-3 text-xs uppercase tracking-wider">
           <span>Sign In as Member</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
         </button>
 
       </form>
 
       <!-- Member Links -->
-      <div class="mt-6 pt-5 border-t border-slate-200 text-center space-y-2">
-        <p class="text-xs text-slate-600">
+      <div class="mt-6 pt-5 border-t border-subtle text-center space-y-2">
+        <p class="text-xs text-muted">
           Don't have a member account? 
-          <a href="register.php" class="font-bold text-primary-600 hover:underline">Register Student Account</a>
+          <a href="register.php" class="font-bold text-accent hover:underline">Register Student Account</a>
         </p>
-        <p class="text-xs text-slate-500">
+        <p class="text-xs text-muted">
           Need Admin Access? 
-          <a href="../admin/login.php" class="font-bold text-amber-600 hover:underline">Admin Login &rarr;</a>
+          <a href="../admin/login.php" class="font-bold text-amber-600 dark:text-amber-400 hover:underline">Admin Login &rarr;</a>
         </p>
       </div>
 

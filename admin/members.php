@@ -47,103 +47,183 @@ $count_pending = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c FR
 $count_rejected = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c FROM member WHERE status = 'Rejected'"))['c'] ?? 0;
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Member Directory | Rentora Admin</title>
+
+    <script>
+        (function () {
+            try {
+                var savedTheme = localStorage.getItem('rentora_theme');
+                var theme = savedTheme || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            } catch (e) { }
+        })();
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
+    <script>
+        tailwind.config = {
+            darkMode: ['class', '[data-theme="dark"]'],
+            theme: {
+                extend: {
+                    colors: {
+                        canvas: 'var(--canvas)',
+                        surface: {
+                            DEFAULT: 'var(--surface)',
+                            elevated: 'var(--surface-elevated)',
+                            subtle: 'var(--surface-subtle)',
+                        },
+                        'border-subtle': 'var(--border-subtle)',
+                        'text-primary': 'var(--text-primary)',
+                        'text-muted': 'var(--text-muted)',
+                        accent: {
+                            DEFAULT: 'var(--accent-primary)',
+                            primary: 'var(--accent-primary)',
+                            hover: 'var(--accent-hover)',
+                            glow: 'var(--accent-glow)',
+                        }
+                    },
+                    boxShadow: {
+                        'float': 'var(--shadow-float)',
+                        'elevated': 'var(--shadow-elevated)',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+                        mono: ['Space Grotesk', 'ui-monospace', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+
+<body class="bg-canvas text-primary min-h-screen flex flex-col transition-colors">
 
     <!-- Top Admin Bar -->
-    <header class="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
+    <header class="floating-nav-header px-6 py-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
             <a href="dashboard.php" class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-extrabold shadow-md">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                <div
+                    class="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white font-extrabold shadow-md shadow-accent/20">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                        </path>
+                    </svg>
                 </div>
-                <span class="text-lg font-bold text-white tracking-tight">Rentora Admin</span>
+                <span class="text-base font-bold text-primary tracking-tight">Rentora Admin</span>
             </a>
-            <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Operations</span>
+            <span
+                class="text-[11px] px-2.5 py-0.5 rounded-full font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">Operations</span>
         </div>
         <div class="flex items-center gap-4 text-xs">
-            <a href="dashboard.php" class="text-slate-400 hover:text-white transition">Dashboard</a>
-            <a href="members.php" class="text-white font-semibold border-b-2 border-blue-500 pb-0.5">Member Directory</a>
-            <a href="../index.php" class="text-slate-400 hover:text-white transition">Public Marketplace</a>
-            <a href="change_password.php" class="text-slate-400 hover:text-white transition">Security</a>
-            <a href="../auth/logout.php" class="text-rose-400 hover:text-rose-300 font-medium transition ml-4">Sign Out</a>
+            <button type="button" id="admin-theme-btn"
+                class="p-1.5 rounded-lg bg-surface-subtle border border-subtle text-muted hover:text-primary transition"
+                title="Toggle Theme">
+                🌓
+            </button>
+            <a href="dashboard.php" class="text-muted hover:text-primary transition">Dashboard</a>
+            <a href="members.php" class="text-accent font-bold border-b-2 border-accent pb-0.5">Member Directory</a>
+            <a href="../index.php" class="text-muted hover:text-primary transition">Marketplace</a>
+            <a href="change_password.php" class="text-muted hover:text-primary transition">Security</a>
+            <a href="../auth/logout.php"
+                class="text-rose-600 dark:text-rose-400 hover:underline font-semibold transition ml-2">Sign Out</a>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full">
+    <main class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full bg-canvas">
         <!-- Page Header -->
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
             <div>
-                <h1 class="text-2xl font-extrabold text-white tracking-tight">Verified Academic Registry</h1>
-                <p class="text-xs text-slate-400 mt-1">Manage Premier University student accounts, approvals, and credentials.</p>
+                <h1 class="text-2xl font-extrabold text-primary tracking-tight">Verified Academic Registry</h1>
+                <p class="text-xs text-muted mt-1">Manage Premier University student accounts, approvals, and
+                    credentials.</p>
             </div>
 
             <!-- Metric Badges -->
             <div class="flex items-center gap-3 flex-wrap">
-                <div class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2">
-                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Total Members</div>
-                    <div class="text-lg font-black text-white"><?php echo $count_all; ?></div>
+                <div class="bg-surface border border-subtle rounded-xl px-4 py-2 shadow-float">
+                    <div class="text-[10px] text-muted font-mono uppercase tracking-wider font-bold">Total Members</div>
+                    <div class="text-lg font-black text-primary font-mono"><?php echo $count_all; ?></div>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2">
-                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Verified</div>
-                    <div class="text-lg font-black text-emerald-400"><?php echo $count_verified; ?></div>
+                <div class="bg-surface border border-subtle rounded-xl px-4 py-2 shadow-float">
+                    <div class="text-[10px] text-muted font-mono uppercase tracking-wider font-bold">Verified</div>
+                    <div class="text-lg font-black text-emerald-600 dark:text-emerald-400 font-mono">
+                        <?php echo $count_verified; ?></div>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2">
-                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Pending Review</div>
-                    <div class="text-lg font-black text-amber-400"><?php echo $count_pending; ?></div>
+                <div class="bg-surface border border-subtle rounded-xl px-4 py-2 shadow-float">
+                    <div class="text-[10px] text-muted font-mono uppercase tracking-wider font-bold">Pending Review
+                    </div>
+                    <div class="text-lg font-black text-amber-600 dark:text-amber-400 font-mono">
+                        <?php echo $count_pending; ?></div>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2">
-                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Rejected</div>
-                    <div class="text-lg font-black text-rose-400"><?php echo $count_rejected; ?></div>
+                <div class="bg-surface border border-subtle rounded-xl px-4 py-2 shadow-float">
+                    <div class="text-[10px] text-muted font-mono uppercase tracking-wider font-bold">Rejected</div>
+                    <div class="text-lg font-black text-rose-600 dark:text-rose-400 font-mono">
+                        <?php echo $count_rejected; ?></div>
                 </div>
             </div>
         </div>
 
         <!-- Feedback Alert -->
         <?php if (isset($_GET['msg']) && $_GET['msg'] === 'updated'): ?>
-            <div class="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold flex items-center justify-between">
+            <div
+                class="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
                     <span>Member verification status updated successfully.</span>
                 </div>
-                <a href="members.php" class="text-slate-400 hover:text-white text-[11px]">&times; Dismiss</a>
+                <a href="members.php" class="text-muted hover:text-primary text-[11px]">&times; Dismiss</a>
             </div>
         <?php endif; ?>
 
         <!-- Filter & Search Controls -->
-        <form method="GET" action="members.php" class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 mb-6 flex flex-col md:flex-row gap-3 items-center justify-between">
+        <form method="GET" action="members.php"
+            class="bg-surface border border-subtle rounded-2xl p-4 mb-6 shadow-float flex flex-col md:flex-row gap-3 items-center justify-between">
             <div class="w-full md:w-96 relative">
-                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" 
-                       placeholder="Search by name, student ID, email, or username..." 
-                       class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>"
+                    placeholder="Search by name, student ID, email, or username..." class="input-subtle text-xs">
             </div>
             <div class="w-full md:w-auto flex items-center gap-3">
-                <select name="status" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select name="status" class="input-subtle text-xs">
                     <option value="">All Verification States</option>
-                    <option value="Pending" <?php echo ($status_filter === 'Pending') ? 'selected' : ''; ?>>Pending</option>
-                    <option value="Verified" <?php echo ($status_filter === 'Verified') ? 'selected' : ''; ?>>Verified</option>
-                    <option value="Rejected" <?php echo ($status_filter === 'Rejected') ? 'selected' : ''; ?>>Rejected</option>
+                    <option value="Pending" <?php echo ($status_filter === 'Pending') ? 'selected' : ''; ?>>Pending
+                    </option>
+                    <option value="Verified" <?php echo ($status_filter === 'Verified') ? 'selected' : ''; ?>>Verified
+                    </option>
+                    <option value="Rejected" <?php echo ($status_filter === 'Rejected') ? 'selected' : ''; ?>>Rejected
+                    </option>
                 </select>
-                <button type="submit" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition">Apply</button>
+                <button type="submit" class="btn-accent py-2 text-xs">Apply</button>
                 <?php if (!empty($search) || !empty($status_filter)): ?>
-                    <a href="members.php" class="px-3 py-2.5 text-xs text-slate-400 hover:text-white transition">Clear</a>
+                    <a href="members.php" class="btn-secondary py-2 text-xs">Clear</a>
                 <?php endif; ?>
             </div>
         </form>
 
         <!-- Members Table -->
-        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div class="bg-surface border border-subtle rounded-2xl overflow-hidden shadow-float">
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs">
-                    <thead class="bg-slate-900 border-b border-slate-800 text-slate-400 uppercase font-semibold text-[10px] tracking-wider">
+                    <thead
+                        class="bg-surface-subtle border-b border-subtle text-muted uppercase font-semibold text-[10px] tracking-wider">
                         <tr>
                             <th class="px-5 py-3.5">Student / Member</th>
                             <th class="px-4 py-3.5">Student ID</th>
@@ -154,76 +234,71 @@ $count_rejected = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c F
                             <th class="px-5 py-3.5 text-right">Moderation Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-800 text-slate-300">
+                    <tbody class="divide-y divide-border-subtle text-primary">
                         <?php if ($members_res && mysqli_num_rows($members_res) > 0): ?>
                             <?php while ($m = mysqli_fetch_assoc($members_res)): ?>
-                                <tr class="hover:bg-slate-800/40 transition">
+                                <tr class="hover:bg-surface-subtle transition">
                                     <td class="px-5 py-4 whitespace-nowrap">
-                                        <div class="font-bold text-white text-sm">
+                                        <div class="font-bold text-primary text-sm">
                                             <?php echo htmlspecialchars($m['first_name'] . ' ' . $m['last_name']); ?>
                                         </div>
-                                        <div class="text-[11px] text-slate-500 font-mono">@<?php echo htmlspecialchars($m['username']); ?></div>
+                                        <div class="text-[11px] text-muted font-mono">
+                                            @<?php echo htmlspecialchars($m['username']); ?></div>
                                         <?php if (!empty($m['gender']) || !empty($m['dob'])): ?>
-                                            <div class="text-[10px] text-slate-500 mt-0.5">
+                                            <div class="text-[10px] text-muted mt-0.5">
                                                 <?php echo htmlspecialchars(implode(' &bull; ', array_filter([$m['gender'] ?? null, $m['dob'] ?? null]))); ?>
                                             </div>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="px-4 py-4 whitespace-nowrap font-mono text-slate-300">
+                                    <td class="px-4 py-4 whitespace-nowrap font-mono text-muted">
                                         <?php echo htmlspecialchars($m['student_id'] ?? 'Not set'); ?>
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap">
-                                        <div class="text-slate-300"><?php echo htmlspecialchars($m['university_email']); ?></div>
-                                        <div class="text-[11px] text-slate-500 font-mono"><?php echo htmlspecialchars($m['phone_number'] ?? 'N/A'); ?></div>
+                                        <div class="text-primary"><?php echo htmlspecialchars($m['university_email']); ?></div>
+                                        <div class="text-[11px] text-muted font-mono">
+                                            <?php echo htmlspecialchars($m['phone_number'] ?? 'N/A'); ?></div>
                                     </td>
-                                    <td class="px-4 py-4 whitespace-nowrap text-slate-400">
+                                    <td class="px-4 py-4 whitespace-nowrap text-muted">
                                         <?php echo htmlspecialchars($m['campus_address'] ?? 'Not set'); ?>
                                     </td>
-                                    <td class="px-4 py-4 whitespace-nowrap font-mono font-semibold text-slate-200">
-                                        ৳<?php echo number_format((float)($m['account_balance'] ?? 0), 2); ?>
+                                    <td class="px-4 py-4 whitespace-nowrap font-mono font-semibold text-primary">
+                                        ৳<?php echo number_format((float) ($m['account_balance'] ?? 0), 2); ?>
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap">
                                         <?php
                                         $st = $m['status'] ?? 'Pending';
-                                        if ($st === 'Verified'): ?>
-                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                                                Verified
-                                            </span>
-                                        <?php elseif ($st === 'Rejected'): ?>
-                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
-                                                Rejected
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-                                                Pending Review
-                                            </span>
-                                        <?php endif; ?>
+                                        $badge = match ($st) {
+                                            'Verified' => 'badge-verified',
+                                            'Rejected' => 'badge-rejected',
+                                            default => 'badge-pending'
+                                        };
+                                        ?>
+                                        <span class="badge-subtle <?php echo $badge; ?>">
+                                            <?php echo htmlspecialchars($st); ?>
+                                        </span>
                                     </td>
                                     <td class="px-5 py-4 whitespace-nowrap text-right">
                                         <form method="POST" action="members.php" class="inline-flex items-center gap-1.5">
-                                            <input type="hidden" name="member_id" value="<?php echo (int)$m['member_id']; ?>">
-                                            
+                                            <input type="hidden" name="member_id" value="<?php echo (int) $m['member_id']; ?>">
+
                                             <?php if ($st !== 'Verified'): ?>
-                                                <button type="submit" name="action" value="Verified" 
-                                                        class="px-2.5 py-1 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/30 rounded-lg text-xs font-bold transition">
+                                                <button type="submit" name="action" value="Verified"
+                                                    class="px-2.5 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white border border-emerald-500/30 rounded-lg text-xs font-bold transition">
                                                     Verify
                                                 </button>
                                             <?php endif; ?>
 
                                             <?php if ($st !== 'Rejected'): ?>
-                                                <button type="submit" name="action" value="Rejected" 
-                                                        class="px-2.5 py-1 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 rounded-lg text-xs font-bold transition">
+                                                <button type="submit" name="action" value="Rejected"
+                                                    class="px-2.5 py-1 bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500 hover:text-white border border-rose-500/30 rounded-lg text-xs font-bold transition">
                                                     Reject
                                                 </button>
                                             <?php endif; ?>
 
                                             <?php if ($st === 'Verified' || $st === 'Rejected'): ?>
-                                                <button type="submit" name="action" value="Pending" 
-                                                        class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 rounded-lg text-xs font-medium transition"
-                                                        title="Reset to Pending status">
+                                                <button type="submit" name="action" value="Pending"
+                                                    class="px-2.5 py-1 bg-surface-subtle text-muted hover:text-primary border border-subtle rounded-lg text-xs font-medium transition"
+                                                    title="Reset to Pending status">
                                                     Reset
                                                 </button>
                                             <?php endif; ?>
@@ -233,11 +308,17 @@ $count_rejected = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c F
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7" class="px-6 py-12 text-center text-slate-400">
+                                <td colspan="7" class="px-6 py-12 text-center text-muted">
                                     <div class="max-w-xs mx-auto text-center space-y-2">
-                                        <svg class="w-8 h-8 text-slate-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                                        <div class="text-sm font-semibold text-slate-300">No member records found</div>
-                                        <p class="text-xs text-slate-500">Try adjusting your search terms or filter selection.</p>
+                                        <svg class="w-8 h-8 text-muted mx-auto" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                                            </path>
+                                        </svg>
+                                        <div class="text-sm font-semibold text-primary">No member records found</div>
+                                        <p class="text-xs text-muted">Try adjusting your search terms or filter selection.
+                                        </p>
                                     </div>
                                 </td>
                             </tr>
@@ -248,8 +329,28 @@ $count_rejected = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c F
         </div>
     </main>
 
-    <footer class="border-t border-slate-900 bg-slate-950 py-4 px-6 text-center text-xs text-slate-600">
+    <footer class="border-t border-subtle bg-surface py-4 px-6 text-center text-xs text-muted">
         Rentora Academic Platform &bull; Operations &amp; Moderation Console
     </footer>
+
+    <script>
+        var adminThemeBtn = document.getElementById('admin-theme-btn');
+        if (adminThemeBtn) {
+            adminThemeBtn.addEventListener('click', function () {
+                var currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                var newTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                if (newTheme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+                try {
+                    localStorage.setItem('rentora_theme', newTheme);
+                } catch (e) { }
+            });
+        }
+    </script>
 </body>
+
 </html>

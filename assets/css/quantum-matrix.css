@@ -1,891 +1,241 @@
 /* ==========================================================================
-   RENTORA HUB - CRYSTALLINE VACUUM & OPTICAL WHITE INSTITUTIONAL SHOWCASE
-   Inverted gravitational constant: pure optical white surfaces,
-   crisp slate borders, and sharp refractive blue vectors.
-   Frictionless wave of energy navigation with cubic-bezier continuity.
+   RENTORA HUB - QUANTUM FLOATING MATRIX UI
+   Anti-Gravity Equilibrium: Elevated Surfaces, Micro-interactions,
+   3D Holographic Card Equilibrium with Semantic Token Integration.
    ========================================================================== */
 
-:root {
-  /* Strict 3-Tier Dimensional Spectrum */
-  --photonic-ice: #EFF3FF;
-  --night-blue: #151B54;
-  --absolute-white: #FFFFFF;
-
-  /* Crystalline Optical White Palette */
-  --optical-white: #ffffff;
-  --optical-snow: #EFF3FF;
-  --optical-slate-50: #f1f5f9;
-  --optical-slate-100: #e2e8f0;
-  --optical-slate-200: #cbd5e1;
-  --optical-slate-300: #94a3b8;
-  --optical-slate-500: #64748b;
-  --optical-slate-700: #334155;
-  --optical-slate-900: #151B54;
-  --optical-navy-950: #0c1033;
-
-  /* Sharp Refractive Blue Vectors */
-  --vector-blue-50: #eff6ff;
-  --vector-blue-100: #dbeafe;
-  --vector-blue-200: #bfdbfe;
-  --vector-blue-400: #60a5fa;
-  --vector-blue-500: #3b82f6;
-  --vector-blue-600: #2563eb;
-  --vector-blue-700: #1d4ed8;
-  --vector-blue-800: #1e40af;
-  --vector-emerald-500: #10b981;
-
-  /* Card Elevations */
-  --elevation-rest: 0 4px 16px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
-  --elevation-hover: 0 20px 35px -6px rgba(15, 23, 42, 0.10), 0 8px 16px -4px rgba(15, 23, 42, 0.05);
-  
-  /* Telemetry coordinates */
-  --holo-x: 50%;
-  --holo-y: 50%;
-}
-
-/* ==========================================================================
-   1. GLOBAL CRYSTALLINE VACUUM ENVIRONMENT
-   ========================================================================== */
-
-html.theme-crystalline,
-body.theme-crystalline {
-  background-color: var(--optical-snow) !important;
-  color: var(--optical-slate-900) !important;
-  overflow-x: hidden;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  letter-spacing: -0.012em;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Subtle Crystalline Spacetime Grid Canvas */
-#spacetime-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.35;
-}
-
-/* Crystalline Viewport Backdrop */
+/* ─── Crystalline Spacetime Grid Background ─── */
 .antimatter-viewport {
   position: relative;
   z-index: 1;
-  background: 
-    radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.04) 0%, transparent 60%),
-    radial-gradient(circle at 100% 30%, rgba(2, 132, 199, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 0% 70%, rgba(37, 99, 235, 0.03) 0%, transparent 50%);
+  background-color: var(--canvas);
 }
 
-/* ==========================================================================
-   2. FRICTIONLESS WAVE OF ENERGY - NAVIGATION MATRIX
-   ========================================================================== */
-
-/* Dark-Matter Vacuum Header Containment (#0A0F1D) */
-.quantum-header {
-  position: static !important;
-  top: auto !important;
-  z-index: 50;
-  background: rgba(10, 15, 29, 0.94) !important;
-  backdrop-filter: blur(24px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5) !important;
+/* ─── Hero Section with Modern Deep Canvas ─── */
+.hero-floating-section {
+  background: radial-gradient(circle at 50% 0%, var(--surface-subtle) 0%, var(--canvas) 80%);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-/* Crisp 1px Laser Guide Rail along Header */
-.laser-guide-conduit {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(59, 130, 246, 0.2) 20%, 
-    rgba(96, 165, 250, 0.8) 50%, 
-    rgba(16, 185, 129, 0.5) 80%, 
-    transparent 100%
-  );
-  box-shadow: 0 0 8px rgba(96, 165, 250, 0.4);
-  pointer-events: none;
-}
-
-/* THE FRICTIONLESS WAVE OF ENERGY (#nav-pill)
-   Zero-latency binary positioning, transitions purged. */
-#nav-pill {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 0;
-  width: 0;
-  border-radius: 0.65rem;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0;
-  will-change: none;
-
-  /* Zero-latency calculated illumination inside dark-matter vacuum */
-  background: rgba(255, 255, 255, 0.10) !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  box-shadow: 
-    0 4px 20px -2px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.20) !important;
-
-  /* Kinetic Purge: Zero transition delays, zero hover inertia */
-  transition: none !important;
-}
-
-/* Refractive Blue Slipstream Filament at bottom edge of pill */
-#nav-pill::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 15%;
-  width: 70%;
-  height: 2px;
-  background: linear-gradient(90deg, 
-    transparent, 
-    #38bdf8, 
-    #60a5fa, 
-    #38bdf8, 
-    transparent
-  );
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
-  border-radius: 2px;
-}
-
-/* ==========================================================================
-   PHASE 2: FRICTIONLESS STATE TRANSITIONS (ZERO-LATENCY LIGHT-FADE ILLUMINATION)
-   Subtle calculated illumination (rgba(255, 255, 255, 0.1)) snaps into reality
-   microsecond cursor crosses threshold with zero chromatic residue or layout shift.
-   ========================================================================== */
-/* ==========================================================================
-   DIRECTIVE 2 & 3: PURE UX EQUILIBRIUM & NAVIGATIONAL MATRIX STABILIZATION
-   Proportional padding (0.625rem 1rem / px-4 py-2.5), shrink-0 profile core,
-   and instant binary hover states with zero latency.
-   ========================================================================== */
-.nav-link,
-.nav-orbit-link {
-  color: #94a3b8 !important;
-  font-weight: 500;
-  font-size: 13px !important; /* Scaled for perfect density text-[13px] */
-  letter-spacing: 0.01em;
-  position: relative;
-  z-index: 10;
-  padding: 0.5rem 0.625rem !important; /* Mathematically reduced (px-2.5 py-2) */
-  border-radius: 0.75rem !important;
-  border: 1px solid transparent !important;
-  background: transparent !important;
-  box-sizing: border-box;
-  text-decoration: none;
-  flex-shrink: 0 !important;
-  transition: none !important; /* Zero visual drag / instantaneous binary state */
-}
-
-.nav-link:hover,
-.nav-orbit-link:hover {
-  color: #ffffff !important;
-  background-color: #151B54 !important; /* Locked in Night Blue */
-  border-color: rgba(255, 255, 255, 0.20) !important;
-  box-shadow: none !important;
-  transition: none !important;
-}
-
-.nav-link-active,
-.nav-orbit-active {
-  color: #ffffff !important;
-  background-color: #151B54 !important; /* Locked in Night Blue */
-  border-color: rgba(255, 255, 255, 0.28) !important;
-  font-weight: 700 !important;
-  box-shadow: none !important;
-}
-
-/* Outer Orbital Rim Nodes */
-.orbital-rim {
-  position: relative;
-  z-index: 20;
-  flex-shrink: 0 !important;
-}
-
-/* ==========================================================================
-   PROFILE SINGULARITY CORE & EQUILIBRIUM POCKET
-   ========================================================================== */
-.profile-singularity {
-  position: relative;
-  z-index: 45;
-  flex-shrink: 0 !important;
-}
-
-.profile-singularity-trigger {
-  cursor: pointer;
-  outline: none;
-  background: #151B54 !important; /* Night Blue Core */
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  padding: 0.5rem 0.625rem !important; /* Dynamic compression (px-2.5 py-2) */
-  border-radius: 0.75rem !important;
-  flex-shrink: 0 !important;
-  transition: none !important; /* Zero visual drag */
-}
-
-.profile-singularity-trigger:hover,
-.profile-singularity:focus-within .profile-singularity-trigger {
-  background: #1E2570 !important;
-  border-color: rgba(255, 255, 255, 0.32) !important;
-  box-shadow: none !important;
-  transition: none !important;
-}
-
-/* Localized Dimensional Pocket Menu - Proportional bounding without rigid distortion */
-.profile-singularity-menu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 0.5rem);
-  width: max-content !important;
-  min-width: 18rem !important;
-  max-width: 22rem !important;
-  background: #0A0F1D !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  border-radius: 1rem !important;
-  box-shadow: 0 20px 45px -8px rgba(0, 0, 0, 0.85) !important;
-  padding: 1rem !important;
-  z-index: 100;
-  pointer-events: none;
-  opacity: 0;
-  transform: none !important; /* Vaporize warping transform */
-  transition: none !important; /* Vaporize visual drag / animations */
-  visibility: hidden;
-}
-
-/* Instantaneous Binary Reveal with Zero Latency */
-.profile-singularity:hover .profile-singularity-menu,
-.profile-singularity:focus-within .profile-singularity-menu,
-.profile-singularity.dilated .profile-singularity-menu,
-.profile-singularity-menu:hover {
-  opacity: 1 !important;
-  pointer-events: auto !important;
-  visibility: visible !important;
-  transform: none !important;
-}
-
-/* Singularity Pocket Links */
-.singularity-pocket-link {
-  text-decoration: none;
-  background: transparent;
-  transition: 
-    background-color 80ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 80ms cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 80ms cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid transparent;
-}
-
-.singularity-pocket-link:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
-}
-
-/* Frictionless Photonic Pulse Ring */
-.photonic-burst-ring {
-  position: absolute;
-  border-radius: 0.65rem;
-  border: 1.5px solid var(--vector-blue-500);
-  box-shadow: 0 0 12px rgba(37, 99, 235, 0.3);
-  pointer-events: none;
-  z-index: 2;
-  animation: wavePulseRing 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes wavePulseRing {
-  0% { transform: translate(-50%, -50%) scale(0.9); opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(1.35); opacity: 0; }
-}
-
-/* ==========================================================================
-   3. ABOUT PAGE VISUAL DNA & GLASSMORPHIC QUANTUM GEOMETRY
-   ========================================================================== */
-
-/* Fade-up dynamic animation */
-@keyframes ab-fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.ab-fade { opacity: 0; }
-.ab-fade.visible { animation: ab-fadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.ab-fade-d1.visible { animation-delay: .05s; }
-.ab-fade-d2.visible { animation-delay: .12s; }
-.ab-fade-d3.visible { animation-delay: .19s; }
-.ab-fade-d4.visible { animation-delay: .26s; }
-.ab-fade-d5.visible { animation-delay: .33s; }
-.ab-fade-d6.visible { animation-delay: .40s; }
-@media (prefers-reduced-motion: reduce) {
-  .ab-fade, .ab-fade.visible { animation: none; opacity: 1; }
-}
-
-/* Purged rogue geometric anomalies & blue box entities */
-.ab-blob {
-  display: none !important;
-}
-
-/* Fluid SVG wave divider */
-.ab-wave {
-  display: block;
-  line-height: 0;
-  margin-bottom: -2px;
-}
-.ab-wave svg {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* Why Rentora & Catalog Equipment Cards */
-.ab-why-card {
-  background: #FFFFFF;
-  border: 1px solid #D1DFEE;
-  border-radius: 1.25rem;
-  padding: 1.75rem;
-  box-shadow: 0 4px 16px rgba(15, 35, 65, 0.05);
-  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
-}
-.ab-why-card:hover {
-  transform: translateY(-4px);
-  border-color: #93C5FD;
-  box-shadow: 0 14px 30px rgba(15, 35, 65, 0.10);
-}
-
-/* Step timeline connectors */
-.ab-step-wrap { position: relative; }
-.ab-connector {
-  position: absolute;
-  top: 24px;
-  left: calc(50% + 28px);
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #3B82F6, #10B981);
-}
-.ab-num {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #1d4ed8, #2563eb);
-  color: #fff;
-  font-size: .9rem;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-  box-shadow: 0 0 20px rgba(37, 99, 235, .5);
-}
-
-/* Glassmorphic Feature Panels */
-.ab-feat-panel {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08);
-  transition: transform 220ms ease, box-shadow 220ms ease;
-}
-.ab-feat-panel:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.14);
-}
-
-/* Trust & Safety Cards */
-.ab-trust-card {
-  background: #FFFFFF;
-  border: 1px solid #D9E2EF;
-  border-radius: 1.25rem;
-  padding: 1.5rem;
-  box-shadow: 0 4px 14px rgba(15, 35, 65, 0.06);
-  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
-}
-.ab-trust-card:hover {
-  transform: translateY(-3px);
-  border-color: #BFDBFE;
-  box-shadow: 0 10px 24px rgba(15, 35, 65, 0.10);
-}
-
-/* Glassmorphic Campus Gear Tile */
-.ab-gear-tile {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 1rem;
-  padding: 1.25rem;
-  transition: transform 200ms ease, background 200ms ease;
-}
-.ab-gear-tile:hover {
-  transform: translateY(-3px);
-  background: rgba(255, 255, 255, 0.20);
-}
-
-/* Deep Navy Quantum Hero Container matching About Hero */
-.hologram-hero-container {
-  position: relative;
-  background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%) !important;
-  color: #ffffff !important;
-  overflow: hidden;
-}
-
-/* Geodesic Conduit neutralized to prevent geometric anomalies */
-.holo-grid-ceiling {
-  display: none !important;
-}
-
-/* GLASSMORPHIC QUANTUM SEARCH COMMAND DECK */
-.quantum-search-deck,
+/* ─── Glassmorphic Quantum Search Deck ─── */
 .glass-search-deck {
-  position: relative;
-  background: rgba(255, 255, 255, 0.09) !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  border-radius: 1.25rem !important;
-  padding: 1.5rem !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  box-shadow: 
-    0 24px 50px -12px rgba(2, 6, 23, 0.7),
-    0 4px 16px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
-  transition: border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow-elevated);
 }
 
-.quantum-search-deck:hover,
-.glass-search-deck:hover {
-  border-color: rgba(96, 165, 250, 0.45) !important;
-  box-shadow: 
-    0 30px 60px -12px rgba(2, 6, 23, 0.8),
-    0 0 25px rgba(37, 99, 235, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
-}
-
-/* Glassmorphic Zero-Resistance Inputs */
-.quantum-input,
-.glass-input {
-  background: rgba(2, 6, 23, 0.65) !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  color: #ffffff !important;
-  border-radius: 0.75rem !important;
-  font-size: 0.875rem !important;
-  font-family: inherit;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-
-.quantum-input:focus,
-.glass-input:focus {
-  border-color: #60a5fa !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3) !important;
-  background: rgba(2, 6, 23, 0.85) !important;
-  outline: none !important;
-}
-
-.quantum-input option,
-.glass-input option {
-  background-color: #0f172a !important;
-  color: #ffffff !important;
-}
-
-/* Terminal Velocity Refractive Submit Button */
-.quantum-submit-btn {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 60%, #1e40af 100%) !important;
-  color: #ffffff !important;
-  font-weight: 700 !important;
-  font-size: 0.875rem !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 0.75rem !important;
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35) !important;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-
-.quantum-submit-btn:hover {
-  transform: translateY(-1.5px);
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 60%, #1d4ed8 100%) !important;
-  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5) !important;
-}
-
-/* Glassmorphic Discipline Filter Pills */
+/* ─── Quantum Pill Filter Buttons ─── */
 .quantum-pill {
-  position: relative;
-  padding: 0.4rem 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
   border-radius: 9999px;
   font-size: 0.75rem;
-  font-weight: 600;
-  color: #bfdbfe;
-  background: rgba(255, 255, 255, 0.10);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-weight: 700;
+  background-color: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  color: #1E293B;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
 }
 
 .quantum-pill:hover {
-  color: #ffffff;
-  border-color: rgba(147, 197, 253, 0.4);
-  background: rgba(255, 255, 255, 0.18);
+  background-color: #F1F5F9;
+  border-color: #1D4ED8;
+  color: #020617;
   transform: translateY(-1px);
 }
 
-.quantum-pill-active {
-  color: #ffffff !important;
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-  border-color: #60a5fa !important;
-  font-weight: 700 !important;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4) !important;
+.quantum-pill-active,
+.quantum-pill.active {
+  background-color: var(--accent-primary) !important;
+  border-color: var(--accent-primary) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px 0 var(--accent-glow) !important;
 }
 
-
-/* ==========================================================================
-   4. REFINED INSTITUTIONAL METRICS (Reactor Telemetry Strip)
-   ========================================================================== */
-
-.reactor-stats-strip {
-  background: #ffffff;
-  border-top: 1px solid var(--optical-slate-100);
-  border-bottom: 1px solid var(--optical-slate-100);
-  position: relative;
-  z-index: 10;
+/* Dark Mode Pill Invariants (Preserved 100%) */
+[data-theme="dark"] .quantum-pill,
+.dark .quantum-pill {
+  background-color: var(--surface-subtle);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  box-shadow: none;
 }
 
-.reactor-metric-pod {
-  position: relative;
-  padding: 0.9rem 1rem;
+[data-theme="dark"] .quantum-pill:hover,
+.dark .quantum-pill:hover {
+  background-color: var(--surface-elevated);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
 }
 
-.reactor-metric-val {
-  font-size: 1.45rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  font-family: 'Space Grotesk', 'Inter', sans-serif;
-  color: var(--optical-slate-900);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
+[data-theme="dark"] .quantum-pill-active,
+[data-theme="dark"] .quantum-pill.active,
+.dark .quantum-pill-active,
+.dark .quantum-pill.active {
+  background-color: var(--accent-primary) !important;
+  border-color: var(--accent-primary) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px 0 var(--accent-glow) !important;
 }
 
-/* ==========================================================================
-   5. REFINED CARD ELEVATIONS & OPTICAL WHITE WORKSPACE
-   ========================================================================== */
-
-.zero-g-catalog-container {
-  position: relative;
-  background: transparent;
-  padding: 3rem 0;
-  perspective: 1200px;
-}
-
-.quantum-section-title {
-  color: var(--optical-slate-900);
-  font-size: 1.55rem;
-  font-weight: 800;
-  letter-spacing: -0.025em;
-}
-
-.quantum-section-subtitle {
-  color: var(--optical-slate-500);
-  font-size: 0.825rem;
-  font-weight: 500;
-}
-
-/* 3D Elevated Card Wrapper */
+/* ─── 3D Equipment Cards in Perfect Floating Equilibrium ─── */
 .zero-g-card-wrapper {
+  position: relative;
   perspective: 1000px;
-  transform-style: preserve-3d;
-  will-change: transform;
+  height: 100%;
 }
 
-/* ABSOLUTE ZERO-INERTIA PROTOCOL — Equipment tile float animations locked to static stasis */
-.zero-g-phase-0,
-.zero-g-phase-1,
-.zero-g-phase-2,
-.zero-g-phase-3 { animation: none !important; transform: none !important; }
-
-@keyframes opticalFloat0 {
-  0% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
-  100% { transform: translateY(-6px) rotateX(0.8deg) rotateY(-0.6deg); }
-}
-
-@keyframes opticalFloat1 {
-  0% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
-  100% { transform: translateY(5px) rotateX(-0.6deg) rotateY(0.8deg); }
-}
-
-@keyframes opticalFloat2 {
-  0% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
-  100% { transform: translateY(-5px) rotateX(0.8deg) rotateY(0.6deg); }
-}
-
-@keyframes opticalFloat3 {
-  0% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
-  100% { transform: translateY(6px) rotateX(-0.8deg) rotateY(-0.8deg); }
-}
-
-.zero-g-card-wrapper.gravitational-lock {
-  animation: none !important;
-}
-
-/* THE REFINED EQUILIBRIUM CARD — Absolute Static Stasis */
 .holo-equipment-card {
   position: relative;
-  background: #ffffff !important;
-  border: 1px solid #D1DFEE !important;
-  border-radius: 1.25rem !important;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.25rem;
   overflow: hidden;
+  box-shadow: var(--shadow-float);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 16px rgba(15, 35, 65, 0.05) !important;
-  /* Zero-Inertia: no transform at all */
-  will-change: border-color, box-shadow;
-  transition: 
-    border-color 0.18s ease, 
-    box-shadow 0.18s ease;
+  height: 100%;
 }
 
-/* Gravitational Stasis: hover = glow only, zero lift */
-.holo-equipment-card:hover,
-.holo-equipment-card.gravitationally-engaged {
-  border-color: #93C5FD !important;
-  box-shadow: 0 6px 24px rgba(15, 35, 65, 0.10), 0 0 0 1px rgba(147, 197, 253, 0.4) !important;
-  transform: none !important;
+.holo-equipment-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-elevated);
+  border-color: var(--accent-primary);
 }
 
-/* Crystalline Specular Sheen Layer */
-.holo-sheen-layer {
-  position: absolute;
-  inset: 0;
-  border-radius: 1rem;
-  background: radial-gradient(
-    circle at var(--holo-x, 50%) var(--holo-y, 50%),
-    rgba(255, 255, 255, 0.6) 0%,
-    rgba(219, 234, 254, 0.25) 35%,
-    transparent 70%
-  );
-  pointer-events: none;
-  z-index: 5;
-  mix-blend-mode: soft-light;
-  opacity: 0.85;
-}
-
-/* Crisp Corner Reticles */
-.hud-corner-tl {
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  width: 8px;
-  height: 8px;
-  border-top: 1.5px solid rgba(148, 163, 184, 0.45);
-  border-left: 1.5px solid rgba(148, 163, 184, 0.45);
-  pointer-events: none;
-  z-index: 10;
-}
-
-.hud-corner-br {
-  position: absolute;
-  bottom: 6px;
-  right: 6px;
-  width: 8px;
-  height: 8px;
-  border-bottom: 1.5px solid rgba(148, 163, 184, 0.45);
-  border-right: 1.5px solid rgba(148, 163, 184, 0.45);
-  pointer-events: none;
-  z-index: 10;
-}
-
-.holo-equipment-card.gravitationally-engaged .hud-corner-tl,
-.holo-equipment-card.gravitationally-engaged .hud-corner-br {
-  border-color: var(--vector-blue-500);
-}
-
-/* Image Container */
+/* Holographic Image Container */
 .holo-image-container {
   position: relative;
-  height: 12rem;
   width: 100%;
-  background: var(--optical-slate-50);
+  height: 180px;
+  background-color: var(--surface-subtle);
   overflow: hidden;
-  transform: translateZ(10px);
-  border-bottom: 1px solid var(--optical-slate-100);
 }
 
 .holo-image-container img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .holo-equipment-card:hover .holo-image-container img {
-  transform: scale(1.04);
+  transform: scale(1.05);
 }
 
-/* Subtle Crystalline Laser Line */
-.holo-scanner-beam {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--vector-blue-500), transparent);
-  box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
-  pointer-events: none;
-  opacity: 0;
-  z-index: 6;
-}
-
-.holo-equipment-card:hover .holo-scanner-beam {
-  opacity: 1;
-  animation: scanLaser 1.8s linear infinite;
-}
-
-@keyframes scanLaser {
-  0% { top: 0%; opacity: 0; }
-  15% { opacity: 1; }
-  85% { opacity: 1; }
-  100% { top: 100%; opacity: 0; }
-}
-
-/* Daily Rate Capsule */
+/* Price Capsule */
 .holo-price-capsule {
   position: absolute;
-  bottom: 0.65rem;
-  right: 0.65rem;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid var(--optical-slate-200);
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
-  backdrop-filter: blur(12px);
-  padding: 0.25rem 0.65rem;
-  border-radius: 0.5rem;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #FFFFFF;
+  font-weight: 800;
   font-size: 0.8125rem;
-  font-weight: 700;
-  color: var(--optical-navy-950);
-  transform: translateZ(20px);
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.625rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 /* Card Body */
 .holo-card-body {
   padding: 1.25rem;
-  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transform: translateZ(14px);
+  flex: 1;
+  background: var(--surface);
 }
 
 .holo-card-title {
-  font-weight: 700;
-  color: var(--optical-navy-950);
   font-size: 0.9375rem;
-  line-height: 1.4;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.35;
+  margin-bottom: 0.5rem;
+}
+
+.holo-card-title a {
+  color: inherit;
+  text-decoration: none;
   transition: color 0.15s ease;
 }
 
-.holo-card-title:hover {
-  color: var(--vector-blue-600);
+.holo-card-title a:hover {
+  color: var(--accent-primary);
 }
 
 .holo-card-divider {
-  border-top: 1px solid var(--optical-slate-100);
-  border-bottom: 1px solid var(--optical-slate-100);
-  padding: 0.6rem 0;
-  margin: 0.75rem 0;
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--border-subtle);
 }
 
-/* Action Button: Monolith View Button */
+/* Action Button inside Card */
 .holo-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   width: 100%;
-  padding: 0.65rem 1rem;
-  border-radius: 0.65rem;
-  background: var(--optical-navy-950);
-  color: #ffffff;
-  font-weight: 600;
+  padding: 0.5rem 1rem;
+  background: var(--surface-subtle);
+  color: var(--text-primary);
   font-size: 0.75rem;
-  text-align: center;
-  display: block;
-  letter-spacing: 0.02em;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
-  transform: translateZ(18px);
-  transition: all 0.2s ease;
+  font-weight: 700;
+  border-radius: 0.625rem;
+  border: 1px solid var(--border-subtle);
+  transition: all 0.15s ease;
+  text-decoration: none;
 }
 
 .holo-action-btn:hover {
-  background: var(--vector-blue-600);
-  color: #ffffff;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
-  transform: translateZ(24px) translateY(-1px);
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px var(--accent-glow);
 }
 
-/* ==========================================================================
-   6. AUDIO RESONATOR CONTROLS
-   ========================================================================== */
+/* ─── Reactor Metric Pods ─── */
+.reactor-metric-pod {
+  padding: 0.75rem 1rem;
+}
 
-.quantum-audio-toggle {
+.reactor-metric-val {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/* ─── Modern Floating Submit Button ─── */
+.quantum-submit-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.25rem 0.6rem;
-  border-radius: 0.5rem;
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(71, 85, 105, 0.5);
-  color: #cbd5e1;
-  font-size: 0.68rem;
-  font-weight: 600;
-  cursor: pointer;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--accent-primary);
+  color: #FFFFFF !important;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  border: none;
+  box-shadow: 0 4px 14px 0 var(--accent-glow);
   transition: all 0.15s ease;
+  cursor: pointer;
+  text-decoration: none;
 }
 
-.quantum-audio-toggle:hover,
-.quantum-audio-toggle.active {
-  color: #60a5fa;
-  border-color: #60a5fa;
-  background: rgba(15, 23, 42, 0.9);
-}
-
-.quantum-audio-bars {
-  display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  height: 9px;
-}
-
-.quantum-audio-bars span {
-  width: 2px;
-  height: 100%;
-  background: #60a5fa;
-  border-radius: 1px;
-}
-
-.quantum-audio-toggle.active .quantum-audio-bars span:nth-child(1) {
-  animation: audioBarDance 0.7s ease-in-out infinite alternate;
-}
-.quantum-audio-toggle.active .quantum-audio-bars span:nth-child(2) {
-  animation: audioBarDance 0.9s ease-in-out 0.2s infinite alternate;
-}
-.quantum-audio-toggle.active .quantum-audio-bars span:nth-child(3) {
-  animation: audioBarDance 0.6s ease-in-out 0.4s infinite alternate;
-}
-
-@keyframes audioBarDance {
-  0% { height: 2px; }
-  100% { height: 9px; }
-}
-
-/* Responsive Accessibility */
-@media (prefers-reduced-motion: reduce) {
-  .zero-g-phase-0,
-  .zero-g-phase-1,
-  .zero-g-phase-2,
-  .zero-g-phase-3 {
-    animation: none !important;
-  }
-  .holo-equipment-card {
-    transform: none !important;
-  }
+.quantum-submit-btn:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 6px 20px 0 var(--accent-glow);
+  transform: translateY(-1px);
 }
