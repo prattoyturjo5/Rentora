@@ -1,24 +1,21 @@
-﻿/*
+/*
  * ═════════════════════════════════════════════════════════════════════════════
- *  POLARITY INVERSION ARCHITECTURE
- *  Main Canvas: Maximum Photonic White (bg-slate-50 / #F8FAFC)
- *  Functional UI Structures: High-Gravity Deep Dark-Matter Monoliths (bg-[#0F172A])
+ *  ABSOLUTE ZERO-GRAVITY PHOTONIC CHROMATIC LOCK
+ *  Canvas: Photonic Ice (#EFF3FF) — 3-Tier Dimensional Spectrum
+ *  Monoliths: Ultra-Dense Night Blue (#151B54) — Primary Interactive Structures
+ *  Text Polarity: Strictly Inverted — Pure Binary Contrast, Zero Gradient Drag
  *  Sectors: Dashboard, My Equipment, Rentals, Exchanges, Profile Singularity
  * ═════════════════════════════════════════════════════════════════════════════
  */
 
-/* ─── 1. PHOTONIC WHITE BACKGROUND (bg-slate-50) ─── */
+/* ─── 1. PHOTONIC ICE BACKGROUND (#EFF3FF) — Pure Structural Vacuum, Zero Gradient Drag ─── */
 body[data-sector="monolith"],
 body[data-sector="dark"],
 body[data-sector="monolith"] html,
 body[data-sector="dark"] html {
-  background-color: #F8FAFC !important;
-  background-image: 
-    radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.05) 0%, transparent 60%),
-    radial-gradient(rgba(148, 163, 184, 0.18) 1px, transparent 1px) !important;
-  background-size: 100% 100%, 24px 24px !important;
-  background-attachment: fixed !important;
-  color: #0F172A !important;
+  background-color: #EFF3FF !important;
+  background-image: none !important;
+  color: #151B54 !important;
 }
 
 body[data-sector="monolith"] main,
@@ -47,7 +44,7 @@ body[data-sector="dark"] > main > div > p.text-slate-500 {
   color: #64748B !important;
 }
 
-/* ─── 3. HIGH-GRAVITY DARK-MATTER MONOLITHS (bg-[#0F172A]) ─── */
+/* ─── 3. NIGHT BLUE MONOLITHS (#151B54) — Ultra-Dense Primary Interactive Structures ─── */
 /* All functional UI panels, tables, equipment blocks, cards, and forms */
 body[data-sector="monolith"] .bg-white,
 body[data-sector="monolith"] .photonic-panel,
@@ -63,18 +60,18 @@ body[data-sector="dark"] .rounded-2xl.border,
 body[data-sector="dark"] .rounded-xl.border,
 body[data-sector="dark"] #identity,
 body[data-sector="dark"] #avatar {
-  background-color: #0F172A !important;
-  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  background-color: #151B54 !important;
+  border: 1px solid rgba(255, 255, 255, 0.11) !important;
   border-radius: 1rem !important;
   box-shadow: 
-    0 20px 25px -5px rgba(15, 23, 42, 0.28),
-    0 8px 10px -6px rgba(15, 23, 42, 0.20),
-    0 0 0 1px rgba(15, 23, 42, 0.05) !important;
-  color: #F8FAFC !important;
+    0 20px 25px -5px rgba(21, 27, 84, 0.35),
+    0 8px 10px -6px rgba(21, 27, 84, 0.25),
+    0 0 0 1px rgba(21, 27, 84, 0.06) !important;
+  color: #FFFFFF !important;
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
-/* Monolith Card Sub-Headers / Dividers */
+/* Monolith Card Sub-Headers / Dividers — Night Blue depth tier */
 body[data-sector="monolith"] .bg-white .bg-slate-50,
 body[data-sector="monolith"] .bg-white .bg-slate-50\/50,
 body[data-sector="monolith"] .rounded-2xl.border .bg-slate-50,
@@ -85,8 +82,8 @@ body[data-sector="dark"] .bg-white .bg-slate-50\/50,
 body[data-sector="dark"] .rounded-2xl.border .bg-slate-50,
 body[data-sector="dark"] .rounded-2xl.border .bg-slate-50\/50,
 body[data-sector="dark"] section .border-b.border-slate-100 {
-  background-color: rgba(2, 6, 23, 0.55) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: rgba(10, 14, 46, 0.60) !important;
+  border-color: rgba(255, 255, 255, 0.09) !important;
 }
 
 /* ─── 4. HIGH-CONTRAST TYPOGRAPHY INSIDE DARK MONOLITHS ─── */
@@ -181,10 +178,10 @@ body[data-sector="dark"] .bg-white textarea,
 body[data-sector="dark"] .rounded-2xl.border input,
 body[data-sector="dark"] .rounded-2xl.border select,
 body[data-sector="dark"] .rounded-2xl.border textarea {
-  background-color: rgba(2, 6, 23, 0.75) !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  background-color: rgba(10, 14, 46, 0.80) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
   color: #FFFFFF !important;
-  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.3) !important;
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.35) !important;
 }
 
 body[data-sector="monolith"] .bg-white input::placeholder,
@@ -195,7 +192,7 @@ body[data-sector="dark"] .bg-white input::placeholder,
 body[data-sector="dark"] .bg-white textarea::placeholder,
 body[data-sector="dark"] .rounded-2xl.border input::placeholder,
 body[data-sector="dark"] .rounded-2xl.border textarea::placeholder {
-  color: #64748B !important;
+  color: #7B82C4 !important;
 }
 
 body[data-sector="monolith"] .bg-white input:focus,
@@ -210,38 +207,38 @@ body[data-sector="dark"] .bg-white textarea:focus,
 body[data-sector="dark"] .rounded-2xl.border input:focus,
 body[data-sector="dark"] .rounded-2xl.border select:focus,
 body[data-sector="dark"] .rounded-2xl.border textarea:focus {
-  border-color: #3B82F6 !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.30) !important;
+  border-color: #6C75D4 !important;
+  box-shadow: 0 0 0 3px rgba(108, 117, 212, 0.35) !important;
   outline: none !important;
 }
 
 body[data-sector="monolith"] select option,
 body[data-sector="dark"] select option {
-  background-color: #0F172A !important;
+  background-color: #151B54 !important;
   color: #FFFFFF !important;
 }
 
-/* ─── 6. MONOLITH TABLES ─── */
+/* ─── 6. MONOLITH TABLES — Night Blue (#151B54) ─── */
 body[data-sector="monolith"] .bg-white table,
 body[data-sector="monolith"] .rounded-2xl.border table,
 body[data-sector="dark"] .bg-white table,
 body[data-sector="dark"] .rounded-2xl.border table {
-  background-color: #0F172A !important;
+  background-color: #151B54 !important;
 }
 
 body[data-sector="monolith"] thead,
 body[data-sector="monolith"] thead.bg-slate-50,
 body[data-sector="dark"] thead,
 body[data-sector="dark"] thead.bg-slate-50 {
-  background-color: rgba(2, 6, 23, 0.85) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(10, 14, 46, 0.90) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
 }
 
 body[data-sector="monolith"] thead th,
 body[data-sector="monolith"] th,
 body[data-sector="dark"] thead th,
 body[data-sector="dark"] th {
-  color: #60A5FA !important;
+  color: #A5B4FC !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
   font-size: 0.70rem !important;
@@ -250,18 +247,18 @@ body[data-sector="dark"] th {
 
 body[data-sector="monolith"] tbody tr,
 body[data-sector="dark"] tbody tr {
-  background-color: #0F172A !important;
-  border-color: rgba(255, 255, 255, 0.06) !important;
+  background-color: #151B54 !important;
+  border-color: rgba(255, 255, 255, 0.07) !important;
 }
 
 body[data-sector="monolith"] tbody tr:hover,
 body[data-sector="dark"] tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.04) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
 }
 
 body[data-sector="monolith"] td,
 body[data-sector="dark"] td {
-  color: #E2E8F0 !important;
+  color: #E0E7FF !important;
 }
 
 /* ─── 7. HIGH-VISIBILITY STATUS BADGES IN DARK MONOLITHS ─── */
@@ -327,53 +324,90 @@ body[data-sector="dark"] .text-red-700 {
   color: #F87171 !important;
 }
 
-/* ─── 8. DROPZONES & INTERACTIVE PANELS ─── */
+/* ─── 8. DROPZONES & INTERACTIVE PANELS (Pure Binary Contrast, Zero Drag) ─── */
 body[data-sector="monolith"] #upload-dropzone,
-body[data-sector="monolith"] #avatar-dropzone,
-body[data-sector="dark"] #upload-dropzone,
-body[data-sector="dark"] #avatar-dropzone {
-  background-color: rgba(2, 6, 23, 0.45) !important;
-  border: 2px dashed rgba(255, 255, 255, 0.20) !important;
+body[data-sector="dark"] #upload-dropzone {
+  background-color: #0A0E2E !important;
+  border: 2px dashed rgba(255, 255, 255, 0.25) !important;
 }
 
 body[data-sector="monolith"] #upload-dropzone:hover,
+body[data-sector="dark"] #upload-dropzone:hover {
+  background-color: #12184A !important;
+  border-color: #FFFFFF !important;
+}
+
+/* Hologram Studio Dedicated Trinary Lock */
+body[data-sector="monolith"] #avatar,
+body[data-sector="dark"] #avatar {
+  background-color: #151B54 !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: #FFFFFF !important;
+}
+
+body[data-sector="monolith"] #avatar-dropzone,
+body[data-sector="dark"] #avatar-dropzone {
+  background-color: #0A0E2E !important;
+  border: 2px dashed rgba(255, 255, 255, 0.30) !important;
+  color: #FFFFFF !important;
+}
+
 body[data-sector="monolith"] #avatar-dropzone:hover,
-body[data-sector="dark"] #upload-dropzone:hover,
 body[data-sector="dark"] #avatar-dropzone:hover {
-  background-color: rgba(37, 99, 235, 0.15) !important;
-  border-color: #60A5FA !important;
+  background-color: #12184A !important;
+  border-color: #FFFFFF !important;
+}
+
+body[data-sector="monolith"] #stream-status-bar,
+body[data-sector="dark"] #stream-status-bar {
+  background-color: #0A0E2E !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #FFFFFF !important;
+}
+
+body[data-sector="monolith"] #save-avatar-btn,
+body[data-sector="dark"] #save-avatar-btn {
+  background-color: #151B54 !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.30) !important;
+}
+
+body[data-sector="monolith"] #save-avatar-btn:hover,
+body[data-sector="dark"] #save-avatar-btn:hover {
+  background-color: #1E2570 !important;
+  border-color: #FFFFFF !important;
 }
 
 body[data-sector="monolith"] .h-44.bg-slate-100,
 body[data-sector="dark"] .h-44.bg-slate-100 {
-  background-color: rgba(2, 6, 23, 0.65) !important;
+  background-color: #0A0E2E !important;
 }
 
-/* ─── 9. MODALS ─── */
+/* ─── 9. MODALS — Night Blue shell ─── */
 body[data-sector="monolith"] .fixed.inset-0,
 body[data-sector="dark"] .fixed.inset-0 {
-  background-color: rgba(2, 6, 23, 0.80) !important;
+  background-color: rgba(10, 14, 46, 0.85) !important;
   backdrop-filter: blur(8px) !important;
 }
 
 body[data-sector="monolith"] .fixed.inset-0 .bg-white,
 body[data-sector="dark"] .fixed.inset-0 .bg-white {
-  background-color: #0F172A !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8) !important;
+  background-color: #151B54 !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 25px 50px -12px rgba(21, 27, 84, 0.85) !important;
 }
 
-/* ─── 10. PRESERVED DARK-ACCENT PANELS ─── */
+/* ─── 10. PRESERVED NIGHT-BLUE ACCENT PANELS (Zero Gradients — Pure Monolithic Mass) ─── */
 body[data-sector="monolith"] #security,
 body[data-sector="dark"] #security {
-  background: linear-gradient(135deg, #020617 0%, #0F172A 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: #151B54 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
 
 body[data-sector="monolith"] .bg-navy-900.rounded-2xl,
 body[data-sector="dark"] .bg-navy-900.rounded-2xl {
-  background: linear-gradient(135deg, #020617 0%, #0F172A 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: #151B54 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
 
 /* ─── 11. SCROLLBAR ─── */

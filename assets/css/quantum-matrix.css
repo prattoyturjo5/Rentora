@@ -6,17 +6,22 @@
    ========================================================================== */
 
 :root {
+  /* Strict 3-Tier Dimensional Spectrum */
+  --photonic-ice: #EFF3FF;
+  --night-blue: #151B54;
+  --absolute-white: #FFFFFF;
+
   /* Crystalline Optical White Palette */
   --optical-white: #ffffff;
-  --optical-snow: #f8fafc;
+  --optical-snow: #EFF3FF;
   --optical-slate-50: #f1f5f9;
   --optical-slate-100: #e2e8f0;
   --optical-slate-200: #cbd5e1;
   --optical-slate-300: #94a3b8;
   --optical-slate-500: #64748b;
   --optical-slate-700: #334155;
-  --optical-slate-900: #0f172a;
-  --optical-navy-950: #020617;
+  --optical-slate-900: #151B54;
+  --optical-navy-950: #0c1033;
 
   /* Sharp Refractive Blue Vectors */
   --vector-blue-50: #eff6ff;

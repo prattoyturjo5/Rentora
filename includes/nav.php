@@ -195,15 +195,23 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-400 h
         </div>
 
         <?php if ($current_role === 'member'): ?>
+          <?php
+            $nav_user_has_avatar = !empty($_SESSION['avatar']) && file_exists(__DIR__ . '/../' . $_SESSION['avatar']);
+            $nav_user_avatar_url = $nav_user_has_avatar ? ($base_path . '/' . $_SESSION['avatar'] . '?v=' . ($_SESSION['avatar_v'] ?? '1')) : null;
+          ?>
           <!-- Phase 3: The Profile Singularity (Interactive Dilating Pocket) -->
           <div id="profile-singularity" class="profile-singularity group/singularity relative" tabindex="0">
             <!-- Singularity Interactive Trigger -->
             <button type="button" class="profile-singularity-trigger flex items-center gap-2.5 px-3 py-1.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-150 text-left focus:outline-none focus:ring-2 focus:ring-blue-400/40" id="singularity-trigger" aria-haspopup="true" aria-expanded="false">
               <!-- Dynamic Gravitational Avatar Orb -->
               <div class="relative">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center font-bold text-xs shadow-md shadow-blue-500/30 ring-1 ring-white/30">
-                  <?php echo strtoupper(substr($current_name, 0, 1)); ?>
-                </div>
+                <?php if ($nav_user_has_avatar): ?>
+                  <img src="<?php echo htmlspecialchars($nav_user_avatar_url); ?>" alt="Avatar" class="w-8 h-8 rounded-full object-cover shadow-md ring-1 ring-white/30">
+                <?php else: ?>
+                  <div class="w-8 h-8 rounded-full bg-[#151B54] text-white flex items-center justify-center font-bold text-xs shadow-md border border-white/20 ring-1 ring-white/30">
+                    <?php echo strtoupper(substr($current_name, 0, 1)); ?>
+                  </div>
+                <?php endif; ?>
                 <!-- Status Beacon -->
                 <?php if ($current_member_status === 'Verified'): ?>
                   <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#0A0F1D] animate-pulse" title="Verified Member"></span>
@@ -240,11 +248,16 @@ $nav_inactive_class = 'nav-link px-3.5 py-2 text-sm font-medium text-slate-400 h
             <div class="profile-singularity-menu absolute right-0 top-full mt-2 w-80 rounded-2xl bg-[#0A0F1D]/95 backdrop-blur-2xl border border-white/15 shadow-[0_25px_60px_rgba(0,0,0,0.85)] p-3.5 z-50 pointer-events-none opacity-0 -translate-y-2 scale-95 transition-all duration-200" id="singularity-menu">
               <!-- Singularity Core User Identity Header -->
               <div class="flex items-center gap-3 pb-3 border-b border-white/10 mb-2.5 px-1">
-                <div class="w-11 h-11 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center font-extrabold text-sm shadow-md ring-2 ring-white/20">
-                  <?php echo strtoupper(substr($current_name, 0, 1)); ?>
-                </div>
+                <?php if ($nav_user_has_avatar): ?>
+                  <img src="<?php echo htmlspecialchars($nav_user_avatar_url); ?>" alt="Avatar" class="w-11 h-11 rounded-full object-cover shadow-md ring-2 ring-white/20">
+                <?php else: ?>
+                  <div class="w-11 h-11 rounded-full bg-[#151B54] text-white flex items-center justify-center font-extrabold text-sm shadow-md border border-white/20 ring-2 ring-white/20">
+                    <?php echo strtoupper(substr($current_name, 0, 1)); ?>
+                  </div>
+                <?php endif; ?>
                 <div class="flex-1 min-w-0">
                   <p class="text-sm font-bold text-white truncate"><?php echo htmlspecialchars($current_name); ?></p>
+                  <p class="text-[11px] text-slate-400 font-mono truncate">@<?php echo htmlspecialchars($_SESSION['username'] ?? 'member'); ?></p>
                   <p class="text-[11px] text-slate-400 font-mono truncate">@<?php echo htmlspecialchars($_SESSION['username'] ?? 'member'); ?></p>
                   <div class="mt-1 flex items-center gap-2">
                     <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold <?php echo $current_member_status === 'Verified' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : ($current_member_status === 'Rejected' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'); ?>">

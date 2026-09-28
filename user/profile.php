@@ -13,14 +13,14 @@ $user_id = (int)($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
 $success_msg = "";
 $error_msg = "";
 
-// Hardwire data pipeline directly to server's absolute root directory
-$avatar_dir = 'C:/xampp/htdocs/Rentora/uploads/avatars';
+// Hardwire data pipeline directly to server's root uploads/avatars sector using dynamic __DIR__ matrix
+$avatar_dir = dirname(__DIR__) . '/uploads/avatars';
 if (!is_dir($avatar_dir)) {
     @mkdir($avatar_dir, 0777, true);
 }
 @chmod($avatar_dir, 0777);
 
-// Auto-discover avatar from local file system absolute root directory
+// Auto-discover avatar from local file system root sector (zero SQL mutations)
 if ($user_id > 0) {
     $avatar_matches = glob($avatar_dir . '/avatar_' . $user_id . '.*');
     if (!empty($avatar_matches)) {
@@ -31,13 +31,12 @@ if ($user_id > 0) {
     }
 }
 
-// Handle Form & Strict Multipart/Form-Data Submissions
+// Handle Form Submissions via Native PHP Core Architecture (Zero AJAX / Zero Virtual Memory Buffers)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
-    $is_ajax = !empty($_POST['is_ajax']) || (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') || $action === 'stream_avatar_binary';
 
-    // Strict Multipart/Form-Data Binary Stream Ingestion
-    if ($action === 'update_avatar' || $action === 'stream_avatar_binary') {
+    // Direct Native Multipart Binary Ingestion
+    if ($action === 'update_avatar') {
         if (isset($_FILES['avatar_file']) && $_FILES['avatar_file']['error'] === UPLOAD_ERR_OK) {
             $file_tmp   = $_FILES['avatar_file']['tmp_name'];
             $file_name  = $_FILES['avatar_file']['name'];
@@ -49,18 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (!in_array($file_ext, $allowed_exts)) {
                 $error_msg = "Invalid image format. Allowed: PNG, JPG, WEBP, GIF.";
-                if ($is_ajax) {
-                    header('Content-Type: application/json; charset=utf-8');
-                    echo json_encode(['status' => 'error', 'message' => $error_msg]);
-                    exit();
-                }
             } elseif ($file_size > 5 * 1024 * 1024) {
                 $error_msg = "Image exceeds 5MB limit.";
-                if ($is_ajax) {
-                    header('Content-Type: application/json; charset=utf-8');
-                    echo json_encode(['status' => 'error', 'message' => $error_msg]);
-                    exit();
-                }
             } else {
                 // Purge older avatar files for this user
                 foreach (glob($avatar_dir . '/avatar_' . $user_id . '.*') as $old_file) {
@@ -70,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $target_filename = 'avatar_' . $user_id . '.' . $file_ext;
                 $target_path     = $avatar_dir . '/' . $target_filename;
 
-                // Hard-route binary stream using absolute PHP directory path
+                // Native hardwire binary write directly to uploads/avatars/ root sector
                 $written = @move_uploaded_file($file_tmp, $target_path);
                 if (!$written) {
                     $binary = @file_get_contents($file_tmp);
@@ -87,26 +76,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $cache_token = time();
                     $_SESSION['avatar']   = 'uploads/avatars/' . $target_filename;
                     $_SESSION['avatar_v'] = $cache_token;
-                    $success_msg = "Avatar hard-routed to absolute PHP directory (" . $target_filename . ") with strict multipart/form-data packet.";
-
-                    if ($is_ajax) {
-                        header('Content-Type: application/json; charset=utf-8');
-                        echo json_encode([
-                            'status'     => 'success',
-                            'message'    => 'Avatar hard-routed via strict multipart/form-data packet.',
-                            'avatar_url' => '../uploads/avatars/' . $target_filename . '?v=' . $cache_token,
-                            'filename'   => $target_filename,
-                            'size'       => filesize($target_path)
-                        ]);
-                        exit();
-                    }
+                    $success_msg = "Avatar binary hardwired directly to uploads/avatars/" . $target_filename . " with zero SQL mutations.";
                 } else {
-                    $error_msg = "Filesystem write failed on absolute path: " . $target_path;
-                    if ($is_ajax) {
-                        header('Content-Type: application/json; charset=utf-8');
-                        echo json_encode(['status' => 'error', 'message' => $error_msg]);
-                        exit();
-                    }
+                    $error_msg = "Filesystem write failed on path: " . $target_path;
                 }
             }
         } elseif (isset($_FILES['avatar_file']) && $_FILES['avatar_file']['error'] !== UPLOAD_ERR_NO_FILE) {
@@ -120,53 +92,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 UPLOAD_ERR_EXTENSION  => 'File upload stopped by PHP extension.'
             ];
             $error_msg = $upload_errors[$err_code] ?? ('Upload failed with error code ' . $err_code);
-            if ($is_ajax) {
-                header('Content-Type: application/json; charset=utf-8');
-                echo json_encode(['status' => 'error', 'message' => $error_msg]);
-                exit();
-            }
-        } elseif (!empty($_POST['avatar_base64']) && $is_ajax) {
-            // Direct Base64 stream fallback
-            $raw_data = $_POST['avatar_base64'];
-            $file_ext = 'png';
-            if (preg_match('/^data:image\/(\w+);base64,/', $raw_data, $type)) {
-                $raw_data = substr($raw_data, strpos($raw_data, ',') + 1);
-                $file_ext = strtolower($type[1]);
-                if ($file_ext === 'jpeg') $file_ext = 'jpg';
-            }
-            $bin = base64_decode($raw_data);
-            if (!empty($bin)) {
-                foreach (glob($avatar_dir . '/avatar_' . $user_id . '.*') as $old_file) {
-                    @unlink($old_file);
-                }
-                $target_filename = 'avatar_' . $user_id . '.' . $file_ext;
-                $target_path     = $avatar_dir . '/' . $target_filename;
-                $written = @file_put_contents($target_path, $bin, LOCK_EX);
-                if ($written !== false) {
-                    @chmod($target_path, 0666);
-                    $cache_token = time();
-                    $_SESSION['avatar']   = 'uploads/avatars/' . $target_filename;
-                    $_SESSION['avatar_v'] = $cache_token;
-                    header('Content-Type: application/json; charset=utf-8');
-                    echo json_encode([
-                        'status'     => 'success',
-                        'message'    => 'Avatar binary stream accepted and written to absolute path.',
-                        'avatar_url' => '../uploads/avatars/' . $target_filename . '?v=' . $cache_token,
-                        'filename'   => $target_filename,
-                        'bytes'      => strlen($bin)
-                    ]);
-                    exit();
-                }
-            }
         } elseif (isset($_POST['avatar_preset'])) {
             $preset = trim($_POST['avatar_preset']);
             $_SESSION['avatar_preset'] = $preset;
             $success_msg = "Quantum avatar persona updated to " . htmlspecialchars($preset) . ".";
-            if ($is_ajax) {
-                header('Content-Type: application/json; charset=utf-8');
-                echo json_encode(['status' => 'success', 'message' => $success_msg]);
-                exit();
-            }
         }
     }
 
@@ -246,10 +175,8 @@ require_once(__DIR__ . '/../includes/nav.php');
 ?>
 
 <main class="flex-1 relative pb-16">
-  <!-- Quantum Dark-Matter Banner -->
-  <div class="relative bg-gradient-to-r from-[#0A0F1D] via-navy-950 to-[#0A0F1D] text-white py-10 px-4 sm:px-6 lg:px-8 border-b border-white/10 overflow-hidden">
-    <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image:radial-gradient(rgba(255,255,255,0.15) 1px, transparent 1px);background-size:20px 20px;"></div>
-    
+  <!-- Quantum Dark-Matter Banner (Locked to Night Blue #151B54 — Zero Gradient Drag) -->
+  <div class="relative bg-[#151B54] text-white py-10 px-4 sm:px-6 lg:px-8 border-b border-white/10 overflow-hidden">
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
       <div class="flex items-center gap-4">
         <!-- Interactive Singularity Avatar -->
@@ -260,20 +187,20 @@ require_once(__DIR__ . '/../includes/nav.php');
           ?>
           <img id="banner-avatar-img" src="<?php echo htmlspecialchars($av_src ?? ''); ?>" alt="Avatar"
                class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover shadow-xl ring-2 ring-white/20 <?php echo $has_av ? '' : 'hidden'; ?>">
-          <div id="banner-avatar-fallback" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center font-black text-2xl shadow-xl shadow-blue-500/30 ring-2 ring-white/20 <?php echo $has_av ? 'hidden' : ''; ?>">
+          <div id="banner-avatar-fallback" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#151B54] text-white flex items-center justify-center font-black text-2xl shadow-xl ring-2 ring-white/30 border border-white/20 <?php echo $has_av ? 'hidden' : ''; ?>">
             <?php echo strtoupper(substr($full_name, 0, 1)); ?>
           </div>
           <?php if ($status === 'Verified'): ?>
-            <span class="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full bg-emerald-500 text-white font-bold text-[10px] ring-2 ring-[#0A0F1D] shadow-sm flex items-center gap-1">
+            <span class="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full bg-emerald-500 text-white font-bold text-[10px] ring-2 ring-[#151B54] shadow-sm flex items-center gap-1">
               <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
               Verified
             </span>
           <?php elseif ($status === 'Rejected'): ?>
-            <span class="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full bg-rose-500 text-white font-bold text-[10px] ring-2 ring-[#0A0F1D] shadow-sm">
+            <span class="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full bg-rose-500 text-white font-bold text-[10px] ring-2 ring-[#151B54] shadow-sm">
               Rejected
             </span>
           <?php else: ?>
-            <span class="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full bg-amber-500 text-white font-bold text-[10px] ring-2 ring-[#0A0F1D] shadow-sm">
+            <span class="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full bg-amber-500 text-white font-bold text-[10px] ring-2 ring-[#151B54] shadow-sm">
               Pending
             </span>
           <?php endif; ?>
@@ -285,11 +212,11 @@ require_once(__DIR__ . '/../includes/nav.php');
           </div>
           <p class="text-xs sm:text-sm text-slate-300 font-mono mt-0.5">@<?php echo htmlspecialchars($username); ?> &bull; ID: <?php echo htmlspecialchars($student_id ?: 'Not linked'); ?></p>
           <div class="mt-2 flex flex-wrap items-center gap-2">
-            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-white/10 text-slate-200 border border-white/10">
-              <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-white/10 text-white border border-white/10">
+              <svg class="w-3.5 h-3.5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
               <?php echo htmlspecialchars($email); ?>
             </span>
-            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-white/10 text-slate-200 border border-white/10">
+            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-white/10 text-white border border-white/10">
               <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
               <?php echo htmlspecialchars($address ?: 'Hazari Lane, PUC'); ?>
             </span>
@@ -299,10 +226,10 @@ require_once(__DIR__ . '/../includes/nav.php');
 
       <!-- Quick Balance & Nav Singularity Shortcuts -->
       <div class="flex items-center gap-3">
-        <a href="<?php echo $base_path; ?>/user/dashboard.php" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-semibold border border-white/15 transition-all">
+        <a href="<?php echo $base_path; ?>/user/dashboard.php" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/15 transition-all">
           &larr; Return to Dashboard
         </a>
-        <a href="<?php echo $base_path; ?>/auth/change_password.php" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-lg shadow-blue-600/30 transition-all">
+        <a href="<?php echo $base_path; ?>/auth/change_password.php" class="px-4 py-2 rounded-xl bg-[#151B54] hover:bg-[#1E2570] text-white text-xs font-semibold border border-white/30 shadow-lg shadow-[#151B54]/40 transition-all">
           Security Settings &rarr;
         </a>
       </div>
@@ -312,20 +239,20 @@ require_once(__DIR__ . '/../includes/nav.php');
   <!-- Messages Alert -->
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
     <?php if (!empty($success_msg)): ?>
-      <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium flex items-center gap-3 shadow-sm mb-6">
-        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+      <div class="p-4 rounded-xl bg-[#151B54] border border-emerald-400/40 text-emerald-300 text-sm font-medium flex items-center gap-3 shadow-lg mb-6">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
         <span><?php echo $success_msg; ?></span>
       </div>
     <?php endif; ?>
 
     <?php if (!empty($error_msg)): ?>
-      <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm font-medium flex items-center gap-3 shadow-sm mb-6">
-        <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <div class="p-4 rounded-xl bg-[#151B54] border border-rose-400/40 text-rose-300 text-sm font-medium flex items-center gap-3 shadow-lg mb-6">
+        <svg class="w-5 h-5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         <span><?php echo htmlspecialchars($error_msg); ?></span>
       </div>
     <?php endif; ?>
 
-    <!-- Main Grid Content -->
+    <!-- Main Grid Content: Responsive 3-Tier Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       
       <!-- Left 2 Cols: Form Sections -->
@@ -392,20 +319,20 @@ require_once(__DIR__ . '/../includes/nav.php');
           </form>
         </section>
 
-        <!-- Section 2: Avatar Uploads & Persona Hologram -->
+        <!-- Section 2: Avatar Uploads & Hologram Studio (Strict Photonic Chromatic Lock) -->
         <section id="avatar" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden scroll-mt-24">
           <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
             <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-lg bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+              <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center text-white">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
               </div>
               <div>
-                <h2 class="text-base font-bold text-slate-900">Avatar Uploads &amp; Hologram Studio</h2>
-                <p class="text-xs text-slate-500">Zero-latency binary pipeline hardwired to server root (<code class="font-mono text-purple-600">uploads/avatars/</code>)</p>
+                <h2 class="text-base font-bold text-white">Avatar Uploads &amp; Hologram Studio</h2>
+                <p class="text-xs text-slate-300">Zero-latency binary pipeline hardwired to server root (<code class="font-mono text-white bg-white/10 px-1 py-0.5 rounded">uploads/avatars/</code>)</p>
               </div>
             </div>
-            <span class="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span>
+            <span class="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-white/10 text-white border border-white/20 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
               Hardwired Pipeline
             </span>
           </div>
@@ -415,74 +342,74 @@ require_once(__DIR__ . '/../includes/nav.php');
 
             <!-- Studio Interface: Preview + Direct Stream Dropzone -->
             <div class="space-y-4">
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Holographic Projection &amp; Binary Stream Portal</label>
+              <label class="block text-xs font-bold text-white uppercase tracking-wider">Holographic Projection &amp; Binary Stream Portal</label>
               
               <div class="flex flex-col sm:flex-row items-center gap-5">
                 <!-- Studio Hologram Frame -->
                 <div class="relative group shrink-0">
-                  <div class="w-24 h-24 rounded-2xl bg-slate-900 border-2 border-purple-400/40 p-1 shadow-lg shadow-purple-500/10 flex items-center justify-center overflow-hidden">
+                  <div class="w-24 h-24 rounded-2xl bg-[#0A0E2E] border-2 border-white/30 p-1 shadow-xl flex items-center justify-center overflow-hidden">
                     <img id="studio-avatar-img" src="<?php echo htmlspecialchars($av_src ?? ''); ?>" alt="Avatar Preview"
                          class="w-full h-full rounded-xl object-cover <?php echo $has_av ? '' : 'hidden'; ?>">
-                    <div id="studio-avatar-fallback" class="w-full h-full rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center font-black text-2xl shadow-inner <?php echo $has_av ? 'hidden' : ''; ?>">
+                    <div id="studio-avatar-fallback" class="w-full h-full rounded-xl bg-[#151B54] text-white flex items-center justify-center font-black text-2xl border border-white/20 <?php echo $has_av ? 'hidden' : ''; ?>">
                       <?php echo strtoupper(substr($full_name, 0, 1)); ?>
                     </div>
                   </div>
-                  <span class="absolute -bottom-1.5 -right-1.5 px-1.5 py-0.5 rounded-full bg-purple-600 text-white font-mono text-[9px] font-bold tracking-tight shadow">
+                  <span class="absolute -bottom-1.5 -right-1.5 px-1.5 py-0.5 rounded-full bg-[#151B54] text-white font-mono text-[9px] font-bold tracking-tight border border-white/30 shadow">
                     STREAM
                   </span>
                 </div>
 
                 <!-- Hardwired Dropzone Pipeline -->
-                <div id="avatar-dropzone" class="flex-1 w-full border-2 border-dashed border-purple-200 hover:border-purple-400 bg-purple-50/20 hover:bg-purple-50/50 rounded-2xl p-5 text-center transition-all cursor-pointer group">
+                <div id="avatar-dropzone" class="flex-1 w-full border-2 border-dashed border-white/30 hover:border-white/80 bg-[#0A0E2E]/60 hover:bg-[#0A0E2E]/90 rounded-2xl p-5 text-center transition-all cursor-pointer group">
                   <input type="file" id="avatar-file-input" name="avatar_file" accept="image/png,image/jpeg,image/webp,image/gif" class="sr-only">
                   
                   <div class="flex flex-col items-center justify-center space-y-1.5 pointer-events-none">
-                    <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                    <div class="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                     </div>
-                    <p class="text-xs font-bold text-slate-800">
-                      <span class="text-purple-600 underline">Click to transmit binary</span> or drag &amp; drop image stream
+                    <p class="text-xs font-bold text-white">
+                      <span class="text-[#EFF3FF] underline underline-offset-2">Click to transmit binary</span> or drag &amp; drop image stream
                     </p>
-                    <p class="text-[11px] text-slate-400 font-mono">Accepts PNG, JPG, WEBP &bull; Max 3MB &bull; Latency: 0ms</p>
+                    <p class="text-[11px] text-slate-300 font-mono">Accepts PNG, JPG, WEBP &bull; Max 5MB &bull; Latency: 0ms</p>
                   </div>
                 </div>
               </div>
 
               <!-- Stream Live Feedback Bar -->
-              <div id="stream-status-bar" class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono flex items-center justify-between">
+              <div id="stream-status-bar" class="p-3 rounded-xl bg-[#0A0E2E]/80 border border-white/15 text-xs font-mono flex items-center justify-between text-white">
                 <div class="flex items-center gap-2">
-                  <span id="stream-pulse" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  <span id="stream-status-text" class="text-slate-600">Hardwired pipeline ready: /Rentora/uploads/avatars/</span>
+                  <span id="stream-pulse" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span id="stream-status-text" class="text-slate-200">Hardwired pipeline ready: /Rentora/uploads/avatars/</span>
                 </div>
-                <span id="stream-meta" class="text-[11px] text-purple-600 font-bold">Direct I/O Mode</span>
+                <span id="stream-meta" class="text-[11px] text-[#EFF3FF] font-bold">Direct I/O Mode</span>
               </div>
             </div>
 
             <!-- Quantum Persona Presets -->
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">Or Select a Quantum Academic Persona</label>
+              <label class="block text-xs font-bold text-white uppercase tracking-wider mb-3">Or Select a Quantum Academic Persona</label>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <?php
                 $personas = [
-                    ['name' => 'Quantum Engineer', 'icon' => '⚛️', 'color' => 'border-blue-400 bg-blue-50/50 hover:bg-blue-50'],
-                    ['name' => 'Bio-Tech Scholar', 'icon' => '🧬', 'color' => 'border-emerald-400 bg-emerald-50/50 hover:bg-emerald-50'],
-                    ['name' => 'Cyber Architect', 'icon' => '🛰️', 'color' => 'border-purple-400 bg-purple-50/50 hover:bg-purple-50'],
-                    ['name' => 'Campus Pioneer', 'icon' => '🎓', 'color' => 'border-amber-400 bg-amber-50/50 hover:bg-amber-50']
+                    ['name' => 'Quantum Engineer', 'icon' => '⚛️'],
+                    ['name' => 'Bio-Tech Scholar', 'icon' => '🧬'],
+                    ['name' => 'Cyber Architect', 'icon' => '🛰️'],
+                    ['name' => 'Campus Pioneer', 'icon' => '🎓']
                 ];
                 foreach ($personas as $p):
                 ?>
-                  <label class="flex flex-col items-center p-3 rounded-xl border <?php echo $p['color']; ?> cursor-pointer hover:scale-105 transition-all text-center group">
+                  <label class="flex flex-col items-center p-3 rounded-xl border border-white/15 bg-[#0A0E2E]/70 hover:bg-[#0A0E2E] hover:border-white/40 cursor-pointer hover:scale-105 transition-all text-center group">
                     <input type="radio" name="avatar_preset" value="<?php echo $p['name']; ?>" class="sr-only">
                     <span class="text-2xl mb-1 group-hover:scale-110 transition-transform"><?php echo $p['icon']; ?></span>
-                    <span class="text-xs font-bold text-slate-800"><?php echo $p['name']; ?></span>
+                    <span class="text-xs font-bold text-white"><?php echo $p['name']; ?></span>
                   </label>
                 <?php endforeach; ?>
               </div>
             </div>
 
             <div class="pt-2 flex items-center justify-between">
-              <span class="text-xs text-slate-400 italic">Bypasses sluggish file-streams via raw binary hardwire.</span>
-              <button type="submit" id="save-avatar-btn" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md shadow-purple-600/20 transition-all hover:scale-[1.02] flex items-center gap-1.5">
+              <span class="text-xs text-slate-300 italic">Bypasses virtual memory buffers via direct binary hardwire.</span>
+              <button type="submit" id="save-avatar-btn" class="px-5 py-2.5 rounded-xl bg-[#151B54] hover:bg-[#1E2570] text-white font-bold text-xs border border-white/30 shadow-lg shadow-[#151B54]/40 transition-all hover:scale-[1.02] flex items-center gap-1.5">
                 <span>Commit Hologram Stream</span>
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
               </button>
@@ -536,21 +463,21 @@ require_once(__DIR__ . '/../includes/nav.php');
           </div>
         </div>
 
-        <!-- Security Gateway Card -->
-        <div id="security" class="bg-gradient-to-br from-slate-900 to-navy-950 rounded-2xl p-6 text-white shadow-xl scroll-mt-24">
+        <!-- Security Gateway Card (Solid Night Blue #151B54 — No Gradients) -->
+        <div id="security" class="bg-[#151B54] rounded-2xl p-6 text-white border border-white/15 shadow-xl scroll-mt-24">
           <div class="flex items-center gap-3 mb-3">
-            <div class="w-9 h-9 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-400">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            <div class="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
             </div>
             <div>
               <h3 class="text-sm font-bold text-white">Encryption &amp; Security</h3>
-              <p class="text-[11px] text-slate-400 font-mono">Quantum hash password protocol</p>
+              <p class="text-[11px] text-slate-300 font-mono">Quantum hash password protocol</p>
             </div>
           </div>
-          <p class="text-xs text-slate-300 leading-relaxed mb-4">
+          <p class="text-xs text-slate-200 leading-relaxed mb-4">
             Protect your equipment listings and campus exchange agreements by maintaining a high-entropy password.
           </p>
-          <a href="<?php echo $base_path; ?>/auth/change_password.php" class="block w-full text-center py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/15 transition-all">
+          <a href="<?php echo $base_path; ?>/auth/change_password.php" class="block w-full text-center py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition-all">
             Update Security Credentials &rarr;
           </a>
         </div>
@@ -565,6 +492,7 @@ require_once(__DIR__ . '/../includes/nav.php');
 document.addEventListener('DOMContentLoaded', function() {
   const fileInput      = document.getElementById('avatar-file-input');
   const dropzone       = document.getElementById('avatar-dropzone');
+  const avatarForm     = document.getElementById('avatar-form');
   const studioImg      = document.getElementById('studio-avatar-img');
   const studioFallback = document.getElementById('studio-avatar-fallback');
   const bannerImg      = document.getElementById('banner-avatar-img');
@@ -572,9 +500,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const statusText     = document.getElementById('stream-status-text');
   const statusPulse    = document.getElementById('stream-pulse');
   const metaText       = document.getElementById('stream-meta');
-  const saveBtn        = document.getElementById('save-avatar-btn');
 
-  if (!fileInput || !dropzone) return;
+  if (!fileInput || !dropzone || !avatarForm) return;
 
   dropzone.addEventListener('click', function(e) {
     if (e.target !== fileInput) {
@@ -586,7 +513,7 @@ document.addEventListener('DOMContentLoaded', function() {
     dropzone.addEventListener(name, function(e) {
       e.preventDefault();
       e.stopPropagation();
-      dropzone.classList.add('border-purple-600', 'bg-purple-100/40');
+      dropzone.classList.add('border-white', 'bg-[#12184A]');
     });
   });
 
@@ -594,30 +521,36 @@ document.addEventListener('DOMContentLoaded', function() {
     dropzone.addEventListener(name, function(e) {
       e.preventDefault();
       e.stopPropagation();
-      dropzone.classList.remove('border-purple-600', 'bg-purple-100/40');
+      dropzone.classList.remove('border-white', 'bg-[#12184A]');
     });
   });
 
   dropzone.addEventListener('drop', function(e) {
     const files = e.dataTransfer.files;
     if (files.length > 0) {
-      injectBinaryStream(files[0]);
+      tunnelBinary(files[0]);
     }
   });
 
   fileInput.addEventListener('change', function(e) {
     if (e.target.files && e.target.files[0]) {
-      injectBinaryStream(e.target.files[0]);
+      tunnelBinary(e.target.files[0]);
     }
   });
 
-  function injectBinaryStream(file) {
+  /**
+   * Directive 2: Zero-Gravity Binary Injection Pipeline
+   * 1. Instant local DOM photonic preview (zero latency).
+   * 2. Quantum-tunnel binary payload directly into native PHP core architecture via multipart form POST.
+   * 3. Eradicates all asynchronous AJAX streams, fetch(), and virtual memory buffers.
+   */
+  function tunnelBinary(file) {
     if (!file.type.startsWith('image/')) {
-      alert('Selected stream is not a valid image format.');
+      alert('Selected payload is not a valid image format.');
       return;
     }
 
-    // Phase 1: Microsecond Photonic Pop in DOM (Zero Latency)
+    // Instant local DOM preview before transmission
     const localUrl = URL.createObjectURL(file);
     if (studioImg) {
       studioImg.src = localUrl;
@@ -630,48 +563,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     if (bannerFallback) bannerFallback.classList.add('hidden');
 
-    if (statusText) statusText.innerHTML = '<span class="text-amber-600 font-bold">⚡ Transmitting binary stream to server root...</span>';
-    if (statusPulse) statusPulse.className = 'w-2 h-2 rounded-full bg-amber-400 animate-ping';
-    if (metaText) metaText.textContent = 'Writing Binary...';
-    if (saveBtn) saveBtn.classList.add('opacity-75');
+    // Update status indicators
+    if (statusText) statusText.innerHTML = '<span class="text-emerald-300 font-bold">⚡ Binary injection initiated — transmitting to PHP core...</span>';
+    if (statusPulse) statusPulse.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
+    if (metaText) metaText.textContent = 'Hardwiring Stream...';
 
-    // Phase 2: Hard-routing binary image stream with strict multipart/form-data packet headers
-    const startTime = performance.now();
-    const formData = new FormData();
-    formData.append('action', 'update_avatar');
-    formData.append('is_ajax', '1');
-    formData.append('avatar_file', file, file.name);
+    // If file was dropped, inject into fileInput for native POST
+    if (file !== fileInput.files[0]) {
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      fileInput.files = dt.files;
+    }
 
-    fetch('profile.php', {
-      method: 'POST',
-      // Strict multipart/form-data is natively enforced with boundary headers by browser
-      body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-      const elapsed = Math.round(performance.now() - startTime);
-      if (data.status === 'success') {
-        if (studioImg) studioImg.src = data.avatar_url;
-        if (bannerImg) bannerImg.src = data.avatar_url;
-
-        if (statusText) {
-          statusText.innerHTML = '<span class="text-emerald-400 font-bold">✓ Hard-Routed Absolute PHP Path:</span> ' 
-            + data.filename + ' via strict multipart/form-data (' + elapsed + 'ms)';
-        }
-        if (statusPulse) statusPulse.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
-        if (metaText) metaText.innerHTML = '<span class="text-emerald-400 font-bold">100% Injected</span>';
-      } else {
-        if (statusText) statusText.innerHTML = '<span class="text-rose-400">Stream rejected: ' + (data.message || 'Transmission failed') + '</span>';
-        if (statusPulse) statusPulse.className = 'w-2 h-2 rounded-full bg-rose-500';
-        if (metaText) metaText.textContent = 'Stream Error';
-      }
-      if (saveBtn) saveBtn.classList.remove('opacity-75');
-    })
-    .catch(err => {
-      console.warn('Multipart fetch caught error, submitting form natively:', err);
-      const avatarForm = document.getElementById('avatar-form');
-      if (avatarForm) avatarForm.submit();
-    });
+    // The microsecond a binary image crosses the event horizon (onchange/drop),
+    // natively submit the HTML form directly to PHP core reactor:
+    avatarForm.submit();
   }
 });
 </script>

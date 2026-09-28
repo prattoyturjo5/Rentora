@@ -104,7 +104,7 @@
 
     buildParticles: function (count) {
       this.particles = [];
-      const colors = ['#2563eb', '#38bdf8', '#10b981', '#93c5fd'];
+      const colors = ['#151B54', '#6C75D4', '#A5B4FC', '#EFF3FF'];
       for (let i = 0; i < count; i++) {
         this.particles.push({
           x: Math.random() * Telemetry.screen.w,
@@ -191,7 +191,7 @@
 
       // Fine-line Crystalline Grid in Delicate Azure
       ctx.lineWidth = 0.8;
-      ctx.strokeStyle = 'rgba(37, 99, 235, 0.055)';
+      ctx.strokeStyle = 'rgba(21, 27, 84, 0.06)';
 
       for (let r = 0; r < this.gridRows; r++) {
         ctx.beginPath();
