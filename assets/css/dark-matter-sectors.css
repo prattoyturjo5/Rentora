@@ -448,7 +448,8 @@ body[data-sector="monolith"] .nav-link,
 body[data-sector="monolith"] .nav-orbit-link,
 body[data-sector="dark"] .nav-link,
 body[data-sector="dark"] .nav-orbit-link {
-  padding: 0.625rem 1rem !important; /* Proportional padding (px-4 py-2.5) */
+  padding: 0.5rem 0.625rem !important; /* Mathematically reduced (px-2.5 py-2) */
+  font-size: 13px !important;          /* Scaled for perfect density text-[13px] */
   flex-shrink: 0 !important;
   transition: none !important; /* Zero visual drag / instantaneous binary state */
 }
@@ -480,7 +481,7 @@ body[data-sector="dark"] .profile-singularity {
 
 body[data-sector="monolith"] .profile-singularity-trigger,
 body[data-sector="dark"] .profile-singularity-trigger {
-  padding: 0.625rem 1rem !important; /* Proportional padding (px-4 py-2.5) */
+  padding: 0.5rem 0.625rem !important; /* Dynamic compression (px-2.5 py-2) */
   flex-shrink: 0 !important;
   background-color: #151B54 !important;
   border-color: rgba(255, 255, 255, 0.16) !important;
@@ -567,4 +568,129 @@ body[data-sector="dark"] textarea:focus {
   transition: none !important;
   transform: none !important;
 }
+
+/* ==========================================================================
+   SECTION 14: DUAL-TIER ARCHITECTURAL SEVERANCE & HIGH-CONTRAST STRATIFICATION
+   Directive 1: Dual-Tier Architectural Severance (Decoupled Identity & Routing Vectors)
+   Directive 2: Absolute Centering & Mass Distribution (Equal relative mass flanks flex-1)
+   Directive 3: High-Contrast Stratification (Tier 1 Night Blue #151B54, Tier 2 Photonic Ice #EFF3FF)
+   ========================================================================== */
+
+/* Quantum Header Reset */
+.quantum-header,
+header.quantum-header,
+body[data-sector="monolith"] .quantum-header,
+body[data-sector="dark"] .quantum-header {
+  position: static !important;
+  top: auto !important;
+  width: 100% !important;
+  background: transparent !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Tier 1: Identity & Profile Vector (Dense Night Blue Vacuum #151B54) */
+.tier-1-monolith,
+body[data-sector="monolith"] .tier-1-monolith,
+body[data-sector="dark"] .tier-1-monolith {
+  background-color: #151B54 !important;
+  color: #FFFFFF !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+  position: relative !important;
+  z-index: 40 !important;
+  width: 100% !important;
+}
+
+/* Mass Distribution Mechanics: Equal Relative Mass Flanks */
+.tier-1-flank-left {
+  flex: 1 1 0% !important;
+  min-width: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+.tier-1-flank-right {
+  flex: 1 1 0% !important;
+  min-width: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+}
+
+/* Centered Geometric Anchor for Rentora Logo */
+.tier-1-center-anchor {
+  flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Tier 2: Dedicated Routing Matrix (Photonic Ice #EFF3FF Monolith) */
+.tier-2-matrix,
+body[data-sector="monolith"] .tier-2-matrix,
+body[data-sector="dark"] .tier-2-matrix {
+  background-color: #EFF3FF !important;
+  border-bottom: 1px solid #CBD5E1 !important;
+  box-shadow: 0 4px 12px rgba(21, 27, 84, 0.08) !important;
+  position: relative !important;
+  z-index: 30 !important;
+  width: 100% !important;
+}
+
+/* Tier 2 Navigation Routing Links - Night Blue Typography */
+.nav-tier2-link,
+body[data-sector="monolith"] .nav-tier2-link,
+body[data-sector="dark"] .nav-tier2-link {
+  color: #151B54 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  padding: 0.375rem 0.875rem !important;
+  border-radius: 0.5rem !important;
+  flex-shrink: 0 !important;
+  transition: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.nav-tier2-link:hover,
+body[data-sector="monolith"] .nav-tier2-link:hover,
+body[data-sector="dark"] .nav-tier2-link:hover {
+  background-color: rgba(21, 27, 84, 0.10) !important;
+  color: #151B54 !important;
+  transition: none !important;
+}
+
+/* Tier 2 Active Route - Solid Night Blue Monolith with Absolute White Typography */
+.nav-tier2-active,
+body[data-sector="monolith"] .nav-tier2-active,
+body[data-sector="dark"] .nav-tier2-active {
+  background-color: #151B54 !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 3px rgba(21, 27, 84, 0.25) !important;
+  transition: none !important;
+}
+
+.nav-tier2-active:hover,
+body[data-sector="monolith"] .nav-tier2-active:hover,
+body[data-sector="dark"] .nav-tier2-active:hover {
+  background-color: #1E2570 !important;
+  color: #FFFFFF !important;
+}
+
+/* Symmetrical Equilibrium Anchor: Prevent Profile Singularity Node Drift */
+.profile-singularity {
+  flex-shrink: 0 !important;
+}
+
+.profile-singularity-menu {
+  right: 0 !important;
+  left: auto !important;
+  background-color: #0A0F1D !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
 

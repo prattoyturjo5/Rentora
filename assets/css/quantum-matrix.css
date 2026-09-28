@@ -172,11 +172,11 @@ body.theme-crystalline {
 .nav-orbit-link {
   color: #94a3b8 !important;
   font-weight: 500;
-  font-size: 0.875rem;
+  font-size: 13px !important; /* Scaled for perfect density text-[13px] */
   letter-spacing: 0.01em;
   position: relative;
   z-index: 10;
-  padding: 0.625rem 1rem !important; /* Proportional padding (px-4 py-2.5) */
+  padding: 0.5rem 0.625rem !important; /* Mathematically reduced (px-2.5 py-2) */
   border-radius: 0.75rem !important;
   border: 1px solid transparent !important;
   background: transparent !important;
@@ -225,7 +225,7 @@ body.theme-crystalline {
   outline: none;
   background: #151B54 !important; /* Night Blue Core */
   border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  padding: 0.625rem 1rem !important; /* Proportional padding (px-4 py-2.5) */
+  padding: 0.5rem 0.625rem !important; /* Dynamic compression (px-2.5 py-2) */
   border-radius: 0.75rem !important;
   flex-shrink: 0 !important;
   transition: none !important; /* Zero visual drag */

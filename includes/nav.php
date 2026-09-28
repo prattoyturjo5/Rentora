@@ -90,110 +90,57 @@ if (isset($active_nav)) {
     $is_exchanges_active = ($active_nav === 'exchanges');
 }
 
-$nav_active_class   = 'nav-link nav-link-active px-4 py-2.5 text-sm font-semibold text-white bg-[#151B54] rounded-xl relative z-10 shrink-0';
-$nav_inactive_class = 'nav-link px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-[#151B54] rounded-xl relative z-10 shrink-0';
+$nav_active_class   = 'nav-link nav-link-active px-2.5 py-2 text-[13px] font-semibold text-white bg-[#151B54] rounded-xl relative z-10 shrink-0';
+$nav_inactive_class = 'nav-link px-2.5 py-2 text-[13px] font-medium text-slate-300 hover:text-white hover:bg-[#151B54] rounded-xl relative z-10 shrink-0';
+$nav_tier2_active   = 'nav-tier2-link nav-tier2-active px-3.5 py-1.5 text-[13px] font-bold text-white bg-[#151B54] rounded-lg shadow-sm shrink-0 flex items-center gap-1.5';
+$nav_tier2_inactive = 'nav-tier2-link px-3.5 py-1.5 text-[13px] font-semibold text-[#151B54] hover:bg-[#151B54]/10 hover:text-[#151B54] rounded-lg transition-none shrink-0 flex items-center gap-1.5';
 ?>
-<!-- Top Campus Notice Bar (Dark-Matter Vacuum Horizon) -->
-<div class="bg-[#060A14] text-slate-300 text-xs py-2 px-4 border-b border-white/5 relative z-50">
-  <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
-    <div class="flex items-center gap-2">
-      <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
-      <span class="font-medium text-slate-200">Premier University Marketplace —</span> 
-      <span class="text-slate-400">Exchange &amp; rent academic gear with verified PU students. Zero platform fee.</span>
-    </div>
-    <div class="flex items-center gap-3 text-slate-400">
+<!-- Dual-Tier Architectural Severance Monolith -->
+<header class="quantum-header static z-40 w-full shadow-md">
 
-      <span class="hidden sm:flex items-center gap-1 text-slate-400">
-        <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
-        <span>Hazari Lane, Wasa &amp; GEC Campus</span>
-      </span>
-      <span class="hidden sm:inline text-slate-700">|</span>
-      <?php if ($current_role === 'admin'): ?>
-        <a href="<?php echo $base_path; ?>/admin/dashboard.php" class="hover:text-white transition-colors flex items-center gap-1 text-emerald-300 font-semibold">
-          <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-          Admin Console
-        </a>
-      <?php else: ?>
-        <a href="<?php echo $base_path; ?>/admin/login.php" class="hover:text-white transition-colors flex items-center gap-1 text-slate-300 hover:text-white">
-          <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-          Admin Portal
-        </a>
-      <?php endif; ?>
-    </div>
-  </div>
-</div>
-
-<!-- Global Header Navigation with Absolute Dark-Matter Vacuum Matrix (#0A0F1D) -->
-<header class="quantum-header static z-40 bg-[#0A0F1D]/95 backdrop-blur-2xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
-  <div class="laser-guide-conduit"></div>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center h-16 gap-4">
+  <!-- Tier 1: Identity & Profile Vector (Dense Night Blue Vacuum #151B54) -->
+  <div class="tier-1-monolith bg-[#151B54] text-white border-b border-white/10 relative z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between min-w-0">
       
-      <!-- Brand Logo (shrink-0) -->
-      <a href="<?php echo $base_path; ?>/index.php" class="flex items-center gap-3 group shrink-0">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-navy-950 border border-blue-400/30 flex items-center justify-center text-white font-extrabold shadow-md shadow-blue-500/25 transition-none shrink-0">
-          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+      <!-- Tier 1 Left Flank: Equal Relative Mass (flex-1) — Notice & Admin Links Flush Left -->
+      <div class="tier-1-flank-left flex-1 flex items-center justify-start gap-2.5 sm:gap-4 min-w-0">
+        <div class="flex items-center gap-2 text-xs text-slate-300 font-medium truncate">
+          <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+          <span class="font-semibold text-white truncate">Premier University</span>
+          <span class="text-slate-400 hidden xl:inline font-mono">Marketplace</span>
         </div>
-        <div>
-          <div class="flex items-center gap-1.5">
-            <span class="text-xl font-extrabold tracking-tight text-white">Rentora</span>
-            <span class="text-xl font-bold text-sky-400">Hub</span>
-          </div>
-          <p class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold font-mono">Campus Equipment Exchange</p>
-        </div>
-      </a>
-
-      <!-- Primary Core Marketplace Cluster (Frictionless Wave of Energy) -->
-      <nav id="main-nav" class="hidden md:flex items-center space-x-1 lg:space-x-1.5 relative py-1 shrink-0">
-        <!-- Sliding active pill indicator -->
-        <div id="nav-pill" aria-hidden="true"></div>
-
-        <a href="<?php echo $base_path; ?>/index.php" class="<?php echo $is_browse_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="browse" <?php if ($is_browse_active): ?>aria-current="page"<?php endif; ?>>
-          Browse Equipment
-        </a>
-
-        <?php if ($current_role === 'member'): ?>
-          <a href="<?php echo $base_path; ?>/user/dashboard.php" class="<?php echo $is_dashboard_active ? $nav_active_class : $nav_inactive_class; ?>" data-nav-key="dashboard" <?php if ($is_dashboard_active): ?>aria-current="page"<?php endif; ?>>
-            Dashboard
+        <span class="hidden sm:inline-block w-px h-4 bg-white/15"></span>
+        <?php if ($current_role === 'admin'): ?>
+          <a href="<?php echo $base_path; ?>/admin/dashboard.php" class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-emerald-300 hover:text-white bg-emerald-950/50 border border-emerald-500/30 rounded-lg shrink-0 transition-none">
+            <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            <span class="hidden sm:inline">Admin Console</span>
           </a>
-          <a href="<?php echo $base_path; ?>/user/equipment.php" class="<?php echo ($is_equipment_active ? $nav_active_class : $nav_inactive_class); ?> flex items-center gap-1.5" data-nav-key="equipment" <?php if ($is_equipment_active): ?>aria-current="page"<?php endif; ?>>
-            <span>My Equipment</span>
-            <span class="text-[10px] bg-white/10 text-slate-300 border border-white/10 px-1.5 py-0.5 rounded font-bold">Lender</span>
-          </a>
-          <a href="<?php echo $base_path; ?>/user/rentals.php" class="<?php echo ($is_rentals_active ? $nav_active_class : $nav_inactive_class); ?> flex items-center gap-1.5" data-nav-key="rentals" <?php if ($is_rentals_active): ?>aria-current="page"<?php endif; ?>>
-            <span>Rentals</span>
-            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded font-bold">Active</span>
-          </a>
-          <a href="<?php echo $base_path; ?>/user/exchanges.php" class="<?php echo ($is_exchanges_active ? $nav_active_class : $nav_inactive_class); ?> flex items-center gap-1.5" data-nav-key="exchanges" <?php if ($is_exchanges_active): ?>aria-current="page"<?php endif; ?>>
-            <span>Exchanges</span>
-            <?php if ($incoming_swaps_count > 0): ?>
-              <span class="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-extrabold bg-purple-600 text-white rounded-full shadow-sm min-w-[18px]">
-                <?php echo $incoming_swaps_count; ?>
-              </span>
-            <?php else: ?>
-              <span class="text-[10px] bg-blue-500/20 text-sky-300 border border-blue-500/30 px-1.5 py-0.5 rounded font-bold">Swap</span>
-            <?php endif; ?>
-          </a>
-        <?php elseif ($current_role === 'admin'): ?>
-          <a href="<?php echo $base_path; ?>/admin/dashboard.php" class="px-4 py-2.5 text-sm font-semibold text-emerald-300 bg-[#151B54] border border-emerald-500/30 rounded-xl transition-none shrink-0" <?php if ($is_admin_active): ?>aria-current="page"<?php endif; ?>>
-            Operations Console
+        <?php else: ?>
+          <a href="<?php echo $base_path; ?>/admin/login.php" class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg shrink-0 transition-none">
+            <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            <span class="hidden sm:inline">Admin Portal</span>
           </a>
         <?php endif; ?>
-      </nav>
+      </div>
 
-      <!-- Outer Orbital Rim & User Singularity Controls (shrink-0) -->
-      <div class="hidden sm:flex items-center gap-3 shrink-0">
-        
-        <!-- Phase 1: Outer Orbital Rim Anchors (proportional padding px-4 py-2.5, shrink-0) -->
-        <div class="orbital-rim flex items-center gap-1 border-r border-white/10 pr-3 mr-1 shrink-0">
-          <a href="<?php echo $base_path; ?>/about.php" class="nav-orbit-link px-4 py-2.5 text-sm font-medium rounded-xl text-slate-300 hover:text-white hover:bg-[#151B54] shrink-0 <?php echo $is_about_active ? 'nav-orbit-active text-white font-semibold bg-[#151B54]' : ''; ?>" data-nav-key="about" <?php if ($is_about_active): ?>aria-current="page"<?php endif; ?>>
-            About
-          </a>
-          <a href="<?php echo $base_path; ?>/terms.php" class="nav-orbit-link px-4 py-2.5 text-sm font-medium rounded-xl text-slate-300 hover:text-white hover:bg-[#151B54] shrink-0 <?php echo $is_terms_active ? 'nav-orbit-active text-white font-semibold bg-[#151B54]' : ''; ?>" data-nav-key="terms" <?php if ($is_terms_active): ?>aria-current="page"<?php endif; ?>>
-            Terms
-          </a>
-        </div>
+      <!-- Tier 1 Center Anchor: Rentora Logo Anchored in Exact Mathematical Center -->
+      <div class="tier-1-center-anchor flex-shrink-0 flex items-center justify-center px-2 sm:px-4">
+        <a href="<?php echo $base_path; ?>/index.php" class="flex items-center gap-3 group shrink-0">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-navy-950 border border-blue-400/30 flex items-center justify-center text-white font-extrabold shadow-md shadow-blue-500/25 transition-none shrink-0">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          </div>
+          <div class="text-left">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xl font-extrabold tracking-tight text-white">Rentora</span>
+              <span class="text-xl font-bold text-sky-400">Hub</span>
+            </div>
+            <p class="text-[10px] text-slate-300 uppercase tracking-widest font-semibold font-mono hidden sm:block">Campus Equipment Exchange</p>
+          </div>
+        </a>
+      </div>
 
+      <!-- Tier 1 Right Flank: Equal Relative Mass (flex-1) — Profile Singularity Flush Right -->
+      <div class="tier-1-flank-right flex-1 flex items-center justify-end gap-2.5 sm:gap-3 min-w-0">
         <?php if ($current_role === 'member'): ?>
           <?php
             if (empty($_SESSION['avatar']) && $current_user_id > 0) {
@@ -206,11 +153,10 @@ $nav_inactive_class = 'nav-link px-4 py-2.5 text-sm font-medium text-slate-300 h
             $nav_user_has_avatar = !empty($_SESSION['avatar']) && file_exists(__DIR__ . '/../' . $_SESSION['avatar']);
             $nav_user_avatar_url = $nav_user_has_avatar ? ($base_path . '/' . $_SESSION['avatar'] . '?v=' . ($_SESSION['avatar_v'] ?? '1')) : null;
           ?>
-          <!-- Phase 3: The Profile Singularity (Interactive Dilating Pocket with shrink-0) -->
+          <!-- Profile Singularity (Interactive Dilating Pocket with shrink-0) -->
           <div id="profile-singularity" class="profile-singularity group/singularity relative shrink-0" tabindex="0">
-            <!-- Singularity Interactive Trigger (proportional padding px-4 py-2.5, shrink-0) -->
-            <button type="button" class="profile-singularity-trigger flex items-center gap-3 px-4 py-2.5 rounded-xl border border-white/15 bg-[#151B54] hover:bg-[#1E2570] text-left focus:outline-none shrink-0" id="singularity-trigger" aria-haspopup="true" aria-expanded="false">
-              <!-- Dynamic Gravitational Avatar Orb (shrink-0 to prevent thinning) -->
+            <button type="button" class="profile-singularity-trigger flex items-center gap-2 px-2.5 py-2 rounded-xl border border-white/15 bg-[#151B54] hover:bg-[#1E2570] text-left focus:outline-none shrink-0" id="singularity-trigger" aria-haspopup="true" aria-expanded="false">
+              <!-- Dynamic Gravitational Avatar Orb -->
               <div class="relative shrink-0">
                 <?php if ($nav_user_has_avatar): ?>
                   <img src="<?php echo htmlspecialchars($nav_user_avatar_url); ?>" alt="Avatar" class="w-8 h-8 rounded-full object-cover shadow-md ring-1 ring-white/30 shrink-0">
@@ -221,15 +167,15 @@ $nav_inactive_class = 'nav-link px-4 py-2.5 text-sm font-medium text-slate-300 h
                 <?php endif; ?>
                 <!-- Status Beacon -->
                 <?php if ($current_member_status === 'Verified'): ?>
-                  <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#0A0F1D]" title="Verified Member"></span>
+                  <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#151B54]" title="Verified Member"></span>
                 <?php elseif ($current_member_status === 'Rejected'): ?>
-                  <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-[#0A0F1D]" title="Account Rejected"></span>
+                  <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-[#151B54]" title="Account Rejected"></span>
                 <?php else: ?>
-                  <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-amber-400 ring-2 ring-[#0A0F1D]" title="Pending Verification"></span>
+                  <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-amber-400 ring-2 ring-[#151B54]" title="Pending Verification"></span>
                 <?php endif; ?>
               </div>
 
-              <!-- The Interactive User Name Singularity (shrink-0 & whitespace-nowrap) -->
+              <!-- User Display Name -->
               <div class="text-left leading-tight hidden lg:block shrink-0">
                 <div class="text-xs font-bold text-white flex items-center gap-1.5 whitespace-nowrap">
                   <span><?php echo htmlspecialchars($current_name); ?></span>
@@ -245,13 +191,13 @@ $nav_inactive_class = 'nav-link px-4 py-2.5 text-sm font-medium text-slate-300 h
                 </div>
               </div>
 
-              <!-- Dilation Chevron with shrink-0 -->
+              <!-- Dilation Chevron -->
               <svg class="singularity-chevron w-3.5 h-3.5 text-slate-400 group-hover/singularity:text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
               </svg>
             </button>
 
-            <!-- Localized Dimensional Pocket (Profile Management Menu) - Proportional without rigid pixel constraints or visual drag -->
+            <!-- Profile Management Dropdown Menu -->
             <div class="profile-singularity-menu absolute right-0 top-full mt-2 min-w-[18rem] max-w-sm rounded-2xl bg-[#0A0F1D]/98 backdrop-blur-2xl border border-white/15 shadow-2xl p-4 z-50 pointer-events-none opacity-0" id="singularity-menu">
               <!-- Singularity Core User Identity Header -->
               <div class="flex items-center gap-3 pb-3 border-b border-white/10 mb-2.5 px-1">
@@ -348,16 +294,10 @@ $nav_inactive_class = 'nav-link px-4 py-2.5 text-sm font-medium text-slate-300 h
             </div>
           </div>
 
-          <!-- + List Equipment CTA (proportional padding px-4 py-2.5, shrink-0) -->
-          <a href="<?php echo $base_path; ?>/user/equipment.php" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-lg shadow-blue-600/25 border border-blue-400/30 transition-none shrink-0">
-            <svg class="w-3.5 h-3.5 text-blue-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-            <span>+ List Equipment</span>
-          </a>
-
         <?php elseif ($current_role === 'admin'): ?>
-          <!-- Admin Singularity Matrix (proportional padding px-4 py-2.5, shrink-0) -->
+          <!-- Admin Singularity Matrix -->
           <div id="profile-singularity" class="profile-singularity group/singularity relative shrink-0" tabindex="0">
-            <button type="button" class="profile-singularity-trigger flex items-center gap-3 px-4 py-2.5 rounded-xl border border-white/15 bg-[#151B54] hover:bg-[#1E2570] text-left focus:outline-none shrink-0" id="singularity-trigger" aria-haspopup="true" aria-expanded="false">
+            <button type="button" class="profile-singularity-trigger flex items-center gap-2 px-2.5 py-2 rounded-xl border border-white/15 bg-[#151B54] hover:bg-[#1E2570] text-left focus:outline-none shrink-0" id="singularity-trigger" aria-haspopup="true" aria-expanded="false">
               <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-md ring-1 ring-emerald-400/40 shrink-0">
                 A
               </div>
@@ -406,48 +346,88 @@ $nav_inactive_class = 'nav-link px-4 py-2.5 text-sm font-medium text-slate-300 h
           </div>
 
         <?php else: ?>
-          <!-- Guest Links (proportional padding px-4 py-2.5, shrink-0) -->
-          <a href="<?php echo $base_path; ?>/auth/login.php" class="px-4 py-2.5 text-xs font-bold text-slate-300 hover:text-white hover:bg-[#151B54] rounded-xl transition-none shrink-0">
+          <!-- Guest Auth Actions -->
+          <a href="<?php echo $base_path; ?>/auth/login.php" class="px-3.5 py-2 text-xs font-bold text-slate-200 hover:text-white hover:bg-white/10 rounded-xl transition-none shrink-0">
             Sign In
           </a>
-          <a href="<?php echo $base_path; ?>/auth/register.php" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md shadow-blue-600/25 border border-blue-400/30 transition-none shrink-0">
+          <a href="<?php echo $base_path; ?>/auth/register.php" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md shadow-blue-600/25 border border-blue-400/30 transition-none shrink-0">
             Register Member
           </a>
         <?php endif; ?>
       </div>
 
-      <!-- Mobile Menu Button -->
-      <div class="flex md:hidden items-center gap-2">
-        <a href="<?php echo $current_role === 'member' ? $base_path . '/user/dashboard.php' : $base_path . '/auth/login.php'; ?>" class="p-2 text-slate-300 hover:text-white">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-        </a>
-      </div>
-
     </div>
   </div>
+
+  <!-- Tier 2: Dedicated Routing Matrix (Photonic Ice #EFF3FF Monolith) -->
+  <nav id="main-nav" class="tier-2-matrix bg-[#EFF3FF] border-b border-[#CBD5E1] shadow-sm relative z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap overflow-x-auto no-scrollbar">
+      
+      <a href="<?php echo $base_path; ?>/index.php" class="<?php echo $is_browse_active ? $nav_tier2_active : $nav_tier2_inactive; ?>" data-nav-key="browse" <?php if ($is_browse_active): ?>aria-current="page"<?php endif; ?>>
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <span>Browse Equipment</span>
+      </a>
+
+      <?php if ($current_role === 'member'): ?>
+        <a href="<?php echo $base_path; ?>/user/dashboard.php" class="<?php echo $is_dashboard_active ? $nav_tier2_active : $nav_tier2_inactive; ?>" data-nav-key="dashboard" <?php if ($is_dashboard_active): ?>aria-current="page"<?php endif; ?>>
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="<?php echo $base_path; ?>/user/equipment.php" class="<?php echo $is_equipment_active ? $nav_tier2_active : $nav_tier2_inactive; ?>" data-nav-key="equipment" <?php if ($is_equipment_active): ?>aria-current="page"<?php endif; ?>>
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          <span>My Equipment</span>
+          <span class="<?php echo $is_equipment_active ? 'bg-white/20 text-white' : 'bg-[#151B54]/10 text-[#151B54] border border-[#151B54]/20'; ?> text-[10px] px-1.5 py-0.5 rounded font-bold">Lender</span>
+        </a>
+
+        <a href="<?php echo $base_path; ?>/user/rentals.php" class="<?php echo $is_rentals_active ? $nav_tier2_active : $nav_tier2_inactive; ?>" data-nav-key="rentals" <?php if ($is_rentals_active): ?>aria-current="page"<?php endif; ?>>
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          <span>Rentals</span>
+          <span class="<?php echo $is_rentals_active ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-800 border border-emerald-300'; ?> text-[10px] px-1.5 py-0.5 rounded font-bold">Active</span>
+        </a>
+
+        <a href="<?php echo $base_path; ?>/user/exchanges.php" class="<?php echo $is_exchanges_active ? $nav_tier2_active : $nav_tier2_inactive; ?>" data-nav-key="exchanges" <?php if ($is_exchanges_active): ?>aria-current="page"<?php endif; ?>>
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+          <span>Exchanges</span>
+          <?php if ($incoming_swaps_count > 0): ?>
+            <span class="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-extrabold bg-purple-600 text-white rounded-full shadow-sm min-w-[18px]">
+              <?php echo $incoming_swaps_count; ?>
+            </span>
+          <?php else: ?>
+            <span class="<?php echo $is_exchanges_active ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-800 border border-blue-300'; ?> text-[10px] px-1.5 py-0.5 rounded font-bold">Swap</span>
+          <?php endif; ?>
+        </a>
+      <?php elseif ($current_role === 'admin'): ?>
+        <a href="<?php echo $base_path; ?>/admin/dashboard.php" class="<?php echo $is_admin_active ? $nav_tier2_active : $nav_tier2_inactive; ?>" data-nav-key="admin-dashboard" <?php if ($is_admin_active): ?>aria-current="page"<?php endif; ?>>
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+          <span>Operations Console</span>
+        </a>
+        <a href="<?php echo $base_path; ?>/admin/members.php" class="<?php echo ($active_nav === 'members') ? $nav_tier2_active : $nav_tier2_inactive; ?>" data-nav-key="admin-members">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+          <span>Member Directory</span>
+        </a>
+      <?php endif; ?>
+
+      <span class="hidden sm:inline-block w-px h-4 bg-[#151B54]/20 mx-1"></span>
+
+      <a href="<?php echo $base_path; ?>/about.php" class="<?php echo $is_about_active ? $nav_tier2_active : $nav_tier2_inactive; ?>" data-nav-key="about" <?php if ($is_about_active): ?>aria-current="page"<?php endif; ?>>
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span>About Rentora</span>
+      </a>
+
+      <a href="<?php echo $base_path; ?>/terms.php" class="<?php echo $is_terms_active ? $nav_tier2_active : $nav_tier2_inactive; ?>" data-nav-key="terms" <?php if ($is_terms_active): ?>aria-current="page"<?php endif; ?>>
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        <span>Platform Terms</span>
+      </a>
+
+    </div>
+  </nav>
+
 </header>
 
 <script>
 (function () {
   'use strict';
-  /* Synchronous Zero-Latency Quantum Snap on initial parse */
-  var nav = document.getElementById('main-nav');
-  var pill = document.getElementById('nav-pill');
-  if (nav && pill) {
-    var activeLink = nav.querySelector('a[aria-current="page"]');
-    if (activeLink) {
-      var nR = nav.getBoundingClientRect();
-      var lR = activeLink.getBoundingClientRect();
-      pill.style.left = (lR.left - nR.left) + 'px';
-      pill.style.top = (lR.top - nR.top) + 'px';
-      pill.style.width = lR.width + 'px';
-      pill.style.height = lR.height + 'px';
-      pill.style.opacity = '1';
-    } else {
-      pill.style.opacity = '0';
-    }
-  }
-
   // Profile Singularity Proximity & Click Toggle Continuity
   var singularity = document.getElementById('profile-singularity');
   var trigger = document.getElementById('singularity-trigger');
