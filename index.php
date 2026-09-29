@@ -198,25 +198,25 @@ require_once(__DIR__ . '/includes/nav.php');
             <div class="reactor-metric-val text-primary font-black">
               <?php echo $count_students; ?>+
             </div>
-            <span class="text-[11px] text-slate-700 dark:text-muted font-mono uppercase tracking-wider font-bold">Registered Scholars</span>
+            <span class="text-[11px] text-slate-600 dark:text-slate-300 font-mono uppercase tracking-wider font-bold">Registered Scholars</span>
           </div>
           <div class="reactor-metric-pod">
             <div class="reactor-metric-val text-primary font-black">
               <?php echo $count_avail; ?>+
             </div>
-            <span class="text-[11px] text-slate-700 dark:text-muted font-mono uppercase tracking-wider font-bold">Available Assets</span>
+            <span class="text-[11px] text-slate-600 dark:text-slate-300 font-mono uppercase tracking-wider font-bold">Available Assets</span>
           </div>
           <div class="reactor-metric-pod">
             <div class="reactor-metric-val text-emerald-600 dark:text-emerald-400 font-black">
               <span>৳0</span>
             </div>
-            <span class="text-[11px] text-slate-700 dark:text-muted font-mono uppercase tracking-wider font-bold">Platform Fee</span>
+            <span class="text-[11px] text-slate-600 dark:text-slate-300 font-mono uppercase tracking-wider font-bold">Platform Fee</span>
           </div>
           <div class="reactor-metric-pod">
             <div class="reactor-metric-val text-accent font-black">
               <span>3</span>
             </div>
-            <span class="text-[11px] text-slate-700 dark:text-muted font-mono uppercase tracking-wider font-bold">Campus Handover Zones</span>
+            <span class="text-[11px] text-slate-600 dark:text-slate-300 font-mono uppercase tracking-wider font-bold">Campus Handover Zones</span>
           </div>
         </div>
       </div>

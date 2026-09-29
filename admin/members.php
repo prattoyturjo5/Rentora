@@ -83,6 +83,8 @@ $count_rejected = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c F
                             subtle: 'var(--surface-subtle)',
                         },
                         'border-subtle': 'var(--border-subtle)',
+                        primary: 'var(--text-primary)',
+                        muted: 'var(--text-muted)',
                         'text-primary': 'var(--text-primary)',
                         'text-muted': 'var(--text-muted)',
                         accent: {

@@ -147,6 +147,16 @@ h6 {
   color: var(--text-muted) !important;
 }
 
+[data-theme="dark"] .dark\:text-muted,
+.dark .dark\:text-muted {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .dark\:text-primary,
+.dark .dark\:text-primary {
+  color: var(--text-primary) !important;
+}
+
 .text-accent {
   color: var(--accent-primary) !important;
 }

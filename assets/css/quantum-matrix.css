@@ -217,6 +217,12 @@
   line-height: 1.2;
 }
 
+[data-theme="dark"] .reactor-metric-pod span,
+.dark .reactor-metric-pod span {
+  color: #CBD5E1 !important; /* High contrast legible slate-300 in dark mode */
+}
+
+
 /* ─── Modern Floating Submit Button ─── */
 .quantum-submit-btn {
   display: inline-flex;
