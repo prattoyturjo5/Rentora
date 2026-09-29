@@ -1,8 +1,4 @@
 <?php
-/**
- * Rentora Database Connection
- * Single reusable PDO MySQL connection.
- */
 
 $host = 'localhost';
 $dbname = 'rentora_db';
