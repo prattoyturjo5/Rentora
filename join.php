@@ -183,19 +183,19 @@ require_once(__DIR__ . '/includes/nav.php');
   </section>
 
   <!-- ═══════════════════════════════════════════════════════════════
-       2. FOUNDING MEMBERS' IDENTITY NODES — The 4 Core Architects
+       2. FOUNDING MEMBERS — The Core Team
   ════════════════════════════════════════════════════════════════ -->
   <section class="py-16 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
     
     <div class="text-center max-w-3xl mx-auto mb-12">
       <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-mono font-bold uppercase tracking-wider mb-3 border border-accent/20">
-        Core Engineering Nexus
+        Core Team
       </div>
       <h2 class="text-2xl sm:text-4xl font-extrabold text-primary tracking-tight">
-        The Founding Development Nodes
+        The Founding Development Team
       </h2>
       <p class="mt-3 text-sm sm:text-base text-muted leading-relaxed">
-        Meet the four founding Premier University CSE engineers who built the Rentora core transactional matrix, verified handover protocol, and anti-gravity design system.
+        Meet the four Premier University CSE students who built Rentora — connecting peers across campus for equipment sharing and verified rentals.
       </p>
     </div>
 
@@ -217,14 +217,14 @@ require_once(__DIR__ . '/includes/nav.php');
           </div>
 
           <h3 class="text-lg font-extrabold text-primary tracking-tight">Aiman Hussain</h3>
-          <p class="text-xs font-semibold text-accent mb-2">Systems Architect &amp; Core Engine Lead</p>
+          <p class="text-xs font-semibold text-accent mb-2">Systems Architect &amp; Core Backend Lead</p>
           <div class="inline-flex items-center gap-1 text-[11px] font-mono text-muted mb-4 bg-surface-subtle px-2 py-0.5 rounded border border-subtle">
             <span>ID:</span>
             <span class="font-bold text-primary">0222420005101197</span>
           </div>
 
           <p class="text-xs text-muted leading-relaxed mb-4">
-            Forged the zero-gravity architectural pipeline, high-throughput PDO engine, and binary SVG hologram studio. Designed the mathematical centering matrices and state machines.
+            Architected the foundational system structure, database connection handling, and backend routing. Designed session management, security safeguards, and core application workflows.
           </p>
         </div>
 
@@ -233,9 +233,9 @@ require_once(__DIR__ . '/includes/nav.php');
             <span>Discipline:</span> BSc in CSE, Premier University
           </div>
           <div class="flex flex-wrap gap-1 text-[10px] font-mono font-semibold">
-            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">PHP Core</span>
-            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">MySQL ACID</span>
-            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Architectural DOM</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">PHP</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">MySQL</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">System Architecture</span>
           </div>
         </div>
       </div>
@@ -255,14 +255,14 @@ require_once(__DIR__ . '/includes/nav.php');
           </div>
 
           <h3 class="text-lg font-extrabold text-primary tracking-tight">Prattoy Barua Turja</h3>
-          <p class="text-xs font-semibold text-accent mb-2">Full-Stack Engineer &amp; Database Strategist</p>
+          <p class="text-xs font-semibold text-accent mb-2">Full-Stack Developer &amp; Database Lead</p>
           <div class="inline-flex items-center gap-1 text-[11px] font-mono text-muted mb-4 bg-surface-subtle px-2 py-0.5 rounded border border-subtle">
             <span>ID:</span>
             <span class="font-bold text-primary">0222420005101171</span>
           </div>
 
           <p class="text-xs text-muted leading-relaxed mb-4">
-            Engineered the relational exchange agreement schemas, multi-table joins, equipment category indexes, and transactional token verification backend.
+            Developed the rental and equipment exchange workflows, relational database schemas, and item listing management. Built the handover verification tokens and dashboard features.
           </p>
         </div>
 
@@ -271,9 +271,9 @@ require_once(__DIR__ . '/includes/nav.php');
             <span>Discipline:</span> BSc in CSE, Premier University
           </div>
           <div class="flex flex-wrap gap-1 text-[10px] font-mono font-semibold">
-            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Relational SQL</span>
-            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Auth Vectors</span>
-            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Backend API</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">PHP &amp; SQL</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Database Design</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">REST APIs</span>
           </div>
         </div>
       </div>
@@ -284,23 +284,23 @@ require_once(__DIR__ . '/includes/nav.php');
           <!-- Header & Badge -->
           <div class="flex items-start justify-between gap-3 mb-4">
             <div class="relative shrink-0">
-              <img src="<?php echo $base_path; ?>/assets/images/founders/shreya_chakraborty.jpg" alt="Shreya Chakraborty" class="w-16 h-16 rounded-2xl object-cover object-top border-2 border-rose-400/40 shadow-sm ring-2 ring-rose-500/20">
+              <img src="<?php echo $base_path; ?>/assets/images/founders/shreya_chakraborty.jpg" alt="Shreya Chakraborty" class="w-16 h-16 rounded-2xl object-cover object-top border-2 border-accent/40 shadow-sm ring-2 ring-accent/20">
               <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-surface" title="Verified Founder"></span>
             </div>
-            <span class="px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-[10px] font-mono font-extrabold tracking-wide">
-              UI/UX STRATEGIST
+            <span class="px-2.5 py-1 rounded-full bg-accent/10 text-accent border border-accent/20 text-[10px] font-mono font-extrabold tracking-wide">
+              UI/UX DESIGNER
             </span>
           </div>
 
           <h3 class="text-lg font-extrabold text-primary tracking-tight">Shreya Chakraborty</h3>
-          <p class="text-xs font-semibold text-rose-500 mb-2">UI/UX Strategist &amp; Frontend Systems</p>
+          <p class="text-xs font-semibold text-accent mb-2">UI/UX Designer &amp; Frontend Systems</p>
           <div class="inline-flex items-center gap-1 text-[11px] font-mono text-muted mb-4 bg-surface-subtle px-2 py-0.5 rounded border border-subtle">
             <span>ID:</span>
             <span class="font-bold text-primary">0222420005101183</span>
           </div>
 
           <p class="text-xs text-muted leading-relaxed mb-4">
-            Architected the Trinary chromatic stratification (#151B54, #EFF3FF, #FFFFFF), interaction density heuristics, profile singularity pocket, and accessible form UX.
+            Designed the visual interface, responsive page layouts, and intuitive user workflows. Crafted the color palette, design consistency across components, and dark mode theme.
           </p>
         </div>
 
@@ -309,8 +309,8 @@ require_once(__DIR__ . '/includes/nav.php');
             <span>Discipline:</span> BSc in CSE, Premier University
           </div>
           <div class="flex flex-wrap gap-1 text-[10px] font-mono font-semibold">
-            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">UI Stratification</span>
-            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Figma Design</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">UI/UX Design</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Figma</span>
             <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Tailwind CSS</span>
           </div>
         </div>
@@ -322,23 +322,23 @@ require_once(__DIR__ . '/includes/nav.php');
           <!-- Header & Badge -->
           <div class="flex items-start justify-between gap-3 mb-4">
             <div class="relative shrink-0">
-              <img src="<?php echo $base_path; ?>/assets/images/founders/samia_akter.png" alt="Samia Akter" class="w-16 h-16 rounded-2xl object-cover object-top border-2 border-emerald-400/40 shadow-sm ring-2 ring-emerald-500/20">
+              <img src="<?php echo $base_path; ?>/assets/images/founders/samia_akter.png" alt="Samia Akter" class="w-16 h-16 rounded-2xl object-cover object-top border-2 border-accent/40 shadow-sm ring-2 ring-accent/20">
               <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-surface" title="Verified Founder"></span>
             </div>
-            <span class="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-mono font-extrabold tracking-wide">
+            <span class="px-2.5 py-1 rounded-full bg-accent/10 text-accent border border-accent/20 text-[10px] font-mono font-extrabold tracking-wide">
               OPERATIONS &amp; QA
             </span>
           </div>
 
           <h3 class="text-lg font-extrabold text-primary tracking-tight">Samia Akter</h3>
-          <p class="text-xs font-semibold text-emerald-500 mb-2">Platform Operations &amp; Quality Lead</p>
+          <p class="text-xs font-semibold text-accent mb-2">Platform Operations &amp; Quality Lead</p>
           <div class="inline-flex items-center gap-1 text-[11px] font-mono text-muted mb-4 bg-surface-subtle px-2 py-0.5 rounded border border-subtle">
             <span>ID:</span>
             <span class="font-bold text-primary">0222420005101172</span>
           </div>
 
           <p class="text-xs text-muted leading-relaxed mb-4">
-            Formulated the physical campus handover guidelines, student verification guardrails, deposit refund checks, and end-to-end platform regression testing.
+            Coordinated campus handover safety guidelines, student verification standards, and deposit return workflows. Led platform testing and user experience quality checks.
           </p>
         </div>
 
@@ -347,9 +347,9 @@ require_once(__DIR__ . '/includes/nav.php');
             <span>Discipline:</span> BSc in CSE, Premier University
           </div>
           <div class="flex flex-wrap gap-1 text-[10px] font-mono font-semibold">
-            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Security Protocols</span>
-            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">QA Regression</span>
-            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Campus Ops</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">QA Testing</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Campus Safety</span>
+            <span class="bg-surface-subtle text-primary border border-subtle px-2 py-0.5 rounded">Operations</span>
           </div>
         </div>
       </div>

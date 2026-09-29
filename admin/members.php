@@ -83,6 +83,8 @@ $count_rejected = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c F
                             subtle: 'var(--surface-subtle)',
                         },
                         'border-subtle': 'var(--border-subtle)',
+                        primary: 'var(--text-primary)',
+                        muted: 'var(--text-muted)',
                         'text-primary': 'var(--text-primary)',
                         'text-muted': 'var(--text-muted)',
                         accent: {
@@ -115,7 +117,7 @@ $count_rejected = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c F
 <body class="bg-canvas text-primary min-h-screen flex flex-col transition-colors">
 
     <!-- Top Admin Bar -->
-    <header class="floating-nav-header px-6 py-4 flex items-center justify-between">
+    <header class="bg-white dark:bg-[#0B1120] border-b border-slate-200 dark:border-white/10 shadow-sm px-6 py-4 flex items-center justify-between sticky top-0 z-40 transition-colors">
         <div class="flex items-center gap-3">
             <a href="dashboard.php" class="flex items-center gap-2">
                 <div
@@ -126,23 +128,23 @@ $count_rejected = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c F
                         </path>
                     </svg>
                 </div>
-                <span class="text-base font-bold text-primary tracking-tight">Rentora Admin</span>
+                <span class="text-base font-bold text-slate-900 dark:text-white tracking-tight">Rentora Admin</span>
             </a>
             <span
-                class="text-[11px] px-2.5 py-0.5 rounded-full font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">Operations</span>
+                class="text-[11px] px-2.5 py-0.5 rounded-full font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">Operations</span>
         </div>
-        <div class="flex items-center gap-4 text-xs">
+        <div class="flex items-center gap-4 text-xs font-semibold">
             <button type="button" id="admin-theme-btn"
-                class="p-1.5 rounded-lg bg-surface-subtle border border-subtle text-muted hover:text-primary transition"
+                class="p-1.5 rounded-lg bg-slate-100 dark:bg-white/10 border border-slate-300 dark:border-white/15 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/15 transition"
                 title="Toggle Theme">
                 🌓
             </button>
-            <a href="dashboard.php" class="text-muted hover:text-primary transition">Dashboard</a>
-            <a href="members.php" class="text-accent font-bold border-b-2 border-accent pb-0.5">Member Directory</a>
-            <a href="../index.php" class="text-muted hover:text-primary transition">Marketplace</a>
-            <a href="change_password.php" class="text-muted hover:text-primary transition">Security</a>
+            <a href="dashboard.php" class="text-black dark:text-slate-300 hover:text-accent dark:hover:text-white transition">Dashboard</a>
+            <a href="members.php" class="text-black dark:text-sky-400 font-extrabold border-b-2 border-black dark:border-sky-400 pb-0.5">Member Directory</a>
+            <a href="../index.php" class="text-black dark:text-slate-300 hover:text-accent dark:hover:text-white transition">Marketplace</a>
+            <a href="change_password.php" class="text-black dark:text-slate-300 hover:text-accent dark:hover:text-white transition">Security</a>
             <a href="../auth/logout.php"
-                class="text-rose-600 dark:text-rose-400 hover:underline font-semibold transition ml-2">Sign Out</a>
+                class="text-rose-600 dark:text-rose-400 hover:underline font-bold transition ml-2">Sign Out</a>
         </div>
     </header>
 

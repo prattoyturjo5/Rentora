@@ -48,6 +48,8 @@ $page_title = $page_title ?? 'Rentora - Campus Equipment Exchange & Rental Hub';
               subtle: 'var(--surface-subtle)',
             },
             'border-subtle': 'var(--border-subtle)',
+            primary: 'var(--text-primary)',
+            muted: 'var(--text-muted)',
             'text-primary': 'var(--text-primary)',
             'text-muted': 'var(--text-muted)',
             accent: {
