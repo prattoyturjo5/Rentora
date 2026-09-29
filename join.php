@@ -284,16 +284,16 @@ require_once(__DIR__ . '/includes/nav.php');
           <!-- Header & Badge -->
           <div class="flex items-start justify-between gap-3 mb-4">
             <div class="relative shrink-0">
-              <img src="<?php echo $base_path; ?>/assets/images/founders/shreya_chakraborty.jpg" alt="Shreya Chakraborty" class="w-16 h-16 rounded-2xl object-cover object-top border-2 border-rose-400/40 shadow-sm ring-2 ring-rose-500/20">
+              <img src="<?php echo $base_path; ?>/assets/images/founders/shreya_chakraborty.jpg" alt="Shreya Chakraborty" class="w-16 h-16 rounded-2xl object-cover object-top border-2 border-accent/40 shadow-sm ring-2 ring-accent/20">
               <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-surface" title="Verified Founder"></span>
             </div>
-            <span class="px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-[10px] font-mono font-extrabold tracking-wide">
+            <span class="px-2.5 py-1 rounded-full bg-accent/10 text-accent border border-accent/20 text-[10px] font-mono font-extrabold tracking-wide">
               UI/UX DESIGNER
             </span>
           </div>
 
           <h3 class="text-lg font-extrabold text-primary tracking-tight">Shreya Chakraborty</h3>
-          <p class="text-xs font-semibold text-rose-500 mb-2">UI/UX Designer &amp; Frontend Systems</p>
+          <p class="text-xs font-semibold text-accent mb-2">UI/UX Designer &amp; Frontend Systems</p>
           <div class="inline-flex items-center gap-1 text-[11px] font-mono text-muted mb-4 bg-surface-subtle px-2 py-0.5 rounded border border-subtle">
             <span>ID:</span>
             <span class="font-bold text-primary">0222420005101183</span>
@@ -322,16 +322,16 @@ require_once(__DIR__ . '/includes/nav.php');
           <!-- Header & Badge -->
           <div class="flex items-start justify-between gap-3 mb-4">
             <div class="relative shrink-0">
-              <img src="<?php echo $base_path; ?>/assets/images/founders/samia_akter.png" alt="Samia Akter" class="w-16 h-16 rounded-2xl object-cover object-top border-2 border-emerald-400/40 shadow-sm ring-2 ring-emerald-500/20">
+              <img src="<?php echo $base_path; ?>/assets/images/founders/samia_akter.png" alt="Samia Akter" class="w-16 h-16 rounded-2xl object-cover object-top border-2 border-accent/40 shadow-sm ring-2 ring-accent/20">
               <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 ring-2 ring-surface" title="Verified Founder"></span>
             </div>
-            <span class="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-mono font-extrabold tracking-wide">
+            <span class="px-2.5 py-1 rounded-full bg-accent/10 text-accent border border-accent/20 text-[10px] font-mono font-extrabold tracking-wide">
               OPERATIONS &amp; QA
             </span>
           </div>
 
           <h3 class="text-lg font-extrabold text-primary tracking-tight">Samia Akter</h3>
-          <p class="text-xs font-semibold text-emerald-500 mb-2">Platform Operations &amp; Quality Lead</p>
+          <p class="text-xs font-semibold text-accent mb-2">Platform Operations &amp; Quality Lead</p>
           <div class="inline-flex items-center gap-1 text-[11px] font-mono text-muted mb-4 bg-surface-subtle px-2 py-0.5 rounded border border-subtle">
             <span>ID:</span>
             <span class="font-bold text-primary">0222420005101172</span>
