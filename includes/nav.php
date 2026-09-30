@@ -8,6 +8,7 @@ $current_name = $_SESSION['name'] ?? 'User';
 $current_user_id = $_SESSION['user_id'] ?? $_SESSION['member_id'] ?? null;
 $nav_user_id = intval($_SESSION['member_id'] ?? $_SESSION['user_id'] ?? 0);
 $incoming_swaps_count = 0;
+$incoming_rentals_count = 0;
 
 if ($nav_user_id > 0) {
   if (!isset($conn) || !$conn) {
@@ -24,6 +25,18 @@ if ($nav_user_id > 0) {
       $badge_data = mysqli_fetch_assoc($swap_badge_query);
       $incoming_swaps_count = intval($badge_data['total_pending'] ?? 0);
     }
+
+    $rental_badge_query = mysqli_query($conn, "
+            SELECT COUNT(r.rental_id) AS total_pending 
+            FROM rental_agreement r
+            JOIN equipment e ON r.equipment_id = e.equipment_id
+            WHERE e.owner_id = '$nav_user_id' 
+              AND r.status = 'Pending'
+        ");
+    if ($rental_badge_query) {
+      $r_badge_data = mysqli_fetch_assoc($rental_badge_query);
+      $incoming_rentals_count = intval($r_badge_data['total_pending'] ?? 0);
+    }
   } elseif (isset($pdo)) {
     try {
       $stmt = $pdo->prepare("
@@ -36,6 +49,20 @@ if ($nav_user_id > 0) {
       $incoming_swaps_count = intval($stmt->fetchColumn() ?? 0);
     } catch (Exception $e) {
       $incoming_swaps_count = 0;
+    }
+
+    try {
+      $r_stmt = $pdo->prepare("
+                SELECT COUNT(r.rental_id) 
+                FROM rental_agreement r
+                JOIN equipment e ON r.equipment_id = e.equipment_id
+                WHERE e.owner_id = ? 
+                  AND r.status = 'Pending'
+            ");
+      $r_stmt->execute([$nav_user_id]);
+      $incoming_rentals_count = intval($r_stmt->fetchColumn() ?? 0);
+    } catch (Exception $e) {
+      $incoming_rentals_count = 0;
     }
   }
 }
@@ -184,6 +211,12 @@ $nav_inactive_class = 'nav-link px-3 py-1.5 text-xs font-semibold rounded-xl shr
                     <?php echo strtoupper(substr($current_name, 0, 1)); ?>
                   </div>
                 <?php endif; ?>
+                <?php if ($incoming_rentals_count > 0): ?>
+                  <span class="absolute -top-1 -right-1 flex h-3 w-3 z-10" title="<?php echo $incoming_rentals_count; ?> new rental proposal<?php echo $incoming_rentals_count > 1 ? 's' : ''; ?>">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500 text-[8px] font-black text-white items-center justify-center leading-none"><?php echo $incoming_rentals_count; ?></span>
+                  </span>
+                <?php endif; ?>
                 <?php if ($current_member_status === 'Verified'): ?>
                   <span
                     class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 dark:bg-emerald-500 ring-2 ring-blue-700 dark:ring-[#0B0F17]"
@@ -250,6 +283,20 @@ $nav_inactive_class = 'nav-link px-3 py-1.5 text-xs font-semibold rounded-xl shr
               </div>
 
               <div class="space-y-1">
+                <a href="<?php echo $base_path; ?>/user/rentals.php"
+                  class="flex items-center justify-between px-2.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors">
+                  <div class="flex items-center gap-2.5">
+                    <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <span>Rental Requests</span>
+                  </div>
+                  <?php if ($incoming_rentals_count > 0): ?>
+                    <span class="px-1.5 py-0.5 text-[9px] font-black bg-rose-500 text-white rounded-full min-w-[17px] text-center leading-none">
+                      <?php echo $incoming_rentals_count; ?>
+                    </span>
+                  <?php endif; ?>
+                </a>
                 <a href="<?php echo $base_path; ?>/user/profile.php"
                   class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors">
                   <svg class="w-4 h-4 text-blue-700 dark:text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -413,6 +460,13 @@ $nav_inactive_class = 'nav-link px-3 py-1.5 text-xs font-semibold rounded-xl shr
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
             </svg>
             <span>Rentals</span>
+            <?php if ($incoming_rentals_count > 0): ?>
+              <span
+                class="inline-flex items-center justify-center px-1.5 py-0.5 text-[9px] font-black bg-rose-500 text-white rounded-full min-w-[17px] h-[17px] shadow-sm animate-pulse leading-none"
+                title="<?php echo $incoming_rentals_count; ?> new rental proposal<?php echo $incoming_rentals_count > 1 ? 's' : ''; ?>">
+                <?php echo $incoming_rentals_count; ?>
+              </span>
+            <?php endif; ?>
           </a>
 
           <a href="<?php echo $base_path; ?>/user/exchanges.php"

@@ -107,6 +107,15 @@ $security_deposit_total = safe_user_scalar($pdo, "
     WHERE renter_id = :uid AND status IN ('Pending', 'Active')
 ", ['uid' => $user_id]);
 
+// 5. Incoming Pending Rental Requests (where member is owner)
+$incoming_rentals_count = safe_user_scalar($pdo, "
+    SELECT COUNT(r.rental_id) 
+    FROM rental_agreement r
+    JOIN equipment e ON r.equipment_id = e.equipment_id
+    WHERE e.owner_id = :uid 
+      AND r.status = 'Pending'
+", ['uid' => $user_id]);
+
 // Active Handover Token Card (latest pending or active rental)
 $active_tokens = safe_user_query($pdo, "
     SELECT r.*, e.equipment_name AS title, e.campus_spot, e.image_url, 
@@ -256,6 +265,32 @@ require_once(__DIR__ . '/../includes/nav.php');
       </div>
     </div>
 
+    <?php if ($incoming_rentals_count > 0): ?>
+      <div class="mb-6 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25 text-primary flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+        <div class="flex items-center gap-3.5">
+          <div class="relative w-10 h-10 rounded-xl bg-rose-500/20 text-rose-500 flex items-center justify-center font-bold text-base shrink-0 border border-rose-500/30">
+            <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+            </svg>
+            <span class="absolute -top-1 -right-1 flex h-4 w-4">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-4 w-4 bg-rose-600 text-[9px] text-white font-black items-center justify-center"><?php echo $incoming_rentals_count; ?></span>
+            </span>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 flex items-center gap-2 font-mono">
+              <span>New Rental Proposal<?php echo $incoming_rentals_count > 1 ? 's' : ''; ?> Received</span>
+              <span class="px-1.5 py-0.5 rounded text-[9px] bg-rose-500 text-white font-extrabold uppercase"><?php echo $incoming_rentals_count; ?> Pending</span>
+            </h4>
+            <p class="text-xs text-muted mt-0.5">A campus peer has requested to rent equipment you listed. Approve or reject it in your Rentals Hub.</p>
+          </div>
+        </div>
+        <a href="rentals.php" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shrink-0 transition-colors shadow-sm flex items-center gap-1.5 self-start sm:self-center">
+          <span>Review Proposals (<?php echo $incoming_rentals_count; ?>) &rarr;</span>
+        </a>
+      </div>
+    <?php endif; ?>
+
     <!-- Quick KPIs -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       
@@ -268,13 +303,20 @@ require_once(__DIR__ . '/../includes/nav.php');
         <a href="equipment.php" class="text-[11px] text-accent font-semibold hover:underline">Manage equipment &rarr;</a>
       </div>
 
-      <div class="bg-surface p-5 rounded-2xl border border-subtle shadow-float transition-colors">
+      <div class="bg-surface p-5 rounded-2xl border border-subtle shadow-float transition-colors relative overflow-hidden">
+        <?php if ($incoming_rentals_count > 0): ?>
+          <span class="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white animate-pulse">
+            <?php echo $incoming_rentals_count; ?> new request<?php echo $incoming_rentals_count > 1 ? 's' : ''; ?>
+          </span>
+        <?php endif; ?>
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-muted font-mono">Active Rentals</span>
           <span class="w-8 h-8 rounded-xl bg-surface-subtle text-emerald-500 flex items-center justify-center font-bold text-sm">⏱️</span>
         </div>
         <div class="mt-3 text-2xl font-extrabold text-primary"><?php echo $my_active_rentals_count; ?></div>
-        <a href="rentals.php" class="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">View rental passes &rarr;</a>
+        <a href="rentals.php" class="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">
+          View rental passes <?php if ($incoming_rentals_count > 0): ?><strong class="text-rose-500">(<?php echo $incoming_rentals_count; ?> pending)</strong><?php endif; ?> &rarr;
+        </a>
       </div>
 
       <div class="bg-surface p-5 rounded-2xl border border-subtle shadow-float transition-colors">
