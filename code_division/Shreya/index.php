@@ -61,7 +61,8 @@ try {
     $items_sql = "SELECT e.*, e.equipment_name AS title, e.rental_rate AS daily_rate, 
                          e.condition_status AS item_condition, c.category_name, 
                          CONCAT(m.first_name, ' ', m.last_name) AS owner_name, 
-                         m.username AS owner_student_id,
+                         COALESCE(NULLIF(m.student_id, ''), m.username) AS owner_student_id,
+                         m.username AS owner_username,
                          e.campus_spot
                   FROM equipment e 
                   LEFT JOIN category c ON e.category_id = c.category_id 
@@ -346,7 +347,7 @@ require_once(__DIR__ . '/includes/nav.php');
                           <span class="font-medium text-muted truncate max-w-[110px] text-[11px]"><?php echo htmlspecialchars($item['owner_name'] ?? 'Member'); ?></span>
                         </div>
                         <div class="text-[10px] font-mono text-muted">
-                          @<?php echo htmlspecialchars($item['owner_student_id'] ?? ''); ?>
+                          @<?php echo htmlspecialchars(!empty($item['owner_username']) ? $item['owner_username'] : ($item['owner_student_id'] ?? '')); ?>
                         </div>
                       </div>
 
