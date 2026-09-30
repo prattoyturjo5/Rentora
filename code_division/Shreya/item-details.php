@@ -128,16 +128,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_swap_proposal'
         } elseif ($equipment_a_id === $equipment_b_id) {
             $error = "Cannot swap an item with itself.";
         } else {
+            $cash_direction = trim($_POST['cash_direction'] ?? 'none');
+            if (!in_array($cash_direction, ['none', 'offer', 'demand'], true)) {
+                $cash_direction = 'none';
+            }
+            $cash_adjustment = ($cash_direction === 'none') ? 0.00 : max(0.00, floatval($_POST['cash_compensation'] ?? $_POST['cash_adjustment'] ?? 0));
+            if ($cash_adjustment <= 0.00) {
+                $cash_direction = 'none';
+                $cash_adjustment = 0.00;
+            }
+
             try {
                 $insSwap = $pdo->prepare("
-                    INSERT INTO exchange_agreement (lender_a_id, lender_b_id, equipment_a_id, equipment_b_id, status)
-                    VALUES (:lender_a_id, :lender_b_id, :equipment_a_id, :equipment_b_id, 'Pending')
+                    INSERT INTO exchange_agreement (lender_a_id, lender_b_id, equipment_a_id, equipment_b_id, cash_adjustment, cash_direction, status)
+                    VALUES (:lender_a_id, :lender_b_id, :equipment_a_id, :equipment_b_id, :cash_adjustment, :cash_direction, 'Pending')
                 ");
                 $insSwap->execute([
-                    'lender_a_id'    => $lender_a_id,
-                    'lender_b_id'    => $lender_b_id,
-                    'equipment_a_id' => $equipment_a_id,
-                    'equipment_b_id' => $equipment_b_id
+                    'lender_a_id'     => $lender_a_id,
+                    'lender_b_id'     => $lender_b_id,
+                    'equipment_a_id'  => $equipment_a_id,
+                    'equipment_b_id'  => $equipment_b_id,
+                    'cash_adjustment' => $cash_adjustment,
+                    'cash_direction'  => $cash_direction
                 ]);
                 header("Location: user/exchanges.php?msg=proposal_sent");
                 exit();

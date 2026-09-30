@@ -77,7 +77,7 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 }
 
 // Handle Propose New Exchange
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['propose_exchange'])) {
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['propose_exchange'])) {
     if ($member_status !== 'Verified') {
         $error = ($member_status === 'Rejected') ? "Your account was rejected, contact an admin." : "Your account is pending verification. You cannot propose exchanges until verified.";
     } else {
@@ -94,15 +94,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['propose_exchange'])) 
 
                 if ($lender_b_id) {
                     $lender_a_id = $user_id;
+                    $cash_direction = trim($_POST['cash_direction'] ?? 'none');
+                    if (!in_array($cash_direction, ['none', 'offer', 'demand'], true)) {
+                        $cash_direction = 'none';
+                    }
+                    $cash_adjustment = ($cash_direction === 'none') ? 0.00 : max(0.00, floatval($_POST['cash_adjustment'] ?? $_POST['cash_compensation'] ?? 0));
+                    if ($cash_adjustment <= 0.00) {
+                        $cash_direction = 'none';
+                        $cash_adjustment = 0.00;
+                    }
+
                     $ins = $pdo->prepare("
-                        INSERT INTO exchange_agreement (lender_a_id, lender_b_id, equipment_a_id, equipment_b_id, status)
-                        VALUES (:lender_a_id, :lender_b_id, :equipment_a_id, :equipment_b_id, 'Pending')
+                        INSERT INTO exchange_agreement (lender_a_id, lender_b_id, equipment_a_id, equipment_b_id, cash_adjustment, cash_direction, status)
+                        VALUES (:lender_a_id, :lender_b_id, :equipment_a_id, :equipment_b_id, :cash_adjustment, :cash_direction, 'Pending')
                     ");
                     $ins->execute([
-                        'lender_a_id'    => $lender_a_id,
-                        'lender_b_id'    => $lender_b_id,
-                        'equipment_a_id' => $equipment_a_id,
-                        'equipment_b_id' => $equipment_b_id
+                        'lender_a_id'     => $lender_a_id,
+                        'lender_b_id'     => $lender_b_id,
+                        'equipment_a_id'  => $equipment_a_id,
+                        'equipment_b_id'  => $equipment_b_id,
+                        'cash_adjustment' => $cash_adjustment,
+                        'cash_direction'  => $cash_direction
                     ]);
                     $success = "Exchange proposal submitted to owner!";
                 } else {
@@ -153,6 +165,8 @@ try {
             ea.lender_b_id,
             ea.equipment_a_id,
             ea.equipment_b_id,
+            ea.cash_adjustment,
+            ea.cash_direction,
             eq_a.equipment_name AS gear_a_title,
             eq_a.rental_rate AS gear_a_rate,
             eq_a.security_deposit AS gear_a_val,
@@ -233,6 +247,7 @@ require_once(__DIR__ . '/../includes/nav.php');
               <th class="py-3 px-4">Exchange Date</th>
               <th class="py-3 px-4">Offered Gear (Gear A)</th>
               <th class="py-3 px-4">Requested Gear (Gear B)</th>
+              <th class="py-3 px-4">Cash Adjustment</th>
               <th class="py-3 px-4">Swap Partner &amp; Contact</th>
               <th class="py-3 px-4">Status</th>
               <th class="py-3 px-4 text-right">Actions</th>
@@ -241,7 +256,7 @@ require_once(__DIR__ . '/../includes/nav.php');
           <tbody class="divide-y divide-border-subtle text-primary">
             <?php if (empty($exchanges)): ?>
               <tr>
-                <td colspan="8" class="py-8 text-center text-muted font-medium">
+                <td colspan="9" class="py-8 text-center text-muted font-medium">
                   No active exchange agreements. Propose a swap below!
                 </td>
               </tr>
@@ -256,6 +271,9 @@ require_once(__DIR__ . '/../includes/nav.php');
                   $partner_phone = $is_outgoing ? $ex['lender_b_phone'] : $ex['lender_a_phone'];
                   $partner_email = $is_outgoing ? $ex['lender_b_email'] : $ex['lender_a_email'];
                   $formatted_date = !empty($ex['exchange_date']) ? date('M d, Y • h:i A', strtotime($ex['exchange_date'])) : 'N/A';
+
+                  $c_dir = $ex['cash_direction'] ?? 'none';
+                  $c_amt = floatval($ex['cash_adjustment'] ?? 0);
 
                   $s = $ex['status'] ?? 'Pending';
                   $badge = match($s) {
@@ -290,6 +308,43 @@ require_once(__DIR__ . '/../includes/nav.php');
                     <div><?php echo htmlspecialchars($ex['gear_b_title'] ?? 'Requested Item'); ?></div>
                     <div class="text-[10px] font-normal text-muted">Owner: <?php echo htmlspecialchars($ex['lender_b_name'] ?? 'Owner'); ?> <?php echo $is_incoming ? '(You)' : ''; ?></div>
                   </td>
+                  <td class="py-3 px-4 whitespace-nowrap">
+                    <?php if ($c_dir === 'none' || $c_amt <= 0): ?>
+                      <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-surface-subtle text-muted border border-subtle">
+                        <svg class="w-3.5 h-3.5 text-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+                        <span>Even Swap</span>
+                      </div>
+                      <div class="text-[10px] text-muted mt-0.5 font-mono">No extra cash (৳0.00)</div>
+                    <?php elseif ($c_dir === 'offer'): ?>
+                      <?php if ($is_incoming): ?>
+                        <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-extrabold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                          <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                          <span>+৳<?php echo number_format($c_amt, 2); ?> to You</span>
+                        </div>
+                        <div class="text-[10px] text-emerald-600 dark:text-emerald-400 mt-0.5 font-medium">Proposer offers you extra cash</div>
+                      <?php else: ?>
+                        <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-extrabold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                          <svg class="w-3.5 h-3.5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"/></svg>
+                          <span>-৳<?php echo number_format($c_amt, 2); ?> You Pay</span>
+                        </div>
+                        <div class="text-[10px] text-amber-600 dark:text-amber-400 mt-0.5 font-medium">You offered extra cash to owner</div>
+                      <?php endif; ?>
+                    <?php elseif ($c_dir === 'demand'): ?>
+                      <?php if ($is_incoming): ?>
+                        <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-extrabold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30">
+                          <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                          <span>৳<?php echo number_format($c_amt, 2); ?> Demanded</span>
+                        </div>
+                        <div class="text-[10px] text-rose-600 dark:text-rose-400 mt-0.5 font-medium">Proposer asks you to pay extra</div>
+                      <?php else: ?>
+                        <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-extrabold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                          <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                          <span>+৳<?php echo number_format($c_amt, 2); ?> to You</span>
+                        </div>
+                        <div class="text-[10px] text-emerald-600 dark:text-emerald-400 mt-0.5 font-medium">You asked extra cash from owner</div>
+                      <?php endif; ?>
+                    <?php endif; ?>
+                  </td>
                   <td class="py-3 px-4 text-primary">
                     <div class="font-semibold">
                       <?php echo htmlspecialchars($partner_name ?? 'Partner'); ?>
@@ -309,10 +364,24 @@ require_once(__DIR__ . '/../includes/nav.php');
                   </td>
                   <td class="py-3 px-4 text-right space-x-1.5 whitespace-nowrap">
                     <?php if ($is_incoming && (empty($s) || $s === 'Pending')): ?>
-                      <a href="exchanges.php?action=accept&id=<?php echo $exId; ?>" class="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white border border-emerald-500/30 font-bold text-[11px] transition">
+                      <?php
+                        $confirm_accept_msg = "Are you sure you want to accept this swap agreement?";
+                        if ($c_dir === 'offer' && $c_amt > 0) {
+                            $confirm_accept_msg = "Accept this swap? You will receive ৳" . number_format($c_amt, 2) . " extra cash during handover.";
+                        } elseif ($c_dir === 'demand' && $c_amt > 0) {
+                            $confirm_accept_msg = "Accept this swap? Note: You are required to pay ৳" . number_format($c_amt, 2) . " extra cash during handover.";
+                        } else {
+                            $confirm_accept_msg = "Accept this swap proposal with no extra money give/take (Even Swap)?";
+                        }
+                      ?>
+                      <a href="exchanges.php?action=accept&id=<?php echo $exId; ?>" 
+                         onclick="return confirm('<?php echo htmlspecialchars($confirm_accept_msg, ENT_QUOTES); ?>');"
+                         class="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white border border-emerald-500/30 font-bold text-[11px] transition">
                         Accept
                       </a>
-                      <a href="exchanges.php?action=reject&id=<?php echo $exId; ?>" class="px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500 hover:text-white border border-rose-500/30 font-bold text-[11px] transition">
+                      <a href="exchanges.php?action=reject&id=<?php echo $exId; ?>" 
+                         onclick="return confirm('Decline this exchange proposal?');"
+                         class="px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500 hover:text-white border border-rose-500/30 font-bold text-[11px] transition">
                         Reject
                       </a>
                     <?php elseif ($s === 'Accepted'): ?>
@@ -381,6 +450,24 @@ require_once(__DIR__ . '/../includes/nav.php');
           </select>
         </div>
 
+        <div>
+          <label for="modal_cash_direction" class="block text-xs font-bold text-muted uppercase tracking-wider mb-1 font-mono">Cash Adjustment / Compensation</label>
+          <select id="modal_cash_direction" name="cash_direction" class="input-subtle text-xs">
+            <option value="none">Even Swap / No Cash Adjustment (৳0)</option>
+            <option value="offer">I Will Pay Extra Cash to Owner (-৳)</option>
+            <option value="demand">I Demand Extra Cash from Owner (+৳)</option>
+          </select>
+        </div>
+
+        <div id="modal_cash_amount_box" class="hidden">
+          <label id="modal_cash_amount_label" for="modal_cash_amount" class="block text-xs font-bold text-muted uppercase tracking-wider mb-1 font-mono">Adjustment Amount (৳) *</label>
+          <div class="relative">
+            <span class="absolute left-3 top-2.5 text-muted font-bold text-xs">৳</span>
+            <input type="number" id="modal_cash_amount" name="cash_adjustment" min="0" step="50" value="0" placeholder="e.g. 500" class="input-subtle text-xs pl-7">
+          </div>
+          <p id="modal_cash_help" class="text-[11px] text-muted mt-1">Specify additional money to balance equipment value.</p>
+        </div>
+
         <?php if ($member_status === 'Verified'): ?>
           <button type="submit" name="propose_exchange" class="btn-accent w-full py-3 text-xs uppercase tracking-wider">
             <span>Send Swap Proposal</span>
@@ -396,5 +483,33 @@ require_once(__DIR__ . '/../includes/nav.php');
     </div>
 
   </main>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const dirSel = document.getElementById('modal_cash_direction');
+    const amtBox = document.getElementById('modal_cash_amount_box');
+    const amtInput = document.getElementById('modal_cash_amount');
+    const amtLabel = document.getElementById('modal_cash_amount_label');
+    const amtHelp = document.getElementById('modal_cash_help');
+
+    if (dirSel && amtBox && amtInput) {
+      function toggleCashInput() {
+        if (dirSel.value === 'none') {
+          amtBox.classList.add('hidden');
+          amtInput.value = '0';
+        } else if (dirSel.value === 'offer') {
+          amtBox.classList.remove('hidden');
+          amtLabel.textContent = 'Extra Money You Will Pay to Owner (৳) *';
+          amtHelp.textContent = 'You agree to give this extra cash to the equipment owner during handover.';
+        } else if (dirSel.value === 'demand') {
+          amtBox.classList.remove('hidden');
+          amtLabel.textContent = 'Extra Money You Demand from Owner (৳) *';
+          amtHelp.textContent = 'The equipment owner must give you this extra cash during handover.';
+        }
+      }
+      dirSel.addEventListener('change', toggleCashInput);
+    }
+  });
+  </script>
 
 <?php require_once(__DIR__ . '/../includes/footer.php'); ?>

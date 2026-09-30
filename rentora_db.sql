@@ -99,7 +99,9 @@ CREATE TABLE `exchange_agreement` (
   `lender_a_id` int(10) UNSIGNED NOT NULL,
   `lender_b_id` int(10) UNSIGNED NOT NULL,
   `equipment_a_id` int(10) UNSIGNED NOT NULL,
-  `equipment_b_id` int(10) UNSIGNED NOT NULL
+  `equipment_b_id` int(10) UNSIGNED NOT NULL,
+  `cash_adjustment` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `cash_direction` enum('none','offer','demand') NOT NULL DEFAULT 'none'
 ) ;
 
 -- --------------------------------------------------------

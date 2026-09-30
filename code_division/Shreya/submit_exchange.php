@@ -49,17 +49,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $swap_time = trim($_POST['swap_time'] ?? '10:00');
     $exchange_datetime = date('Y-m-d H:i:s', strtotime("$swap_date $swap_time"));
 
+    $cash_direction = trim($_POST['cash_direction'] ?? 'none');
+    if (!in_array($cash_direction, ['none', 'offer', 'demand'], true)) {
+        $cash_direction = 'none';
+    }
+    $cash_adjustment = ($cash_direction === 'none') ? 0.00 : max(0.00, floatval($_POST['cash_compensation'] ?? $_POST['cash_adjustment'] ?? 0));
+    if ($cash_adjustment <= 0.00) {
+        $cash_direction = 'none';
+        $cash_adjustment = 0.00;
+    }
+
     try {
         $ins = $pdo->prepare("
-            INSERT INTO exchange_agreement (lender_a_id, lender_b_id, equipment_a_id, equipment_b_id, exchange_date, status)
-            VALUES (:lender_a_id, :lender_b_id, :equipment_a_id, :equipment_b_id, :exchange_date, 'Pending')
+            INSERT INTO exchange_agreement (lender_a_id, lender_b_id, equipment_a_id, equipment_b_id, exchange_date, cash_adjustment, cash_direction, status)
+            VALUES (:lender_a_id, :lender_b_id, :equipment_a_id, :equipment_b_id, :exchange_date, :cash_adjustment, :cash_direction, 'Pending')
         ");
         $ins->execute([
-            'lender_a_id'    => $lender_a_id,
-            'lender_b_id'    => $lender_b_id,
-            'equipment_a_id' => $equipment_a_id,
-            'equipment_b_id' => $equipment_b_id,
-            'exchange_date'  => $exchange_datetime
+            'lender_a_id'     => $lender_a_id,
+            'lender_b_id'     => $lender_b_id,
+            'equipment_a_id'  => $equipment_a_id,
+            'equipment_b_id'  => $equipment_b_id,
+            'exchange_date'   => $exchange_datetime,
+            'cash_adjustment' => $cash_adjustment,
+            'cash_direction'  => $cash_direction
         ]);
 
         header("Location: user/exchanges.php?msg=proposal_sent");
