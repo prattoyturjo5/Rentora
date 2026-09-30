@@ -343,14 +343,33 @@ require_once(__DIR__ . '/../includes/nav.php');
           <div id="equipment-upload-wrapper" class="relative">
             <div id="upload-dropzone" class="relative group border-2 border-dashed border-subtle hover:border-accent rounded-2xl p-6 text-center cursor-pointer transition-all bg-surface-subtle overflow-hidden">
               <input type="file" id="equipment_image" name="equipment_image" accept="image/jpeg,image/png,image/webp" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" title="Choose equipment image">
-              <div class="pointer-events-none">
-                <div class="w-10 h-10 rounded-xl bg-surface text-accent flex items-center justify-center mx-auto mb-2 shadow-sm">
+              <input type="hidden" id="dropped_web_image_base64" name="dropped_web_image_base64" value="">
+              
+              <!-- Default State -->
+              <div id="dropzone-default" class="pointer-events-none transition-opacity duration-200">
+                <div class="w-10 h-10 rounded-xl bg-surface text-accent flex items-center justify-center mx-auto mb-2 shadow-sm transition-transform group-hover:scale-110">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 </div>
                 <p class="text-xs font-semibold text-primary">
                   <span class="text-accent group-hover:underline">Click to upload</span> or drag image here
                 </p>
-                <p class="text-[11px] text-muted mt-0.5">PNG, JPG, or WebP (max 5MB)</p>
+                <p class="text-[11px] text-muted mt-0.5">Drag from PC or drop any web image &bull; PNG, JPG, WebP (max 5MB)</p>
+              </div>
+
+              <!-- Drag Hover Active Overlay -->
+              <div id="dropzone-dragover" class="hidden pointer-events-none absolute inset-0 bg-accent/10 backdrop-blur-[2px] flex flex-col items-center justify-center border-2 border-accent rounded-2xl z-20 transition-all">
+                <div class="w-10 h-10 rounded-xl bg-accent text-white flex items-center justify-center mb-2 shadow-md animate-bounce">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                </div>
+                <p class="text-xs font-bold text-accent">Drop Image Here</p>
+                <p class="text-[10px] text-muted">Supports PC files and Web images</p>
+              </div>
+
+              <!-- Downloading / Processing Overlay -->
+              <div id="dropzone-loading" class="hidden pointer-events-none absolute inset-0 bg-surface/90 backdrop-blur-[2px] flex flex-col items-center justify-center rounded-2xl z-20 transition-all">
+                <div class="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin mb-2"></div>
+                <p id="dropzone-loading-text" class="text-xs font-bold text-primary">Fetching web image...</p>
+                <p class="text-[10px] text-muted">Downloading and validating image</p>
               </div>
             </div>
 
@@ -360,7 +379,10 @@ require_once(__DIR__ . '/../includes/nav.php');
                   <img id="image-preview-thumb" src="" alt="Equipment preview" class="w-full h-full object-cover">
                 </div>
                 <div class="min-w-0 flex-1">
-                  <p id="image-preview-name" class="text-xs font-bold text-primary truncate"></p>
+                  <div class="flex items-center gap-1.5">
+                    <p id="image-preview-name" class="text-xs font-bold text-primary truncate"></p>
+                    <span id="image-preview-source-badge" class="hidden text-[9px] font-mono px-1.5 py-0.5 rounded bg-accent/10 text-accent font-semibold">Web Image</span>
+                  </div>
                   <p id="image-preview-meta" class="text-[11px] text-muted"></p>
                   <button type="button" id="btn-change-image" class="text-[11px] text-accent font-semibold hover:underline">Change photo</button>
                 </div>
@@ -400,10 +422,15 @@ require_once(__DIR__ . '/../includes/nav.php');
   document.addEventListener('DOMContentLoaded', function() {
     const dropzone = document.getElementById('upload-dropzone');
     const fileInput = document.getElementById('equipment_image');
+    const hiddenBase64 = document.getElementById('dropped_web_image_base64');
+    const dragOverlay = document.getElementById('dropzone-dragover');
+    const loadingOverlay = document.getElementById('dropzone-loading');
+    const loadingText = document.getElementById('dropzone-loading-text');
     const previewCard = document.getElementById('upload-preview-card');
     const previewThumb = document.getElementById('image-preview-thumb');
     const previewName = document.getElementById('image-preview-name');
     const previewMeta = document.getElementById('image-preview-meta');
+    const sourceBadge = document.getElementById('image-preview-source-badge');
     const removeBtn = document.getElementById('btn-remove-image');
     const changeBtn = document.getElementById('btn-change-image');
     const errorText = document.getElementById('upload-error-text');
@@ -436,8 +463,19 @@ require_once(__DIR__ . '/../includes/nav.php');
       }
     }
 
-    function displayPreview(file) {
+    function showLoading(msg) {
       clearError();
+      if (loadingText) loadingText.textContent = msg || 'Fetching web image...';
+      if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+    }
+
+    function hideLoading() {
+      if (loadingOverlay) loadingOverlay.classList.add('hidden');
+    }
+
+    function displayPreview(file, isWeb = false) {
+      clearError();
+      hideLoading();
       if (currentObjectUrl) {
         URL.revokeObjectURL(currentObjectUrl);
       }
@@ -446,45 +484,318 @@ require_once(__DIR__ . '/../includes/nav.php');
       previewName.textContent = file.name;
       previewMeta.textContent = formatSize(file.size);
 
+      if (sourceBadge) {
+        if (isWeb) sourceBadge.classList.remove('hidden');
+        else sourceBadge.classList.add('hidden');
+      }
+
       dropzone.classList.add('hidden');
       previewCard.classList.remove('hidden');
     }
 
-    function handleFile(file) {
+    function handleFile(file, isWeb = false) {
       if (!file) return;
 
       if (!allowedTypes.includes(file.type)) {
         showError('Please upload a valid JPG, PNG, or WebP image file.');
-        fileInput.value = '';
+        resetInput();
         return;
       }
 
       if (file.size > maxSizeBytes) {
         showError('Image file is too large. Maximum allowed size is 5MB.');
-        fileInput.value = '';
+        resetInput();
         return;
       }
 
-      displayPreview(file);
+      // Populate base64 fallback in case needed
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        if (hiddenBase64) hiddenBase64.value = e.target.result;
+      };
+      reader.readAsDataURL(file);
+
+      displayPreview(file, isWeb);
     }
 
+    function resetInput() {
+      fileInput.value = '';
+      if (hiddenBase64) hiddenBase64.value = '';
+      if (currentObjectUrl) {
+        URL.revokeObjectURL(currentObjectUrl);
+        currentObjectUrl = null;
+      }
+      previewThumb.src = '';
+      previewCard.classList.add('hidden');
+      dropzone.classList.remove('hidden');
+      hideLoading();
+    }
+
+    // Helper: Convert any image Blob (e.g. GIF, AVIF, BMP) to JPEG via Canvas
+    function convertBlobToJpeg(blob) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        const url = URL.createObjectURL(blob);
+        img.onload = function() {
+          URL.revokeObjectURL(url);
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth || img.width || 400;
+            canvas.height = img.naturalHeight || img.height || 400;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+            canvas.toBlob(function(jpegBlob) {
+              resolve(jpegBlob || blob);
+            }, 'image/jpeg', 0.92);
+          } catch (_) {
+            resolve(blob);
+          }
+        };
+        img.onerror = function() {
+          URL.revokeObjectURL(url);
+          resolve(blob);
+        };
+        img.src = url;
+      });
+    }
+
+    // Smart extractor for dragged web image URL
+    function extractImageUrl(dt) {
+      if (!dt) return null;
+      const candidates = [];
+
+      // 1. Check text/html for <img> tag or Google images redirect
+      const html = dt.getData('text/html');
+      if (html) {
+        try {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          const imgs = doc.querySelectorAll('img');
+          for (const img of imgs) {
+            if (img.src) candidates.push(img.src);
+            if (img.dataset && img.dataset.src) candidates.push(img.dataset.src);
+          }
+          const links = doc.querySelectorAll('a');
+          for (const a of links) {
+            if (a.href) {
+              const gMatch = a.href.match(/[?&]imgurl=([^&]+)/i);
+              if (gMatch) candidates.unshift(decodeURIComponent(gMatch[1]));
+              else if (/\.(jpe?g|png|webp|gif)($|\?)/i.test(a.href)) candidates.push(a.href);
+            }
+          }
+        } catch (_) {
+          const match = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+          if (match) candidates.push(match[1]);
+        }
+      }
+
+      // 2. Check text/uri-list
+      const uriList = dt.getData('text/uri-list');
+      if (uriList) {
+        const lines = uriList.split(/\r?\n/).map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+        for (const line of lines) {
+          const gMatch = line.match(/[?&]imgurl=([^&]+)/i);
+          if (gMatch) candidates.unshift(decodeURIComponent(gMatch[1]));
+          else candidates.push(line);
+        }
+      }
+
+      // 3. Check text/plain
+      const text = dt.getData('text/plain');
+      if (text) {
+        const trimmed = text.trim();
+        if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:image/')) {
+          const gMatch = trimmed.match(/[?&]imgurl=([^&]+)/i);
+          if (gMatch) candidates.unshift(decodeURIComponent(gMatch[1]));
+          else candidates.push(trimmed);
+        }
+      }
+
+      for (const url of candidates) {
+        if (url && (url.startsWith('data:image/') || url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:'))) {
+          return url;
+        }
+      }
+      return null;
+    }
+
+    async function handleWebImageUrl(imageUrl) {
+      showLoading('Fetching web image...');
+      try {
+        let blob = null;
+
+        if (imageUrl.startsWith('data:image/')) {
+          const res = await fetch(imageUrl);
+          blob = await res.blob();
+        } else if (imageUrl.startsWith('blob:')) {
+          const res = await fetch(imageUrl);
+          blob = await res.blob();
+        } else {
+          // Attempt direct fetch first (if CORS allowed by host)
+          try {
+            const resp = await fetch(imageUrl, { mode: 'cors' });
+            if (resp.ok) {
+              const ct = resp.headers.get('content-type') || '';
+              if (ct.startsWith('image/')) {
+                blob = await resp.blob();
+              }
+            }
+          } catch (_) {
+            // Direct fetch blocked by CORS, proceed to local proxy
+          }
+
+          if (!blob) {
+            // Fetch via local proxy endpoint
+            const proxyUrl = '../api/fetch_web_image.php?url=' + encodeURIComponent(imageUrl);
+            const resp = await fetch(proxyUrl);
+            if (!resp.ok) {
+              let errText = 'Failed to fetch image from web';
+              try {
+                const errJson = await resp.json();
+                if (errJson && errJson.error) errText = errJson.error;
+              } catch (_) {}
+              throw new Error(errText);
+            }
+            blob = await resp.blob();
+          }
+        }
+
+        if (!blob) {
+          throw new Error('Could not retrieve image data from the provided URL.');
+        }
+
+        if (blob.size > maxSizeBytes) {
+          throw new Error('Image file is too large. Maximum allowed size is 5MB.');
+        }
+
+        // Convert non-standard image types to JPEG if needed
+        if (!allowedTypes.includes(blob.type)) {
+          showLoading('Optimizing image format...');
+          blob = await convertBlobToJpeg(blob);
+        }
+
+        // Determine appropriate filename
+        let fileName = 'web_image.jpg';
+        try {
+          const u = new URL(imageUrl);
+          const p = u.pathname.split('/').pop();
+          if (p && /\.(jpe?g|png|webp)$/i.test(p)) {
+            fileName = decodeURIComponent(p);
+          } else {
+            const ext = blob.type === 'image/png' ? 'png' : (blob.type === 'image/webp' ? 'webp' : 'jpg');
+            fileName = 'web_image_' + Math.floor(Date.now() / 1000) + '.' + ext;
+          }
+        } catch (_) {
+          const ext = blob.type === 'image/png' ? 'png' : (blob.type === 'image/webp' ? 'webp' : 'jpg');
+          fileName = 'web_image_' + Math.floor(Date.now() / 1000) + '.' + ext;
+        }
+
+        const file = new File([blob], fileName, { type: blob.type });
+
+        // Update file input via DataTransfer
+        try {
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          fileInput.files = dt.files;
+        } catch (_) {
+          // If browser restricts DataTransfer assignment, fallback input is handled
+        }
+
+        handleFile(file, true);
+      } catch (err) {
+        hideLoading();
+        showError(err.message || 'Failed to load web image. Please try downloading it first or use another image.');
+      }
+    }
+
+    // Attach Drag and Drop handlers
+    let dragCounter = 0;
+
+    function onDragEnter(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      dragCounter++;
+      if (dragOverlay) dragOverlay.classList.remove('hidden');
+      dropzone.classList.add('border-accent', 'bg-surface');
+    }
+
+    function onDragOver(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.dataTransfer.dropEffect = 'copy';
+      if (dragOverlay) dragOverlay.classList.remove('hidden');
+      dropzone.classList.add('border-accent', 'bg-surface');
+    }
+
+    function onDragLeave(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      dragCounter--;
+      if (dragCounter <= 0) {
+        dragCounter = 0;
+        if (dragOverlay) dragOverlay.classList.add('hidden');
+        dropzone.classList.remove('border-accent', 'bg-surface');
+      }
+    }
+
+    async function onDrop(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      dragCounter = 0;
+      if (dragOverlay) dragOverlay.classList.add('hidden');
+      dropzone.classList.remove('border-accent', 'bg-surface');
+
+      const dt = e.dataTransfer;
+      if (!dt) return;
+
+      // 1. Check for local PC file first
+      if (dt.files && dt.files.length > 0) {
+        fileInput.files = dt.files;
+        handleFile(dt.files[0], false);
+        return;
+      }
+
+      // 2. Check for web image URL
+      const imageUrl = extractImageUrl(dt);
+      if (imageUrl) {
+        await handleWebImageUrl(imageUrl);
+        return;
+      }
+
+      showError('No valid image file or web image detected in the drop.');
+    }
+
+    ['dragenter'].forEach(evt => {
+      dropzone.addEventListener(evt, onDragEnter);
+      fileInput.addEventListener(evt, onDragEnter);
+    });
+
+    ['dragover'].forEach(evt => {
+      dropzone.addEventListener(evt, onDragOver);
+      fileInput.addEventListener(evt, onDragOver);
+    });
+
+    ['dragleave', 'dragend'].forEach(evt => {
+      dropzone.addEventListener(evt, onDragLeave);
+      fileInput.addEventListener(evt, onDragLeave);
+    });
+
+    dropzone.addEventListener('drop', onDrop);
+    fileInput.addEventListener('drop', onDrop);
+
+    // Standard file selection via click
     fileInput.addEventListener('change', function() {
       if (this.files && this.files.length > 0) {
-        handleFile(this.files[0]);
+        handleFile(this.files[0], false);
       }
     });
 
     if (removeBtn) {
       removeBtn.addEventListener('click', function(e) {
         e.preventDefault();
-        fileInput.value = '';
-        if (currentObjectUrl) {
-          URL.revokeObjectURL(currentObjectUrl);
-          currentObjectUrl = null;
-        }
-        previewThumb.src = '';
-        previewCard.classList.add('hidden');
-        dropzone.classList.remove('hidden');
+        resetInput();
         clearError();
       });
     }
